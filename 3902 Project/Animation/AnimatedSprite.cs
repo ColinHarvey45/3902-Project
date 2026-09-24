@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSE_3902_Project
+namespace Animation
 {
     internal class AnimatedSprite : Sprite
     {

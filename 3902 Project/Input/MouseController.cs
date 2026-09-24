@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Interfaces;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
 
-namespace CSE_3902_Project
+namespace Input
 {
     internal class MouseController : IController
     {

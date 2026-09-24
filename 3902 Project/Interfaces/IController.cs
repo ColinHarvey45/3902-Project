@@ -2,7 +2,7 @@
 using System;
 
 
-namespace CSE_3902_Project
+namespace Interfaces
 {
     internal interface IController
     {

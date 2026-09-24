@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace CSE_3902_Project
+namespace Animation
 {
     internal class Sprite : ISprite
     {
