@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Animation;
+using Interfaces;
+// using YourControllersNamespace; // wherever KeyboardController actually lives
 
 namespace CSE_3902_Project
 {
@@ -8,8 +11,9 @@ namespace CSE_3902_Project
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
+        private Link link;
+        private Texture2D linkTexture; // moved to a field so Draw() can use it too
 
-        // github demo
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -19,11 +23,8 @@ namespace CSE_3902_Project
 
         protected override void Initialize()
         {
-
-            // Makes Monogame window size of the current PC window
             graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-
             graphics.ApplyChanges();
 
             base.Initialize();
@@ -32,6 +33,9 @@ namespace CSE_3902_Project
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            linkTexture = Content.Load<Texture2D>("TLOZLink-transparent2");
+            IController controller = new KeyboardController();
+            link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), controller);
         }
 
         protected override void Update(GameTime gameTime)
@@ -39,6 +43,7 @@ namespace CSE_3902_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            link.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -46,9 +51,9 @@ namespace CSE_3902_Project
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // PointClamp keeps the sprite high def when we scale it
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
+            link.Draw(linkTexture);
 
             spriteBatch.End();
 
