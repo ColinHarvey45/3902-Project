@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Animation;
 using Interfaces;
 // using YourControllersNamespace; // wherever KeyboardController actually lives
+using Input;
 
 namespace CSE_3902_Project
 {
