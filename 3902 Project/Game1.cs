@@ -9,6 +9,7 @@ namespace CSE_3902_Project
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
+        // github demo
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
