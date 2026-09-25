@@ -16,13 +16,16 @@ namespace Animation
 
         private readonly IController controller;
 
+        // how long each walk frame is held before swapping - tweak to taste
+        private const float WalkFrameSpeed = 0.15f;
+
         public Link(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, IController controller)
         {
             this.controller = controller;
 
-            downSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(1, 1), 1, 0f);
-            upSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(1, 37), 1, 0f);
-            horizontalSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(1, 68), 1, 0f);
+            downSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(1, 1), 2, WalkFrameSpeed);
+            upSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(71, 1), 2, WalkFrameSpeed);
+            horizontalSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(33, 1), 2, WalkFrameSpeed);
         }
 
         public void Update(GameTime gameTime)
@@ -34,9 +37,7 @@ namespace Animation
             else if (movement.Y > 0) currentDirection = Direction.Down;
             else if (movement.X < 0) currentDirection = Direction.Left;
             else if (movement.X > 0) currentDirection = Direction.Right;
-            // if movement is zero, currentDirection is left unchanged (idle keeps last facing)
 
-            // keep all three sprites in sync so switching direction doesn't reset position
             Vector2 currentPos = ActiveSprite.Position;
             downSprite.Position = currentPos;
             upSprite.Position = currentPos;
@@ -53,7 +54,7 @@ namespace Animation
         {
             Direction.Up => upSprite,
             Direction.Down => downSprite,
-            _ => horizontalSprite // Left and Right both use this, flip handles the difference
+            _ => horizontalSprite
         };
 
         public void Draw(Texture2D texture)
