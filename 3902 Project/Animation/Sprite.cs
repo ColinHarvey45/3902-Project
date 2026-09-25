@@ -47,7 +47,16 @@ namespace Animation
 
         }
 
+        public Vector2 Position
+        {
+            get => spritePosition;
+            set => spritePosition = value;
+        }
 
+        public void SetEffects(SpriteEffects effects)
+        {
+            spriteEffects = effects;
+        }
 
         // Using this constructor for spriteBatch.Draw so that we can scale up our sprites
         public void Draw(Texture2D spriteTexture) //Rectangle? sourceRectangle, Vector2 pos
