@@ -17,6 +17,8 @@ namespace Input
         private Keys altDown;
         private Keys up;
         private Keys altUp;
+        private Keys nextEnemy;
+        private Keys prevEnemy;
         public Vector2 movementDirection;
 
         public KeyboardController()
@@ -32,6 +34,9 @@ namespace Input
             altDown = Keys.Down;
             altUp = Keys.Up;
 
+            nextEnemy = Keys.P;
+            prevEnemy = Keys.O;
+
         }
 
         public KeyboardState GetKeys()
@@ -44,23 +49,32 @@ namespace Input
         }
 
         public Vector2 UpdateMovement()
-{
-        keyboardState = Keyboard.GetState();
+        {
+                keyboardState = Keyboard.GetState();
 
-        movementDirection = Vector2.Zero;
+                movementDirection = Vector2.Zero;
 
-        if (keyboardState.IsKeyDown(right) || keyboardState.IsKeyDown(altRight))
-            movementDirection.X = 1;
-        else if (keyboardState.IsKeyDown(left) || keyboardState.IsKeyDown(altLeft))
-            movementDirection.X = -1;
+                if (keyboardState.IsKeyDown(right) || keyboardState.IsKeyDown(altRight))
+                    movementDirection.X = 1;
+                else if (keyboardState.IsKeyDown(left) || keyboardState.IsKeyDown(altLeft))
+                    movementDirection.X = -1;
 
-        if (keyboardState.IsKeyDown(down) || keyboardState.IsKeyDown(altDown))
-         movementDirection.Y = 1;
-        else if (keyboardState.IsKeyDown(up) || keyboardState.IsKeyDown(altUp))
-            movementDirection.Y = -1;
+                if (keyboardState.IsKeyDown(down) || keyboardState.IsKeyDown(altDown))
+                 movementDirection.Y = 1;
+                else if (keyboardState.IsKeyDown(up) || keyboardState.IsKeyDown(altUp))
+                    movementDirection.Y = -1;
 
-    return movementDirection;
-}
+            return movementDirection;
+        }
+
+        public int changeEnemy(int enemyIndex)
+        {
+
+            if (keyboardState.IsKeyDown(nextEnemy)) { enemyIndex++; }
+            else if (keyboardState.IsKeyDown(prevEnemy)) { enemyIndex++; }
+            
+            return enemyIndex;
+        }
 
         public void Update() { }
         public Vector2 MousePos() { return Vector2.Zero; }

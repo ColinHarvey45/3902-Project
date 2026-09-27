@@ -58,6 +58,11 @@ namespace Animation
             spriteEffects = effects;
         }
 
+        public void SetSpriteSize(Point spriteSize)
+        {
+            rectSize = spriteSize;
+        }
+
         // Using this constructor for spriteBatch.Draw so that we can scale up our sprites
         public void Draw(Texture2D spriteTexture) //Rectangle? sourceRectangle, Vector2 pos
         {
