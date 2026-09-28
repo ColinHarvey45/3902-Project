@@ -8,23 +8,12 @@ using System.Threading.Tasks;
 
 namespace Animation
 {
-    internal class AnimatedSprite : Sprite
+    internal class AnimatedSprite(Texture2D texture, SpriteBatch passedSpriteBatch, Vector2 position, Point rectLocation, int numFrames, float animSpeed) : Sprite(texture, passedSpriteBatch, position, rectLocation)
     {
-        private int currentFrame;
-        private int totalFrames;
-        private double frameTimer;
-        private double frameInterval;
-
-        public AnimatedSprite(Texture2D texture, SpriteBatch passedSpriteBatch, Vector2 position, Point rectLocation, int numFrames, float animSpeed) : base(texture, passedSpriteBatch, position, rectLocation)
-        {
-
-            // The larger the interval the slower the speed of the animation
-            frameInterval = animSpeed;
-            totalFrames = numFrames;
-            currentFrame = 0;
-            frameTimer = 0;
-
-        }
+        private int currentFrame = 0;
+        private readonly int totalFrames = numFrames;
+        private double frameTimer = 0;
+        private readonly double frameInterval = animSpeed;
 
         public void UpdateAnimation(GameTime gameTime, Vector2 movement)
         {
@@ -37,6 +26,7 @@ namespace Animation
             {
                 sourceRect = new Rectangle(location.X, location.Y, rectSize.X, rectSize.Y);
                 currentFrame = 0;
+                frameTimer = 0;
             }
             else if (frameTimer >= frameInterval)
             {
@@ -46,7 +36,7 @@ namespace Animation
                     currentFrame = 0;
                 }
 
-                frameTimer -= frameInterval;
+                frameTimer = 0;
 
                 int column = currentFrame % totalFrames;
                 int row = currentFrame / totalFrames;

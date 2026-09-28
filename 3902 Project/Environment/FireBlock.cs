@@ -6,19 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Enemies
+namespace Environment
 {
-    internal class Stalfos : Enemy
+    internal class FireBlock : Block
     {
-        private static readonly Point StalfosSourceRect = new(1, 58);
-        private static readonly Point StalfosSpriteSize = new(16, 16);
+
+        private static readonly Point fireSourceRect = new(52, 11);
+        private static readonly Point fireSpriteSize = new(18, 18);
         private float flipTimer = 0f;
         private SpriteEffects currentEffect = SpriteEffects.None;
 
-        public Stalfos(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
-            : base(texture, spriteBatch, startPosition, StalfosSourceRect)
+        public FireBlock(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
+            : base(texture, spriteBatch, startPosition, fireSourceRect)
         {
-            this.enemySprite.SetSpriteSize(StalfosSpriteSize);
+            this.blockSprite.SetSpriteSize(fireSpriteSize);
         }
 
 
@@ -28,13 +29,8 @@ namespace Enemies
             if (isVisible)
             {
 
-                Vector2 movement = GetNextMovement(gameTime);
-
-                enemySpriteAnim?.UpdateAnimation(gameTime, movement);
-
-                if (enemySprite != null)
+                if (blockSprite != null)
                 {
-                    enemySprite.Position += movement;
                     Flip(gameTime);
                 }
 
@@ -58,9 +54,9 @@ namespace Enemies
                     currentEffect = SpriteEffects.None;
                 }
 
-                this.enemySprite.SetEffects(currentEffect);
+                this.blockSprite.SetEffects(currentEffect);
             }
         }
+
     }
 }
-

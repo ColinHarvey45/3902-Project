@@ -20,7 +20,7 @@ namespace Enemies
         public Gel(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
             : base(texture, spriteBatch, startPosition, GelSourceRect, GelFrames, GelWalkSpeed)
         {
-            this.enemySprite.SetSpriteSize(GelSpriteSize);
+            this.enemySpriteAnim.SetSpriteSize(GelSpriteSize);
         }
 
 

@@ -17,6 +17,7 @@ namespace Enemies
         protected float timer = 0f;
         protected Vector2 currentDirection;
         protected bool isVisible = true;
+        private readonly Vector2[] directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1) };
 
         protected static readonly Random RandomGenerator = new();
 
@@ -24,12 +25,14 @@ namespace Enemies
         {
             this.texture = texture;
             this.enemySpriteAnim = new AnimatedSprite(texture, spriteBatch, startPosition, sourceRect, totalFrames, frameSpeed);
+            this.currentDirection = directions[RandomGenerator.Next(directions.Length)];
         }
 
         protected Enemy(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, Point sourceRect)
         {
             this.texture = texture;
             this.enemySprite = new Sprite(texture, spriteBatch, startPosition, sourceRect);
+            this.currentDirection = directions[RandomGenerator.Next(directions.Length)];
         }
 
         public virtual Vector2 GetNextMovement(GameTime gameTime)
@@ -39,38 +42,53 @@ namespace Enemies
             if (timer >= 2.0f)
             {
                 timer = 0f;
-                Vector2[] directions = { new(1, 0), new(-1, 0), new(0, -1), new(0, 1) };
+                //Vector2[] directions = { new(1, 0), new(-1, 0), new(0, -1), new(0, 1) };
                 currentDirection = directions[RandomGenerator.Next(directions.Length)];
             }
 
             return currentDirection;
         }
 
+        public void SetVisibility(bool visible)
+        {
+            this.isVisible = visible;
+        }
+
         public virtual void Update(GameTime gameTime)
         {
-            Vector2 movement = GetNextMovement(gameTime);
 
-            if (enemySpriteAnim != null)
+            if (isVisible)
             {
-                enemySpriteAnim.UpdateAnimation(gameTime, movement);
-            }
 
-            if (enemySprite != null)
-            {
-                enemySprite.Position += movement;
+                Vector2 movement = GetNextMovement(gameTime);
+
+                enemySpriteAnim?.UpdateAnimation(gameTime, movement);
+
+                if (enemySprite != null)
+                {
+                    enemySprite.Position += movement;
+                }
+
             }
         }
 
         public virtual void Draw()
         {
-            if (enemySpriteAnim != null)
+            
+            if (isVisible)
             {
-                enemySpriteAnim.Draw(texture);
+
+                if (enemySpriteAnim != null)
+                {
+                    enemySpriteAnim.Draw(texture);
+                }
+                else
+                {
+                    enemySprite?.Draw(texture);
+                }
+
             }
-            else if (enemySprite != null)
-            {
-                enemySprite.Draw(texture);
-            }
+
         }
     }
 }
