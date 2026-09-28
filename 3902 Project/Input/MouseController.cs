@@ -39,6 +39,8 @@ namespace Input
         public void PostUpdate() { }
         public int ChangeEnemy(int enemyIndex, Enemy[] enemyArray) {  return enemyIndex; }
         public int ChangeBlock(int blockIndex, Block[] blockArray) {  return blockIndex; }
+        public bool QuitPressed() { return false; }
+        public bool ResetPressed() { return false; }
 
     }
 }
