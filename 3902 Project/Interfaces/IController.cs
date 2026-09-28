@@ -17,5 +17,8 @@ namespace Interfaces
 
         public Vector2 UpdateMovement();
 
+        public bool QuitPressed();
+        public bool ResetPressed();
+
     }
 }

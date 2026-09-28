@@ -24,6 +24,9 @@ namespace Input
         private readonly Keys prevEnemy;
         private readonly Keys nextBlock;
         private readonly Keys prevBlock;
+        private readonly Keys quit;
+        private readonly Keys altQuit;
+        private readonly Keys reset;
         public Vector2 movementDirection;
 
         public KeyboardController()
@@ -44,6 +47,10 @@ namespace Input
 
             nextBlock = Keys.Y;
             prevBlock = Keys.T;
+
+            quit = Keys.Q;
+            altQuit = Keys.Escape;
+            reset = Keys.R;
 
         }
 
@@ -119,6 +126,16 @@ namespace Input
             }
 
             return currentIndex;
+        }
+
+        public bool QuitPressed()
+        {
+            return currentKeyboardState.IsKeyDown(quit) || currentKeyboardState.IsKeyDown(altQuit);
+        }
+
+        public bool ResetPressed()
+        {
+            return currentKeyboardState.IsKeyDown(reset) && previousKeyboardState.IsKeyUp(reset);
         }
 
         public void Update() { currentKeyboardState = Keyboard.GetState(); }

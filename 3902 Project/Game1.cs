@@ -52,6 +52,12 @@ namespace CSE_3902_Project
 
             keyboard = new KeyboardController();
 
+            ResetGame();
+        }
+
+        // Puts every game object back in its starting state; also used by the reset key
+        private void ResetGame()
+        {
             link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), keyboard);
 
             Zol zol = new Zol(enemyTexture, spriteBatch, new Vector2(400, 200));
@@ -67,6 +73,8 @@ namespace CSE_3902_Project
 
             enemies = [stalfos, zol, gel];
             blocks = [fire, stairs, squareBlock, fishStatue, dragonStatue, blueGap];
+            enemyIndex = 0;
+            blockIndex = 0;
 
             foreach (Enemy enemy in enemies)
             {
@@ -86,10 +94,13 @@ namespace CSE_3902_Project
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            keyboard.Update();
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.QuitPressed())
                 Exit();
 
-            keyboard.Update();
+            if (keyboard.ResetPressed())
+                ResetGame();
 
             link.Update(gameTime);
 
