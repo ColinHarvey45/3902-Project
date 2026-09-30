@@ -68,6 +68,11 @@ namespace Animation
         {
             spriteBatch.Draw(spriteTexture, spritePosition, sourceRect, spriteColor, spriteRotation, spriteOrigin, spriteScale, spriteEffects, layerDepth);
         }
+        
+        public void Draw(Texture2D spriteTexture, Vector2 drawOffset)
+        {
+         spriteBatch.Draw(spriteTexture, spritePosition + drawOffset * spriteScale, sourceRect, spriteColor, spriteRotation, spriteOrigin, spriteScale, spriteEffects, layerDepth);
+        }
 
 
     }
