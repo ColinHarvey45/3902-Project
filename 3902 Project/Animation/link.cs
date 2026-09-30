@@ -30,7 +30,6 @@ namespace Animation
 
         public void Update(GameTime gameTime)
         {
-            controller.Update();
             Vector2 movement = controller.UpdateMovement();
 
             if (movement.Y < 0) currentDirection = Direction.Up;

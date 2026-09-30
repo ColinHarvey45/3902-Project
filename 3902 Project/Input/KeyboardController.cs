@@ -2,8 +2,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
-using Enemies;
-using Environment;
+using System.Collections.Generic;
 
 namespace Input
 {
@@ -12,6 +11,7 @@ namespace Input
 
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
+        private readonly Dictionary<Keys, ICommand> commands = [];
         private readonly Keys right;
         private readonly Keys altRight;
         private readonly Keys left;
@@ -20,13 +20,6 @@ namespace Input
         private readonly Keys altDown;
         private readonly Keys up;
         private readonly Keys altUp;
-        private readonly Keys nextEnemy;
-        private readonly Keys prevEnemy;
-        private readonly Keys nextBlock;
-        private readonly Keys prevBlock;
-        private readonly Keys quit;
-        private readonly Keys altQuit;
-        private readonly Keys reset;
         public Vector2 movementDirection;
 
         public KeyboardController()
@@ -42,16 +35,12 @@ namespace Input
             altDown = Keys.Down;
             altUp = Keys.Up;
 
-            nextEnemy = Keys.P;
-            prevEnemy = Keys.O;
+        }
 
-            nextBlock = Keys.Y;
-            prevBlock = Keys.T;
-
-            quit = Keys.Q;
-            altQuit = Keys.Escape;
-            reset = Keys.R;
-
+        // The command runs once each time the key is pressed, not every frame it is held
+        public void RegisterCommand(Keys key, ICommand command)
+        {
+            commands[key] = command;
         }
 
         public Vector2 UpdateMovement()
@@ -72,74 +61,19 @@ namespace Input
             return movementDirection;
         }
 
-        public int ChangeEnemy(int currentIndex, Enemy[] enemyArray)
+        public void Update()
         {
+            previousKeyboardState = currentKeyboardState;
+            currentKeyboardState = Keyboard.GetState();
 
-            if (currentKeyboardState.IsKeyDown(nextEnemy) && previousKeyboardState.IsKeyUp(nextEnemy))
+            foreach (Keys key in currentKeyboardState.GetPressedKeys())
             {
-
-                enemyArray[currentIndex].SetVisibility(false);
-
-                currentIndex++;
-                if (currentIndex >= enemyArray.Length) currentIndex = 0;
-
-                enemyArray[currentIndex].SetVisibility(true);
+                if (previousKeyboardState.IsKeyUp(key) && commands.TryGetValue(key, out ICommand command))
+                {
+                    command.Execute();
+                }
             }
-            else if (currentKeyboardState.IsKeyDown(prevEnemy) && previousKeyboardState.IsKeyUp(prevEnemy))
-            {
-
-                enemyArray[currentIndex].SetVisibility(false);
-
-                currentIndex--;
-                if (currentIndex < 0) currentIndex = enemyArray.Length - 1;
-
-
-                enemyArray[currentIndex].SetVisibility(true);
-            }
-
-            return currentIndex;
         }
-
-        public int ChangeBlock(int currentIndex, Block[] blockArray)
-        {
-
-            if (currentKeyboardState.IsKeyDown(nextBlock) && previousKeyboardState.IsKeyUp(nextBlock))
-            {
-
-                blockArray[currentIndex].SetVisibility(false);
-
-                currentIndex++;
-                if (currentIndex >= blockArray.Length) currentIndex = 0;
-
-                blockArray[currentIndex].SetVisibility(true);
-            }
-            else if (currentKeyboardState.IsKeyDown(prevBlock) && previousKeyboardState.IsKeyUp(prevBlock))
-            {
-
-                blockArray[currentIndex].SetVisibility(false);
-
-                currentIndex--;
-                if (currentIndex < 0) currentIndex = blockArray.Length - 1;
-
-
-                blockArray[currentIndex].SetVisibility(true);
-            }
-
-            return currentIndex;
-        }
-
-        public bool QuitPressed()
-        {
-            return currentKeyboardState.IsKeyDown(quit) || currentKeyboardState.IsKeyDown(altQuit);
-        }
-
-        public bool ResetPressed()
-        {
-            return currentKeyboardState.IsKeyDown(reset) && previousKeyboardState.IsKeyUp(reset);
-        }
-
-        public void Update() { currentKeyboardState = Keyboard.GetState(); }
-        public void PostUpdate() { previousKeyboardState = currentKeyboardState; }
 
 
         public Vector2 MousePos() { return Vector2.Zero; }
