@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using Enemies;
-using Environment;
 
 
 namespace Input
@@ -36,11 +34,6 @@ namespace Input
         // Mouse not used for movement
         public Vector2 UpdateMovement() { return Vector2.Zero; }
         public void Update() { }
-        public void PostUpdate() { }
-        public int ChangeEnemy(int enemyIndex, Enemy[] enemyArray) {  return enemyIndex; }
-        public int ChangeBlock(int blockIndex, Block[] blockArray) {  return blockIndex; }
-        public bool QuitPressed() { return false; }
-        public bool ResetPressed() { return false; }
 
     }
 }

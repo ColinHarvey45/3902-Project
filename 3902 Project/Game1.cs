@@ -1,4 +1,5 @@
 using Animation;
+using Commands;
 using Enemies;
 using Input;
 using Interfaces;
@@ -23,7 +24,7 @@ namespace CSE_3902_Project
         private Block[] blocks;
         private int enemyIndex = 0;
         private int blockIndex = 0;
-        private IController keyboard;
+        private KeyboardController keyboard;
 
         public Game1()
         {
@@ -51,12 +52,27 @@ namespace CSE_3902_Project
             npcTexture = Content.Load<Texture2D>("TLOZNPCs-transparent");
 
             keyboard = new KeyboardController();
+            RegisterCommands();
 
             ResetGame();
         }
 
+        private void RegisterCommands()
+        {
+            keyboard.RegisterCommand(Keys.P, new NextEnemyCommand(this));
+            keyboard.RegisterCommand(Keys.O, new PreviousEnemyCommand(this));
+
+            keyboard.RegisterCommand(Keys.Y, new NextBlockCommand(this));
+            keyboard.RegisterCommand(Keys.T, new PreviousBlockCommand(this));
+
+            ICommand quit = new QuitCommand(this);
+            keyboard.RegisterCommand(Keys.Q, quit);
+            keyboard.RegisterCommand(Keys.Escape, quit);
+            keyboard.RegisterCommand(Keys.R, new ResetCommand(this));
+        }
+
         // Puts every game object back in its starting state; also used by the reset key
-        private void ResetGame()
+        public void ResetGame()
         {
             link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), keyboard);
 
@@ -92,25 +108,53 @@ namespace CSE_3902_Project
             blocks[blockIndex].SetVisibility(true);
         }
 
+        public void NextEnemy()
+        {
+            ShowEnemy(enemyIndex + 1);
+        }
+
+        public void PreviousEnemy()
+        {
+            ShowEnemy(enemyIndex - 1);
+        }
+
+        public void NextBlock()
+        {
+            ShowBlock(blockIndex + 1);
+        }
+
+        public void PreviousBlock()
+        {
+            ShowBlock(blockIndex - 1);
+        }
+
+        // Hides the current enemy and shows the one at index, wrapping around at either end of the list
+        private void ShowEnemy(int index)
+        {
+            enemies[enemyIndex].SetVisibility(false);
+            enemyIndex = (index + enemies.Length) % enemies.Length;
+            enemies[enemyIndex].SetVisibility(true);
+        }
+
+        // Hides the current block and shows the one at index, wrapping around at either end of the list
+        private void ShowBlock(int index)
+        {
+            blocks[blockIndex].SetVisibility(false);
+            blockIndex = (index + blocks.Length) % blocks.Length;
+            blocks[blockIndex].SetVisibility(true);
+        }
+
         protected override void Update(GameTime gameTime)
         {
-            keyboard.Update();
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.QuitPressed())
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            if (keyboard.ResetPressed())
-                ResetGame();
+            // Runs the command for any key pressed this frame
+            keyboard.Update();
 
             link.Update(gameTime);
-
-            enemyIndex = keyboard.ChangeEnemy(enemyIndex, enemies);
             enemies[enemyIndex].Update(gameTime);
-
-            blockIndex = keyboard.ChangeBlock(blockIndex, blocks);
             blocks[blockIndex].Update(gameTime);
-
-            keyboard.PostUpdate();
 
             base.Update(gameTime);
         }
