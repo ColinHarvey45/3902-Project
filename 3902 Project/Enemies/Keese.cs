@@ -12,14 +12,16 @@ namespace Enemies
     {
 
         private const float KeeseWalkSpeed = 0.15f;
-        private static readonly Point KeeseSourceRect = new(0, 15);
-        private static readonly Point KeeseSpriteSize = new(9, 16);
+        private static readonly Point KeeseSourceRect = new(183, 14);
+        private static readonly Point KeeseSpriteSize = new(16, 16);
         private const int KeeseFrames = 2;
+        
 
         public Keese(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
             : base(texture, spriteBatch, startPosition, KeeseSourceRect, KeeseFrames, KeeseWalkSpeed)
         {
-            this.enemySprite.SetSpriteSize(KeeseSpriteSize);
+            this.enemySpriteAnim.SetSpriteSize(KeeseSpriteSize);
+            this.directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, -1), new Vector2(-1, -1), new Vector2(-1, 1) };
         }
 
     }

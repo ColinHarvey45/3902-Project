@@ -17,7 +17,7 @@ namespace Enemies
         protected float timer = 0f;
         protected Vector2 currentDirection;
         protected bool isVisible = true;
-        private readonly Vector2[] directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1) };
+        protected Vector2[] directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1) };
 
         protected static readonly Random RandomGenerator = new();
 
@@ -42,7 +42,6 @@ namespace Enemies
             if (timer >= 2.0f)
             {
                 timer = 0f;
-                //Vector2[] directions = { new(1, 0), new(-1, 0), new(0, -1), new(0, 1) };
                 currentDirection = directions[RandomGenerator.Next(directions.Length)];
             }
 

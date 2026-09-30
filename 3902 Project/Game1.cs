@@ -79,6 +79,8 @@ namespace CSE_3902_Project
             Zol zol = new Zol(enemyTexture, spriteBatch, new Vector2(400, 200));
             Stalfos stalfos = new Stalfos(enemyTexture, spriteBatch, new Vector2(400, 200));
             Gel gel = new Gel(enemyTexture, spriteBatch, new Vector2(400, 200));
+            Keese keese = new Keese(enemyTexture, spriteBatch, new Vector2(400, 200));
+            Goriya goriya = new Goriya(enemyTexture, spriteBatch, new Vector2(400, 200));
 
             FireBlock fire = new FireBlock(npcTexture, spriteBatch, new Vector2(800, 200));
             Stairs stairs = new Stairs(dungeonTexture, spriteBatch, new Vector2(800, 200));
@@ -87,7 +89,7 @@ namespace CSE_3902_Project
             DragonStatue dragonStatue = new DragonStatue(dungeonTexture, spriteBatch, new Vector2(800, 200));
             BlueGap blueGap = new BlueGap(dungeonTexture, spriteBatch, new Vector2(800, 200));
 
-            enemies = [stalfos, zol, gel];
+            enemies = [stalfos, zol, gel, keese, goriya];
             blocks = [fire, stairs, squareBlock, fishStatue, dragonStatue, blueGap];
             enemyIndex = 0;
             blockIndex = 0;
