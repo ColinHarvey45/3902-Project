@@ -1,0 +1,51 @@
+READABILITY REVIEW
+ 
+Author of code review: Sean Kong
+Date of code review: 2026-10-02
+Sprint number: Sprint 2
+File reviewed: Enemy.cs
+Author of file reviewed: Colin
+Time taken to complete review: 6 minutes
+ 
+COMMENTS - WHAT IS READABLE:
+- Field and method names are mostly self-explanatory (currentDirection, isVisible,
+  GetNextMovement, SetVisibility) - easy to guess purpose without extra context.
+- The random-direction-change logic in GetNextMovement is short and easy to follow
+  on first read: accumulate timer, reset and repick direction every 2 seconds.
+- Update() and Draw() both follow the same "if isVisible" guard pattern, so once
+  a reader understands one method, the other reads quickly too.
+
+CODE QUALITY REVIEW
+ 
+Author of code review: Sean Kong
+Date of code review: 2026-10-02
+Sprint number: Sprint 2
+File reviewed: Enemy.cs
+Author of file reviewed: Colin
+ 
+COMMENTS ON CODE QUALITY:
+- Dual-field design (enemySpriteAnim / enemySprite): having two mutually-exclusive
+  nullable fields, with every Update/Draw call branching on which one is null, is a
+  recurring source of bugs as the class grows - it's easy to add a new code path
+  later and forget to handle both cases (Draw already shows the asymmetry: one
+  branch uses a plain null check, the other uses null-conditional ?.). A cleaner
+  approach would be a single ISprite-typed field (ISprite already exists in the
+  project) so Update/Draw don't need to know which concrete sprite type is in use.
+- RandomGenerator is already static readonly, which is good practice and is the
+  right model to follow for the directions array as well.
+ 
+HYPOTHETICAL CHANGE:
+Suppose a future sprint adds an enemy type that chases Link instead of wandering
+randomly (e.g. a more aggressive enemy). The current implementation would only
+partially support this:
+- GetNextMovement is virtual, so a subclass could override it to return a direction
+  toward Link - that part of the design is genuinely extensible and a good sign.
+- However, Enemy has no reference to Link's position anywhere in the class (no
+  field, no parameter passed into the constructor or into Update/GetNextMovement).
+  A chase-enemy subclass would have nothing to chase with the current API - Link's
+  position would need to be threaded in, which means changing the constructor
+  signature or the Update/GetNextMovement signature, which in turn means touching
+  every existing call site and every existing subclass, not just adding a new one.
+In short: the virtual-method hook makes new movement behavior possible in theory,
+but the missing player-position data is a real gap that would force changes beyond
+just adding a new subclass.
