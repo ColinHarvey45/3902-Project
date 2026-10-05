@@ -89,8 +89,18 @@ namespace CSE_3902_Project
             DragonStatue dragonStatue = new DragonStatue(dungeonTexture, spriteBatch, new Vector2(800, 200));
             BlueGap blueGap = new BlueGap(dungeonTexture, spriteBatch, new Vector2(800, 200));
 
+            WhiteBrick whiteBrick = new WhiteBrick(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            Ladder ladder = new Ladder(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            
+            Wall wall = new Wall(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            OpenDoor openDoor = new OpenDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            BombedWallOpening bombedWallOpening = new BombedWallOpening(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            KeyholeLockedDoor keyholeLockedDoor = new KeyholeLockedDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            DiamondLockedDoor diamondLockedDoor = new DiamondLockedDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            
             enemies = [stalfos, zol, gel, keese, goriya];
-            blocks = [fire, stairs, squareBlock, fishStatue, dragonStatue, blueGap];
+            blocks = [fire, stairs, squareBlock, fishStatue, dragonStatue, blueGap,
+                whiteBrick, ladder, wall, openDoor, bombedWallOpening, keyholeLockedDoor, diamondLockedDoor];
             enemyIndex = 0;
             blockIndex = 0;
 
