@@ -15,7 +15,9 @@ namespace Enemies
         protected AnimatedSprite enemySpriteAnim;
         protected Sprite enemySprite;
         protected float timer = 0f;
-        protected Vector2 currentDirection;
+        private float flipTimer = 0f;
+        public Vector2 currentDirection { get; private set; }
+        private SpriteEffects currentEffect = SpriteEffects.None;
         protected bool isVisible = true;
         protected Vector2[] directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1) };
 
@@ -51,6 +53,27 @@ namespace Enemies
         public void SetVisibility(bool visible)
         {
             this.isVisible = visible;
+        }
+
+        public void Flip(GameTime gameTime)
+        {
+            flipTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (flipTimer >= 0.15f)
+            {
+                flipTimer = 0f;
+
+                if (currentEffect == SpriteEffects.None)
+                {
+                    currentEffect = SpriteEffects.FlipHorizontally;
+                }
+                else
+                {
+                    currentEffect = SpriteEffects.None;
+                }
+
+                this.enemySprite.SetEffects(currentEffect);
+            }
         }
 
         public virtual void Update(GameTime gameTime)

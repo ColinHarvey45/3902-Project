@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Animation;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +11,9 @@ namespace Interfaces
     internal interface IState
     {
 
-        public void ChangeDirection();
+        public void ChangeDirection(Vector2 movement);
         public void TakeDamage(int damage);
-        public void Attack();
+        public void Attack(GameTime gameTime, Vector2 movement);
 
     }
 }

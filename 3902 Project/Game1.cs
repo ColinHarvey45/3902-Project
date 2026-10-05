@@ -106,6 +106,8 @@ namespace CSE_3902_Project
                 block.SetVisibility(false);
             }
 
+
+
             enemies[enemyIndex].SetVisibility(true);
             blocks[blockIndex].SetVisibility(true);
         }

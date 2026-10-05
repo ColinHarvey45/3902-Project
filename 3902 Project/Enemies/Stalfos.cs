@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Animation;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -12,55 +13,70 @@ namespace Enemies
     {
         private static readonly Point StalfosSourceRect = new(1, 58);
         private static readonly Point StalfosSpriteSize = new(16, 16);
-        private float flipTimer = 0f;
-        private SpriteEffects currentEffect = SpriteEffects.None;
+        private readonly StalfosState stalfosState;
 
         public Stalfos(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
             : base(texture, spriteBatch, startPosition, StalfosSourceRect)
         {
+
+            stalfosState = new StalfosState(enemySprite);
+
             this.enemySprite.SetSpriteSize(StalfosSpriteSize);
         }
 
+
+        //public override void Update(GameTime gameTime)
+        //{
+
+        //    if (isVisible)
+        //    {
+
+        //        Vector2 movement = GetNextMovement(gameTime);
+
+        //        enemySpriteAnim?.UpdateAnimation(gameTime, movement);
+
+        //        if (enemySprite != null)
+        //        {
+        //            enemySprite.Position += movement;
+        //            Flip(gameTime);
+        //        }
+
+        //    }
+        //}
 
         public override void Update(GameTime gameTime)
         {
 
             if (isVisible)
             {
-
                 Vector2 movement = GetNextMovement(gameTime);
-
-                enemySpriteAnim?.UpdateAnimation(gameTime, movement);
-
-                if (enemySprite != null)
-                {
-                    enemySprite.Position += movement;
-                    Flip(gameTime);
-                }
-
+                stalfosState.Update(gameTime, movement);
             }
+
         }
 
-        public void Flip(GameTime gameTime)
-        {
-            flipTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (flipTimer >= 0.15f)
-            {
-                flipTimer = 0f;
-
-                if (currentEffect == SpriteEffects.None)
-                {
-                    currentEffect = SpriteEffects.FlipHorizontally;
-                }
-                else
-                {
-                    currentEffect = SpriteEffects.None;
-                }
-
-                this.enemySprite.SetEffects(currentEffect);
-            }
-        }
     }
 }
 
+namespace Enemies
+{
+    internal class StalfosState : EnemyState
+    {
+        private readonly Sprite moveSprite;
+
+        public StalfosState(Sprite moveSprite)
+        {
+            this.activeSprite = moveSprite;
+        }
+
+        public override void ChangeDirection(Vector2 movement) { }
+
+        public override void Update(GameTime gameTime, Vector2 movement)
+        {
+
+            this.activeSprite.Flip(gameTime);
+            base.Update(gameTime, movement);
+
+        }
+    }
+}
