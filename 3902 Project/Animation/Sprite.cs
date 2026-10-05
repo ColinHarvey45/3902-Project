@@ -81,6 +81,7 @@ namespace Animation
         public void SetSpriteSize(Point spriteSize)
         {
             rectSize = spriteSize;
+            sourceRect = new Rectangle(location, rectSize);
         }
 
         // Using this constructor for spriteBatch.Draw so that we can scale up our sprites
