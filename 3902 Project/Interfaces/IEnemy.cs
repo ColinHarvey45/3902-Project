@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Interfaces
 {
-    internal interface IProjectile
+    internal interface IEnemy
     {
-
-        public bool IsFinished { get; }
 
         public void Update(GameTime gameTime);
         public void Draw(SpriteBatch spriteBatch);

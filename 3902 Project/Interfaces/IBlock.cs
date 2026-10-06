@@ -3,10 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Interfaces
 {
-    internal interface IProjectile
+    // Blocks never move, but some (like fire) still animate
+    internal interface IBlock
     {
-
-        public bool IsFinished { get; }
 
         public void Update(GameTime gameTime);
         public void Draw(SpriteBatch spriteBatch);

@@ -1,173 +1,72 @@
-﻿using Animation;
+using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Sprites;
 
 namespace Enemies
 {
+    // Wanders like other enemies, but sometimes stops to throw a boomerang and waits for it to come back
     internal class Goriya : Enemy, IBoomerangThrower
     {
+        private const int ThrowChancePercent = 40; // chance of throwing each time it turns
+        private const float BoomerangSpawnDistance = 24f;
 
-        private const float GoriyaWalkSpeed = 0.15f;
-        private const float GoriyaAttackSpeed = 0.1f;
-        private static readonly Point GoriyaSourceRect = new(224, 11);
-        private static readonly Point GoriyaSpriteSize = new(16, 17);
-        private const int GoriyaFrames = 2;
-        private bool isAttacking = false;
-        private Boomerang activeBoomerang = null;
-        private AnimatedSprite boomerangSprite;
-        private GoriyaState goriyaState;
-        private Sprite downSprite;
-        private Sprite upSprite;
-        private AnimatedSprite horizontalSprite;
+        private IEnemyState state;
+        private Boomerang boomerang = null;
 
-
-        public Vector2 Position { get => goriyaState.currentPosition; }
-
-
-        public Goriya(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
-            : base(texture, spriteBatch, startPosition, GoriyaSourceRect, GoriyaFrames, GoriyaWalkSpeed)
+        public Goriya(Vector2 startPosition)
+            : base(startPosition)
         {
-
-            downSprite = new Sprite(texture, spriteBatch, startPosition, new Point(224, 11));
-            upSprite = new Sprite(texture, spriteBatch, startPosition, new Point(240, 11));
-            horizontalSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(256, 11), 2, GoriyaWalkSpeed);
-
-            this.boomerangSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(290, 15), 3, GoriyaAttackSpeed);
-            boomerangSprite.SetSpriteSize(new Point(9, 16));
-
-            goriyaState = new GoriyaState(upSprite, downSprite, horizontalSprite, boomerangSprite);
-
-            this.enemySpriteAnim.SetSpriteSize(GoriyaSpriteSize);
+            Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
+            state = new GoriyaWalkingState(this);
         }
 
-        // Will need to move attacking logic into state class
         public override void Update(GameTime gameTime)
         {
-
-            if (isVisible)
-            {
-
-                if (isAttacking)
-                {
-                    enemySpriteAnim?.UpdateAnimation(gameTime, new Vector2(0.001f, 0f));
-                    activeBoomerang?.Update(gameTime);
-                }
-                else
-                {
-                    Vector2 movement = GetNextMovement(gameTime);
-                    goriyaState.ChangeDirection(movement);
-                    goriyaState.Update(gameTime, movement);
-                    boomerangSprite.Position = goriyaState.currentPosition;
-
-                    if (timer == 0f && RandomGenerator.Next(0, 50) < 20)
-                    {
-                        ThrowBoomerang();
-                    }
-
-                }
-            }
-
+            state.Update(gameTime);
         }
 
-        public void ThrowBoomerang()
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            if (isAttacking) return;
+            base.Draw(spriteBatch);
+            boomerang?.Draw(spriteBatch);
+        }
 
-            isAttacking = true;
+        // Called by the walking state
+        public void Walk(GameTime gameTime)
+        {
+            Wander(gameTime);
+        }
 
-            Vector2 launchDirection = currentDirection;
-            Vector2 spawnOffset = currentDirection * 24f;
-            Vector2 spawnPos = goriyaState.currentPosition + spawnOffset;
-
-            activeBoomerang = new Boomerang(boomerangSprite, spawnPos, launchDirection, this);
+        // Called by the throwing state while Goriya stands still waiting for its boomerang
+        public void UpdateBoomerang(GameTime gameTime)
+        {
+            boomerang?.Update(gameTime);
         }
 
         public void OnBoomerangReturned()
         {
-            isAttacking = false;
-            activeBoomerang = null;
+            boomerang = null;
+            state = new GoriyaWalkingState(this);
         }
 
-        public override void Draw()
+        protected override void OnDirectionChanged()
         {
-            if (isVisible)
-            {
-                goriyaState.activeSprite.Draw(texture);
+            Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
 
-                if (isAttacking)
-                {
-                    activeBoomerang?.Draw(texture);
-                }
-            }
+            if (RandomGenerator.Next(100) < ThrowChancePercent)
+                ThrowBoomerang();
         }
 
-    }
-}
-
-
-namespace Enemies
-{
-    internal class GoriyaState : EnemyState
-    {
-        private readonly Sprite upSprite;
-        private readonly Sprite downSprite;
-        private readonly AnimatedSprite horizontalAnimation;
-        private readonly AnimatedSprite attackAnimation;
-        public Vector2 currentPosition { get; private set; }
-
-        public GoriyaState(Sprite up, Sprite down, AnimatedSprite horizontal, AnimatedSprite attack)
+        private void ThrowBoomerang()
         {
-            this.upSprite = up;
-            this.downSprite = down;
-            this.horizontalAnimation = horizontal;
-            this.attackAnimation = attack;
+            Vector2 spawnPosition = Position + CurrentDirection * BoomerangSpawnDistance;
+            ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateGoriyaBoomerangSprite();
 
-            this.activeSprite = downSprite;
-        }
-
-        public override void ChangeDirection(Vector2 movement)
-        {
-            if (movement.Equals(Up))
-            {
-                activeSprite = upSprite;
-            }
-            else if (movement.Equals(Down))
-            {
-                activeSprite = downSprite;
-            }
-            else if (movement.Equals(Left))
-            {
-                activeSprite = horizontalAnimation;
-                activeSprite.SetEffects(SpriteEffects.FlipHorizontally);
-            }
-            else if (movement.Equals(Right))
-            {
-                activeSprite = horizontalAnimation;
-                activeSprite.SetEffects(SpriteEffects.None);
-            }
-        }
-
-        public override void Update(GameTime gameTime, Vector2 movement)
-        {
-
-            base.Update(gameTime, movement);
-
-            currentPosition = activeSprite.Position;
-            upSprite.Position = currentPosition;
-            downSprite.Position = currentPosition;
-            horizontalAnimation.Position = currentPosition;
-
-            if (movement.Equals(Up) || movement.Equals(Down))
-            {
-                this.activeSprite.Flip(gameTime);
-            }
+            boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this);
+            state = new GoriyaThrowingState(this);
         }
     }
 }

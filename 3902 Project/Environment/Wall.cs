@@ -1,18 +1,10 @@
-// Wall.cs  ("Walls / room border")
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Sprites;
 
 namespace Environment
 {
-    internal class Wall : Block
+    internal class Wall(Vector2 position)
+        : Block(position, BlockSpriteFactory.Instance.CreateWallSprite())
     {
-        private static readonly Point wallSourceRect = new(815, 11);
-        private static readonly Point wallSpriteSize = new(32, 31);
-
-        public Wall(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
-            : base(texture, spriteBatch, startPosition, wallSourceRect)
-        {
-            this.blockSprite.SetSpriteSize(wallSpriteSize);
-        }
     }
 }

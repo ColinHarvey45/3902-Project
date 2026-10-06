@@ -1,14 +1,14 @@
-using Animation;
 using Interfaces;
+using Player;
 
 namespace Commands
 {
-    internal class LinkThrowBoomerangCommand(Link link) : ICommand
+    internal class LinkThrowBoomerangCommand(IPlayer player) : ICommand
     {
 
         public void Execute()
         {
-            link.ThrowBoomerang();
+            player.UseItem(SecondaryItem.Boomerang);
         }
 
     }

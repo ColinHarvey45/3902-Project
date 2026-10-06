@@ -1,18 +1,10 @@
-// OpenDoor.cs
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Sprites;
 
 namespace Environment
 {
-    internal class OpenDoor : Block
+    internal class OpenDoor(Vector2 position)
+        : Block(position, BlockSpriteFactory.Instance.CreateOpenDoorSprite())
     {
-        private static readonly Point openDoorSourceRect = new(848, 11);
-        private static readonly Point openDoorSpriteSize = new(32, 31);
-
-        public OpenDoor(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
-            : base(texture, spriteBatch, startPosition, openDoorSourceRect)
-        {
-            this.blockSprite.SetSpriteSize(openDoorSpriteSize);
-        }
     }
 }

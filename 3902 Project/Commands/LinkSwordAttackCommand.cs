@@ -1,14 +1,13 @@
-using Animation;
 using Interfaces;
 
 namespace Commands
 {
-    internal class LinkSwordAttackCommand(Link link) : ICommand
+    internal class LinkSwordAttackCommand(IPlayer player) : ICommand
     {
 
         public void Execute()
         {
-            link.SwordAttack();
+            player.SwordAttack();
         }
 
     }

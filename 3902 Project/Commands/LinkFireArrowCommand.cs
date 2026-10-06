@@ -1,14 +1,14 @@
-using Animation;
 using Interfaces;
+using Player;
 
 namespace Commands
 {
-    internal class LinkFireArrowCommand(Link link) : ICommand
+    internal class LinkFireArrowCommand(IPlayer player) : ICommand
     {
 
         public void Execute()
         {
-            link.FireArrow();
+            player.UseItem(SecondaryItem.Arrow);
         }
 
     }

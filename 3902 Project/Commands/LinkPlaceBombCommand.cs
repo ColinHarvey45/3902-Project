@@ -1,14 +1,14 @@
-using Animation;
 using Interfaces;
+using Player;
 
 namespace Commands
 {
-    internal class LinkPlaceBombCommand(Link link) : ICommand
+    internal class LinkPlaceBombCommand(IPlayer player) : ICommand
     {
 
         public void Execute()
         {
-            link.PlaceBomb();
+            player.UseItem(SecondaryItem.Bomb);
         }
 
     }

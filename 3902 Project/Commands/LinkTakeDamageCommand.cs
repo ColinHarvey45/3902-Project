@@ -1,14 +1,13 @@
-using Animation;
 using Interfaces;
 
 namespace Commands
 {
-    internal class LinkTakeDamageCommand(Link link) : ICommand
+    internal class LinkTakeDamageCommand(IPlayer player) : ICommand
     {
 
         public void Execute()
         {
-            link.TakeDamage();
+            player.TakeDamage();
         }
 
     }

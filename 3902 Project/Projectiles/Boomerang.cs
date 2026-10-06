@@ -1,5 +1,4 @@
-﻿using Animation;
-using Interfaces;
+﻿using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,7 +6,7 @@ namespace Projectiles
 {
     internal class Boomerang : IProjectile
     {
-        private readonly AnimatedSprite sprite;
+        private readonly ISprite sprite;
         private Vector2 position;
         private readonly Vector2 velocity;
         private readonly IBoomerangThrower owner;
@@ -21,14 +20,12 @@ namespace Projectiles
 
         public bool IsFinished { get; private set; } = false;
 
-        public Boomerang(AnimatedSprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower owner)
+        public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower owner)
         {
             this.sprite = sprite;
             this.position = spawnPosition;
             this.velocity = direction * speed;
             this.owner = owner;
-
-            this.sprite.Position = spawnPosition;
         }
 
         public void Update(GameTime gameTime)
@@ -63,13 +60,12 @@ namespace Projectiles
                 position += returnDirection * speed * deltaTime;
             }
 
-            sprite.Position = position;
-            sprite.UpdateAnimation(gameTime, new Vector2(0.1f, 0f));
+            sprite.Update(gameTime);
         }
 
-        public void Draw(Texture2D texture)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            sprite.Draw(texture);
+            sprite.Draw(spriteBatch, position);
         }
     }
 }

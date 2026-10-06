@@ -1,117 +1,71 @@
-﻿using Animation;
+using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Enemies
 {
-    internal abstract class Enemy
+    // Shared behaviour for enemies that wander: walk in a straight line and
+    // pick a new random direction every couple of seconds
+    internal abstract class Enemy : IEnemy
     {
-        protected Texture2D texture;
-        protected AnimatedSprite enemySpriteAnim;
-        protected Sprite enemySprite;
-        protected float timer = 0f;
-        private float flipTimer = 0f;
-        public Vector2 currentDirection { get; private set; }
-        private SpriteEffects currentEffect = SpriteEffects.None;
-        protected bool isVisible = true;
-        protected Vector2[] directions = new Vector2[] { new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1) };
+        private const float DirectionChangeTime = 2f;
+        private const float MoveSpeed = 1f; // pixels per frame
+
+        private static readonly Vector2[] FourDirections = [new(1, 0), new(-1, 0), new(0, -1), new(0, 1)];
 
         protected static readonly Random RandomGenerator = new();
 
-        protected Enemy(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, Point sourceRect, int totalFrames, float frameSpeed)
+        private readonly Vector2[] directions;
+        private float directionTimer = 0f;
+
+        public Vector2 Position { get; private set; }
+        protected Vector2 CurrentDirection { get; private set; }
+        protected ISprite Sprite { get; set; }
+
+        protected Enemy(Vector2 startPosition)
+            : this(startPosition, FourDirections)
         {
-            this.texture = texture;
-            this.enemySpriteAnim = new AnimatedSprite(texture, spriteBatch, startPosition, sourceRect, totalFrames, frameSpeed);
-            this.currentDirection = directions[RandomGenerator.Next(directions.Length)];
         }
 
-        protected Enemy(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, Point sourceRect)
+        protected Enemy(Vector2 startPosition, Vector2[] directions)
         {
-            this.texture = texture;
-            this.enemySprite = new Sprite(texture, spriteBatch, startPosition, sourceRect);
-            this.currentDirection = directions[RandomGenerator.Next(directions.Length)];
-        }
-
-        public virtual Vector2 GetNextMovement(GameTime gameTime)
-        {
-            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (timer >= 2.0f)
-            {
-                timer = 0f;
-                currentDirection = directions[RandomGenerator.Next(directions.Length)];
-            }
-
-            return currentDirection;
-        }
-
-        public void SetVisibility(bool visible)
-        {
-            this.isVisible = visible;
-        }
-
-        public void Flip(GameTime gameTime)
-        {
-            flipTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (flipTimer >= 0.15f)
-            {
-                flipTimer = 0f;
-
-                if (currentEffect == SpriteEffects.None)
-                {
-                    currentEffect = SpriteEffects.FlipHorizontally;
-                }
-                else
-                {
-                    currentEffect = SpriteEffects.None;
-                }
-
-                this.enemySprite.SetEffects(currentEffect);
-            }
+            Position = startPosition;
+            this.directions = directions;
+            CurrentDirection = RandomDirection();
         }
 
         public virtual void Update(GameTime gameTime)
         {
-
-            if (isVisible)
-            {
-
-                Vector2 movement = GetNextMovement(gameTime);
-
-                enemySpriteAnim?.UpdateAnimation(gameTime, movement);
-
-                if (enemySprite != null)
-                {
-                    enemySprite.Position += movement;
-                }
-
-            }
+            Wander(gameTime);
         }
 
-        public virtual void Draw()
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
-            
-            if (isVisible)
+            Sprite.Draw(spriteBatch, Position);
+        }
+
+        protected void Wander(GameTime gameTime)
+        {
+            directionTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (directionTimer >= DirectionChangeTime)
             {
-
-                if (enemySpriteAnim != null)
-                {
-                    enemySpriteAnim.Draw(texture);
-                }
-                else
-                {
-                    enemySprite?.Draw(texture);
-                }
-
+                directionTimer = 0f;
+                CurrentDirection = RandomDirection();
+                OnDirectionChanged();
             }
 
+            Position += CurrentDirection * MoveSpeed;
+            Sprite.Update(gameTime);
+        }
+
+        // Lets an enemy react when it turns, e.g. by switching to a sprite facing the new way
+        protected virtual void OnDirectionChanged() { }
+
+        private Vector2 RandomDirection()
+        {
+            return directions[RandomGenerator.Next(directions.Length)];
         }
     }
 }
-

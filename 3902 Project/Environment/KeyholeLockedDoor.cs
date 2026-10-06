@@ -1,18 +1,10 @@
-// KeyholeLockedDoor.cs
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Sprites;
 
 namespace Environment
 {
-    internal class KeyholeLockedDoor : Block
+    internal class KeyholeLockedDoor(Vector2 position)
+        : Block(position, BlockSpriteFactory.Instance.CreateKeyholeLockedDoorSprite())
     {
-        private static readonly Point keyholeDoorSourceRect = new(881, 11);
-        private static readonly Point keyholeDoorSpriteSize = new(32, 31);
-
-        public KeyholeLockedDoor(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition)
-            : base(texture, spriteBatch, startPosition, keyholeDoorSourceRect)
-        {
-            this.blockSprite.SetSpriteSize(keyholeDoorSpriteSize);
-        }
     }
 }

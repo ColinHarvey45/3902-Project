@@ -1,13 +1,13 @@
-using Animation;
 using Commands;
 using Enemies;
+using Environment;
 using Input;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.ObjectModel;
-using Environment;
+using Player;
+using Sprites;
 
 namespace CSE_3902_Project
 {
@@ -15,13 +15,9 @@ namespace CSE_3902_Project
     {
         private readonly GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private Link link;
-        private Texture2D linkTexture; // moved to a field so Draw() can use it too
-        private Texture2D enemyTexture;
-        private Texture2D dungeonTexture;
-        private Texture2D npcTexture;
-        private Enemy[] enemies;
-        private Block[] blocks;
+        private IPlayer link;
+        private IEnemy[] enemies;
+        private IBlock[] blocks;
         private int enemyIndex = 0;
         private int blockIndex = 0;
         private KeyboardController keyboard;
@@ -29,6 +25,10 @@ namespace CSE_3902_Project
         // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
         private const int ScreenWidth = 1024;
         private const int ScreenHeight = 704;
+
+        private static readonly Vector2 LinkStartPosition = new(100, 100);
+        private static readonly Vector2 EnemyShowcasePosition = new(400, 200);
+        private static readonly Vector2 BlockShowcasePosition = new(800, 200);
 
         public Game1()
         {
@@ -50,10 +50,10 @@ namespace CSE_3902_Project
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            linkTexture = Content.Load<Texture2D>("TLOZLink-transparent2");
-            enemyTexture = Content.Load<Texture2D>("TLOZDungeonEnemies-transparent");
-            dungeonTexture = Content.Load<Texture2D>("TLOZDungeon-transparent");
-            npcTexture = Content.Load<Texture2D>("TLOZNPCs-transparent");
+            LinkSpriteFactory.Instance.LoadAllTextures(Content);
+            ProjectileSpriteFactory.Instance.LoadAllTextures(Content);
+            EnemySpriteFactory.Instance.LoadAllTextures(Content);
+            BlockSpriteFactory.Instance.LoadAllTextures(Content);
 
             keyboard = new KeyboardController();
             RegisterCommands();
@@ -78,6 +78,12 @@ namespace CSE_3902_Project
         // Link is rebuilt on every reset, so his keys are rebound to the new Link each time
         private void RegisterLinkCommands()
         {
+            // Registered in priority order: if several are held, the first one listed wins
+            RegisterMoveKeys(Keys.W, Keys.Up, Direction.Up);
+            RegisterMoveKeys(Keys.S, Keys.Down, Direction.Down);
+            RegisterMoveKeys(Keys.A, Keys.Left, Direction.Left);
+            RegisterMoveKeys(Keys.D, Keys.Right, Direction.Right);
+
             ICommand swordAttack = new LinkSwordAttackCommand(link);
             keyboard.RegisterCommand(Keys.Z, swordAttack);
             keyboard.RegisterCommand(Keys.N, swordAttack);
@@ -97,92 +103,73 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.E, new LinkTakeDamageCommand(link));
         }
 
+        private void RegisterMoveKeys(Keys letterKey, Keys arrowKey, Direction direction)
+        {
+            ICommand move = new LinkMoveCommand(link, direction);
+            keyboard.RegisterHeldCommand(letterKey, move);
+            keyboard.RegisterHeldCommand(arrowKey, move);
+        }
+
         // Puts every game object back in its starting state; also used by the reset key
         public void ResetGame()
         {
-            link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), keyboard, GraphicsDevice.Viewport.Bounds);
+            link = new Link(LinkStartPosition, GraphicsDevice.Viewport.Bounds);
             RegisterLinkCommands();
 
-            Zol zol = new Zol(enemyTexture, spriteBatch, new Vector2(400, 200));
-            Stalfos stalfos = new Stalfos(enemyTexture, spriteBatch, new Vector2(400, 200));
-            Gel gel = new Gel(enemyTexture, spriteBatch, new Vector2(400, 200));
-            Keese keese = new Keese(enemyTexture, spriteBatch, new Vector2(400, 200));
-            Goriya goriya = new Goriya(enemyTexture, spriteBatch, new Vector2(400, 200));
+            enemies =
+            [
+                new Stalfos(EnemyShowcasePosition),
+                new Zol(EnemyShowcasePosition),
+                new Gel(EnemyShowcasePosition),
+                new Keese(EnemyShowcasePosition),
+                new Goriya(EnemyShowcasePosition)
+            ];
 
-            FireBlock fire = new FireBlock(npcTexture, spriteBatch, new Vector2(800, 200));
-            Stairs stairs = new Stairs(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            SquareBlock squareBlock = new SquareBlock(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            FishStatue fishStatue = new FishStatue(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            DragonStatue dragonStatue = new DragonStatue(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            BlueGap blueGap = new BlueGap(dungeonTexture, spriteBatch, new Vector2(800, 200));
+            blocks =
+            [
+                new FireBlock(BlockShowcasePosition),
+                new Stairs(BlockShowcasePosition),
+                new SquareBlock(BlockShowcasePosition),
+                new FishStatue(BlockShowcasePosition),
+                new DragonStatue(BlockShowcasePosition),
+                new BlueGap(BlockShowcasePosition),
+                new WhiteBrick(BlockShowcasePosition),
+                new Ladder(BlockShowcasePosition),
+                new Wall(BlockShowcasePosition),
+                new OpenDoor(BlockShowcasePosition),
+                new BombedWallOpening(BlockShowcasePosition),
+                new KeyholeLockedDoor(BlockShowcasePosition),
+                new DiamondLockedDoor(BlockShowcasePosition)
+            ];
 
-            WhiteBrick whiteBrick = new WhiteBrick(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            Ladder ladder = new Ladder(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            
-            Wall wall = new Wall(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            OpenDoor openDoor = new OpenDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            BombedWallOpening bombedWallOpening = new BombedWallOpening(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            KeyholeLockedDoor keyholeLockedDoor = new KeyholeLockedDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            DiamondLockedDoor diamondLockedDoor = new DiamondLockedDoor(dungeonTexture, spriteBatch, new Vector2(800, 200));
-            
-            enemies = [stalfos, zol, gel, keese, goriya];
-            blocks = [fire, stairs, squareBlock, fishStatue, dragonStatue, blueGap,
-                whiteBrick, ladder, wall, openDoor, bombedWallOpening, keyholeLockedDoor, diamondLockedDoor];
             enemyIndex = 0;
             blockIndex = 0;
-
-            foreach (Enemy enemy in enemies)
-            {
-                // Hide everything initially
-                enemy.SetVisibility(false); 
-            }
-            
-            foreach (Block block in blocks)
-            {
-                // Hide everything initially
-                block.SetVisibility(false);
-            }
-
-
-
-            enemies[enemyIndex].SetVisibility(true);
-            blocks[blockIndex].SetVisibility(true);
         }
 
         public void NextEnemy()
         {
-            ShowEnemy(enemyIndex + 1);
+            enemyIndex = WrapIndex(enemyIndex + 1, enemies.Length);
         }
 
         public void PreviousEnemy()
         {
-            ShowEnemy(enemyIndex - 1);
+            enemyIndex = WrapIndex(enemyIndex - 1, enemies.Length);
         }
 
         public void NextBlock()
         {
-            ShowBlock(blockIndex + 1);
+            blockIndex = WrapIndex(blockIndex + 1, blocks.Length);
         }
 
         public void PreviousBlock()
         {
-            ShowBlock(blockIndex - 1);
+            blockIndex = WrapIndex(blockIndex - 1, blocks.Length);
         }
 
-        // Hides the current enemy and shows the one at index, wrapping around at either end of the list
-        private void ShowEnemy(int index)
+        // Only the current enemy and block are shown; cycling past either end of a list wraps around
+        private static int WrapIndex(int index, int count)
         {
-            enemies[enemyIndex].SetVisibility(false);
-            enemyIndex = (index + enemies.Length) % enemies.Length;
-            enemies[enemyIndex].SetVisibility(true);
-        }
-
-        // Hides the current block and shows the one at index, wrapping around at either end of the list
-        private void ShowBlock(int index)
-        {
-            blocks[blockIndex].SetVisibility(false);
-            blockIndex = (index + blocks.Length) % blocks.Length;
-            blocks[blockIndex].SetVisibility(true);
+            return (index + count) % count;
         }
 
         protected override void Update(GameTime gameTime)
@@ -190,7 +177,7 @@ namespace CSE_3902_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            // Runs the command for any key pressed this frame
+            // Runs the commands for any keys pressed or held this frame
             keyboard.Update();
 
             link.Update(gameTime);
@@ -206,9 +193,10 @@ namespace CSE_3902_Project
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            link.Draw(linkTexture);
-            enemies[enemyIndex].Draw();
-            blocks[blockIndex].Draw();
+            // Back to front: room pieces, then enemies, then Link on top
+            blocks[blockIndex].Draw(spriteBatch);
+            enemies[enemyIndex].Draw(spriteBatch);
+            link.Draw(spriteBatch);
 
             spriteBatch.End();
 

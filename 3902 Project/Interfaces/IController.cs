@@ -1,16 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-
-
 namespace Interfaces
 {
     internal interface IController
     {
 
+        // Reads the input device and runs the commands for whatever was pressed
         public void Update();
-        public Vector2 MousePos();
-
-        public Vector2 UpdateMovement();
 
     }
 }
