@@ -3,7 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Animation
 {
-    internal class SwordSwing : Sprite
+    // Plays a list of frames once and stops on the last one (sword swings, bomb explosions)
+    internal class OneShotAnimation : Sprite
     {
         private readonly Rectangle[] frameRects;
         private readonly Vector2[] frameOffsets;
@@ -13,7 +14,7 @@ namespace Animation
 
         public bool IsPlaying { get; private set; }
 
-        public SwordSwing(Texture2D texture, SpriteBatch spriteBatch, Vector2 position, Rectangle[] frameRects, Vector2[] frameOffsets, float frameSpeed)
+        public OneShotAnimation(Texture2D texture, SpriteBatch spriteBatch, Vector2 position, Rectangle[] frameRects, Vector2[] frameOffsets, float frameSpeed)
             : base(texture, spriteBatch, position, new Point(frameRects[0].X, frameRects[0].Y))
         {
             this.frameRects = frameRects;
@@ -50,7 +51,7 @@ namespace Animation
             }
         }
 
-        public void Draw(Texture2D texture)
+        public new void Draw(Texture2D texture)
         {
             base.Draw(texture, frameOffsets[currentFrame]);
         }

@@ -1,22 +1,19 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Interfaces;
+using Projectiles;
 
 namespace Animation
 {
-    internal class Link : ISprite
+    internal class Link : ISprite, IBoomerangThrower
     {
         private enum Direction { Up, Down, Left, Right }
-        private enum EquippedWeapon { None, Sword, Bow }
-
-        private static readonly EquippedWeapon[] WeaponOrder = { EquippedWeapon.None, EquippedWeapon.Sword, EquippedWeapon.Bow };
-        private int weaponIndex = 1; // starts on Sword
-        private EquippedWeapon CurrentWeapon => WeaponOrder[weaponIndex];
 
         private Direction currentDirection = Direction.Down;
         private bool isAttacking = false;
+        private bool boomerangInFlight = false;
+        private float damageTimer = 0f;
 
         // --- Movement sprites ---
         private readonly AnimatedSprite downSprite;
@@ -24,68 +21,119 @@ namespace Animation
         private readonly AnimatedSprite horizontalSprite;
 
         // --- Sword swing sprites ---
-        private readonly SwordSwing swordDown;
-        private readonly SwordSwing swordUp;
-        private readonly SwordSwing swordHorizontal;
+        private readonly OneShotAnimation swordDown;
+        private readonly OneShotAnimation swordUp;
+        private readonly OneShotAnimation swordHorizontal;
 
-        // --- Arrows in flight ---
+        // Every sprite that can draw Link's body, kept on the same position and tint
+        private readonly Sprite[] bodySprites;
+
+        // --- Arrows, boomerangs and bombs Link has used ---
         private readonly Texture2D texture;
         private readonly SpriteBatch spriteBatch;
-        private readonly List<Arrow> arrows = new List<Arrow>();
-        private const int ScreenWidth = 1280;  // adjust to match your actual resolution, or pass it in
-        private const int ScreenHeight = 720;
+        private readonly Rectangle screenBounds;
+        private readonly List<IProjectile> projectiles = new List<IProjectile>();
 
         private readonly IController controller;
-        private KeyboardState previousKeyboardState;
 
         private const float WalkFrameSpeed = 0.15f;
         private const float SwingFrameSpeed = 0.06f;
         private const float MoveSpeed = 3f;
 
-        public Link(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, IController controller)
+        private static readonly Point BoomerangSourceLocation = new(64, 179);
+        private static readonly Point BoomerangSpriteSize = new(9, 8);
+        private const int BoomerangFrames = 3;
+        private const float BoomerangFrameSpeed = 0.1f;
+
+        private const float TileSize = 64f; // one 16px tile at the 4x sprite scale
+        private static readonly Vector2 BombTileOffset = new(16, 4); // centres the 8x14 bomb inside its tile
+
+        private const float DamageDuration = 1f;
+        private const float DamageFlashInterval = 0.1f;
+
+        public Link(Texture2D texture, SpriteBatch spriteBatch, Vector2 startPosition, IController controller, Rectangle screenBounds)
         {
             this.texture = texture;
             this.spriteBatch = spriteBatch;
             this.controller = controller;
+            this.screenBounds = screenBounds;
 
             downSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(1, 1), 2, WalkFrameSpeed);
             upSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(71, 1), 2, WalkFrameSpeed);
             horizontalSprite = new AnimatedSprite(texture, spriteBatch, startPosition, new Point(33, 1), 2, WalkFrameSpeed);
 
-            swordDown = new SwordSwing(texture, spriteBatch, startPosition,
+            swordDown = new OneShotAnimation(texture, spriteBatch, startPosition,
                 new[] { new Rectangle(1, 37, 16, 15), new Rectangle(18, 37, 16, 27), new Rectangle(35, 37, 15, 23), new Rectangle(53, 37, 13, 19) },
                 new[] { Vector2.Zero, Vector2.Zero, Vector2.Zero, Vector2.Zero },
                 SwingFrameSpeed);
 
-            swordUp = new SwordSwing(texture, spriteBatch, startPosition,
+            swordUp = new OneShotAnimation(texture, spriteBatch, startPosition,
                 new[] { new Rectangle(1, 99, 16, 16), new Rectangle(18, 87, 16, 28), new Rectangle(37, 88, 12, 27), new Rectangle(54, 96, 12, 19) },
                 new[] { Vector2.Zero, new Vector2(0, -12), new Vector2(0, -11), new Vector2(0, -3) },
                 SwingFrameSpeed);
 
-            swordHorizontal = new SwordSwing(texture, spriteBatch, startPosition,
+            swordHorizontal = new OneShotAnimation(texture, spriteBatch, startPosition,
                 new[] { new Rectangle(1, 68, 15, 15), new Rectangle(18, 68, 27, 15), new Rectangle(46, 68, 23, 15), new Rectangle(70, 67, 19, 16) },
                 new[] { Vector2.Zero, Vector2.Zero, Vector2.Zero, Vector2.Zero },
                 SwingFrameSpeed);
+
+            bodySprites = new Sprite[] { downSprite, upSprite, horizontalSprite, swordDown, swordUp, swordHorizontal };
+        }
+
+        public Vector2 Position => ActiveSprite.Position;
+
+        public void SwordAttack()
+        {
+            if (isAttacking) return;
+
+            isAttacking = true;
+            ActiveSword.Play();
+        }
+
+        public void FireArrow()
+        {
+            if (isAttacking) return;
+
+            projectiles.Add(new Arrow(texture, spriteBatch, Position, DirectionVector, screenBounds));
+        }
+
+        // Only one boomerang can be out at a time; Link can throw again once it comes back
+        public void ThrowBoomerang()
+        {
+            if (isAttacking || boomerangInFlight) return;
+
+            AnimatedSprite boomerangSprite = new AnimatedSprite(texture, spriteBatch, Position, BoomerangSourceLocation, BoomerangFrames, BoomerangFrameSpeed);
+            boomerangSprite.SetSpriteSize(BoomerangSpriteSize);
+
+            projectiles.Add(new Boomerang(boomerangSprite, Position, DirectionVector, this));
+            boomerangInFlight = true;
+        }
+
+        public void OnBoomerangReturned()
+        {
+            boomerangInFlight = false;
+        }
+
+        // Drops a bomb on the tile in front of Link
+        public void PlaceBomb()
+        {
+            if (isAttacking) return;
+
+            Vector2 bombPosition = Position + DirectionVector * TileSize + BombTileOffset;
+            projectiles.Add(new Bomb(texture, spriteBatch, bombPosition));
+        }
+
+        // Link flashes while hurt and can't be hurt again until the flashing stops
+        public void TakeDamage()
+        {
+            if (damageTimer > 0) return;
+
+            damageTimer = DamageDuration;
         }
 
         public void Update(GameTime gameTime)
         {
-            controller.Update();
             Vector2 movement = controller.UpdateMovement() * MoveSpeed;
-
-            KeyboardState keyboardState = Keyboard.GetState();
-            bool attackPressed = keyboardState.IsKeyDown(Keys.Space) && previousKeyboardState.IsKeyUp(Keys.Space);
-            bool nextWeaponPressed = keyboardState.IsKeyDown(Keys.I) && previousKeyboardState.IsKeyUp(Keys.I);
-            bool prevWeaponPressed = keyboardState.IsKeyDown(Keys.U) && previousKeyboardState.IsKeyUp(Keys.U);
-            previousKeyboardState = keyboardState;
-
-            if (!isAttacking)
-            {
-                if (nextWeaponPressed)
-                    weaponIndex = (weaponIndex + 1) % WeaponOrder.Length;
-                else if (prevWeaponPressed)
-                    weaponIndex = (weaponIndex - 1 + WeaponOrder.Length) % WeaponOrder.Length;
-            }
 
             if (isAttacking)
             {
@@ -100,37 +148,35 @@ namespace Animation
                 else if (movement.X < 0) currentDirection = Direction.Left;
                 else if (movement.X > 0) currentDirection = Direction.Right;
 
-                if (attackPressed && CurrentWeapon == EquippedWeapon.Sword)
-                {
-                    isAttacking = true;
-                    ActiveSword.Play();
-                }
-                else
-                {
-                    ActiveSprite.UpdateAnimation(gameTime, movement);
-
-                    if (attackPressed && CurrentWeapon == EquippedWeapon.Bow)
-                    {
-                        arrows.Add(new Arrow(texture, spriteBatch, ActiveSprite.Position, DirectionVector));
-                    }
-                }
+                ActiveSprite.UpdateAnimation(gameTime, movement);
             }
 
-            foreach (var arrow in arrows)
-                arrow.Update(gameTime, ScreenWidth, ScreenHeight);
-            arrows.RemoveAll(a => !a.Active);
+            foreach (IProjectile projectile in projectiles)
+                projectile.Update(gameTime);
+            projectiles.RemoveAll(p => p.IsFinished);
 
             Vector2 currentPos = isAttacking ? ActiveSword.Position : ActiveSprite.Position;
-            downSprite.Position = currentPos;
-            upSprite.Position = currentPos;
-            horizontalSprite.Position = currentPos;
-            swordDown.Position = currentPos;
-            swordUp.Position = currentPos;
-            swordHorizontal.Position = currentPos;
+            Color tint = UpdateDamageTint(gameTime);
+            foreach (Sprite sprite in bodySprites)
+            {
+                sprite.Position = currentPos;
+                sprite.SetColor(tint);
+            }
 
             bool facingLeft = currentDirection == Direction.Left;
             horizontalSprite.SetEffects(facingLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
             swordHorizontal.SetEffects(facingLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+        }
+
+        // Counts down the hurt timer and returns the colour to draw Link in this frame
+        private Color UpdateDamageTint(GameTime gameTime)
+        {
+            if (damageTimer <= 0) return Color.White;
+
+            damageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            bool flashOn = damageTimer > 0 && (int)(damageTimer / DamageFlashInterval) % 2 == 0;
+
+            return flashOn ? Color.Red : Color.White;
         }
 
         private Vector2 DirectionVector => currentDirection switch
@@ -148,7 +194,7 @@ namespace Animation
             _ => horizontalSprite
         };
 
-        private SwordSwing ActiveSword => currentDirection switch
+        private OneShotAnimation ActiveSword => currentDirection switch
         {
             Direction.Up => swordUp,
             Direction.Down => swordDown,
@@ -162,8 +208,8 @@ namespace Animation
             else
                 ActiveSprite.Draw(texture);
 
-            foreach (var arrow in arrows)
-                arrow.Draw(texture);
+            foreach (IProjectile projectile in projectiles)
+                projectile.Draw(texture);
         }
     }
 }

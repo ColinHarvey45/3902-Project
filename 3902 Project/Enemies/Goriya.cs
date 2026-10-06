@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Enemies
 {
-    internal class Goriya : Enemy
+    internal class Goriya : Enemy, IBoomerangThrower
     {
 
         private const float GoriyaWalkSpeed = 0.15f;

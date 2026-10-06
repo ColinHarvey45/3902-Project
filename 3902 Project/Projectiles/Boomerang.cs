@@ -1,15 +1,16 @@
 ﻿using Animation;
+using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Projectiles
 {
-    internal class Boomerang
+    internal class Boomerang : IProjectile
     {
         private readonly AnimatedSprite sprite;
         private Vector2 position;
         private readonly Vector2 velocity;
-        private readonly Enemies.Goriya owner;
+        private readonly IBoomerangThrower owner;
 
         private float stateTimer = 0f;
 
@@ -18,9 +19,9 @@ namespace Projectiles
         private bool isReturning = false;
         private readonly float speed = 250f;
 
-        public bool IsDead { get; private set; } = false;
+        public bool IsFinished { get; private set; } = false;
 
-        public Boomerang(AnimatedSprite sprite, Vector2 spawnPosition, Vector2 direction, Enemies.Goriya owner)
+        public Boomerang(AnimatedSprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower owner)
         {
             this.sprite = sprite;
             this.position = spawnPosition;
@@ -32,7 +33,7 @@ namespace Projectiles
 
         public void Update(GameTime gameTime)
         {
-            if (IsDead) return;
+            if (IsFinished) return;
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             stateTimer += deltaTime;
@@ -53,7 +54,7 @@ namespace Projectiles
 
                 if (returnDirection.Length() < 8f)
                 {
-                    IsDead = true;
+                    IsFinished = true;
                     owner.OnBoomerangReturned();
                     return;
                 }

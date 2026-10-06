@@ -71,10 +71,33 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.R, new ResetCommand(this));
         }
 
+        // Link is rebuilt on every reset, so his keys are rebound to the new Link each time
+        private void RegisterLinkCommands()
+        {
+            ICommand swordAttack = new LinkSwordAttackCommand(link);
+            keyboard.RegisterCommand(Keys.Z, swordAttack);
+            keyboard.RegisterCommand(Keys.N, swordAttack);
+
+            ICommand fireArrow = new LinkFireArrowCommand(link);
+            keyboard.RegisterCommand(Keys.D1, fireArrow);
+            keyboard.RegisterCommand(Keys.NumPad1, fireArrow);
+
+            ICommand throwBoomerang = new LinkThrowBoomerangCommand(link);
+            keyboard.RegisterCommand(Keys.D2, throwBoomerang);
+            keyboard.RegisterCommand(Keys.NumPad2, throwBoomerang);
+
+            ICommand placeBomb = new LinkPlaceBombCommand(link);
+            keyboard.RegisterCommand(Keys.D3, placeBomb);
+            keyboard.RegisterCommand(Keys.NumPad3, placeBomb);
+
+            keyboard.RegisterCommand(Keys.E, new LinkTakeDamageCommand(link));
+        }
+
         // Puts every game object back in its starting state; also used by the reset key
         public void ResetGame()
         {
-            link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), keyboard);
+            link = new Link(linkTexture, spriteBatch, new Vector2(100, 100), keyboard, GraphicsDevice.Viewport.Bounds);
+            RegisterLinkCommands();
 
             Zol zol = new Zol(enemyTexture, spriteBatch, new Vector2(400, 200));
             Stalfos stalfos = new Stalfos(enemyTexture, spriteBatch, new Vector2(400, 200));

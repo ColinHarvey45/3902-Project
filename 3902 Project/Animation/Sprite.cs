@@ -78,6 +78,11 @@ namespace Animation
             spriteEffects = effects;
         }
 
+        public void SetColor(Color color)
+        {
+            spriteColor = color;
+        }
+
         public void SetSpriteSize(Point spriteSize)
         {
             rectSize = spriteSize;
