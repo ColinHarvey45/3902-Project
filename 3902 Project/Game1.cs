@@ -3,6 +3,7 @@ using Enemies;
 using Environment;
 using Input;
 using Interfaces;
+using Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,10 +17,9 @@ namespace CSE_3902_Project
         private readonly GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private IPlayer link;
-        private IEnemy[] enemies;
-        private IBlock[] blocks;
-        private int enemyIndex = 0;
-        private int blockIndex = 0;
+        private ShowcaseList<IEnemy> enemies;
+        private ShowcaseList<IBlock> blocks;
+        private ShowcaseList<IItem> items;
         private KeyboardController keyboard;
 
         // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
@@ -29,6 +29,7 @@ namespace CSE_3902_Project
         private static readonly Vector2 LinkStartPosition = new(100, 100);
         private static readonly Vector2 EnemyShowcasePosition = new(400, 200);
         private static readonly Vector2 BlockShowcasePosition = new(800, 200);
+        private static readonly Vector2 ItemShowcasePosition = new(600, 450);
 
         public Game1()
         {
@@ -54,6 +55,7 @@ namespace CSE_3902_Project
             ProjectileSpriteFactory.Instance.LoadAllTextures(Content);
             EnemySpriteFactory.Instance.LoadAllTextures(Content);
             BlockSpriteFactory.Instance.LoadAllTextures(Content);
+            ItemSpriteFactory.Instance.LoadAllTextures(Content);
 
             keyboard = new KeyboardController();
             RegisterCommands();
@@ -68,6 +70,9 @@ namespace CSE_3902_Project
 
             keyboard.RegisterCommand(Keys.Y, new NextBlockCommand(this));
             keyboard.RegisterCommand(Keys.T, new PreviousBlockCommand(this));
+
+            keyboard.RegisterCommand(Keys.I, new NextItemCommand(this));
+            keyboard.RegisterCommand(Keys.U, new PreviousItemCommand(this));
 
             ICommand quit = new QuitCommand(this);
             keyboard.RegisterCommand(Keys.Q, quit);
@@ -116,16 +121,16 @@ namespace CSE_3902_Project
             link = new Link(LinkStartPosition, GraphicsDevice.Viewport.Bounds);
             RegisterLinkCommands();
 
-            enemies =
+            enemies = new ShowcaseList<IEnemy>(
             [
                 new Stalfos(EnemyShowcasePosition),
                 new Zol(EnemyShowcasePosition),
                 new Gel(EnemyShowcasePosition),
                 new Keese(EnemyShowcasePosition),
                 new Goriya(EnemyShowcasePosition)
-            ];
+            ]);
 
-            blocks =
+            blocks = new ShowcaseList<IBlock>(
             [
                 new FireBlock(BlockShowcasePosition),
                 new Stairs(BlockShowcasePosition),
@@ -140,37 +145,33 @@ namespace CSE_3902_Project
                 new BombedWallOpening(BlockShowcasePosition),
                 new KeyholeLockedDoor(BlockShowcasePosition),
                 new DiamondLockedDoor(BlockShowcasePosition)
-            ];
+            ]);
 
-            enemyIndex = 0;
-            blockIndex = 0;
+            items = new ShowcaseList<IItem>(
+            [
+                new Heart(ItemShowcasePosition),
+                new HeartContainer(ItemShowcasePosition),
+                new Rupee(ItemShowcasePosition),
+                new TriforcePiece(ItemShowcasePosition),
+                new Fairy(ItemShowcasePosition),
+                new Key(ItemShowcasePosition),
+                new Map(ItemShowcasePosition),
+                new Compass(ItemShowcasePosition),
+                new Bow(ItemShowcasePosition),
+                new BoomerangItem(ItemShowcasePosition),
+                new BombItem(ItemShowcasePosition),
+                new Clock(ItemShowcasePosition)
+            ]);
         }
 
-        public void NextEnemy()
-        {
-            enemyIndex = WrapIndex(enemyIndex + 1, enemies.Length);
-        }
+        public void NextEnemy() => enemies.Next();
+        public void PreviousEnemy() => enemies.Previous();
 
-        public void PreviousEnemy()
-        {
-            enemyIndex = WrapIndex(enemyIndex - 1, enemies.Length);
-        }
+        public void NextBlock() => blocks.Next();
+        public void PreviousBlock() => blocks.Previous();
 
-        public void NextBlock()
-        {
-            blockIndex = WrapIndex(blockIndex + 1, blocks.Length);
-        }
-
-        public void PreviousBlock()
-        {
-            blockIndex = WrapIndex(blockIndex - 1, blocks.Length);
-        }
-
-        // Only the current enemy and block are shown; cycling past either end of a list wraps around
-        private static int WrapIndex(int index, int count)
-        {
-            return (index + count) % count;
-        }
+        public void NextItem() => items.Next();
+        public void PreviousItem() => items.Previous();
 
         protected override void Update(GameTime gameTime)
         {
@@ -181,8 +182,9 @@ namespace CSE_3902_Project
             keyboard.Update();
 
             link.Update(gameTime);
-            enemies[enemyIndex].Update(gameTime);
-            blocks[blockIndex].Update(gameTime);
+            enemies.Current.Update(gameTime);
+            blocks.Current.Update(gameTime);
+            items.Current.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -193,9 +195,10 @@ namespace CSE_3902_Project
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            // Back to front: room pieces, then enemies, then Link on top
-            blocks[blockIndex].Draw(spriteBatch);
-            enemies[enemyIndex].Draw(spriteBatch);
+            // Back to front: room pieces, items, enemies, then Link on top
+            blocks.Current.Draw(spriteBatch);
+            items.Current.Draw(spriteBatch);
+            enemies.Current.Draw(spriteBatch);
             link.Draw(spriteBatch);
 
             spriteBatch.End();

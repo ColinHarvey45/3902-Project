@@ -1,6 +1,7 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Movement;
 using System;
 
 namespace Enemies
@@ -16,11 +17,10 @@ namespace Enemies
 
         protected static readonly Random RandomGenerator = new();
 
-        private readonly Vector2[] directions;
-        private float directionTimer = 0f;
+        private readonly RandomMovement movement;
 
         public Vector2 Position { get; private set; }
-        protected Vector2 CurrentDirection { get; private set; }
+        protected Vector2 CurrentDirection => movement.Direction;
         protected ISprite Sprite { get; set; }
 
         protected Enemy(Vector2 startPosition)
@@ -31,8 +31,7 @@ namespace Enemies
         protected Enemy(Vector2 startPosition, Vector2[] directions)
         {
             Position = startPosition;
-            this.directions = directions;
-            CurrentDirection = RandomDirection();
+            movement = new RandomMovement(directions, DirectionChangeTime, MoveSpeed);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -47,25 +46,15 @@ namespace Enemies
 
         protected void Wander(GameTime gameTime)
         {
-            directionTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (directionTimer >= DirectionChangeTime)
-            {
-                directionTimer = 0f;
-                CurrentDirection = RandomDirection();
+            movement.Update(gameTime);
+            if (movement.JustTurned)
                 OnDirectionChanged();
-            }
 
-            Position += CurrentDirection * MoveSpeed;
+            Position += movement.Velocity;
             Sprite.Update(gameTime);
         }
 
         // Lets an enemy react when it turns, e.g. by switching to a sprite facing the new way
         protected virtual void OnDirectionChanged() { }
-
-        private Vector2 RandomDirection()
-        {
-            return directions[RandomGenerator.Next(directions.Length)];
-        }
     }
 }
