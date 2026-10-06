@@ -15,6 +15,9 @@ namespace Sprites
         private static readonly Rectangle FishStatueFrame = new(1018, 11, 16, 16);
         private static readonly Rectangle DragonStatueFrame = new(1035, 11, 16, 16);
         private static readonly Rectangle BlueGapFrame = new(1018, 28, 16, 16);
+        private static readonly Rectangle FloorTileFrame = new(984, 11, 16, 16);
+        private static readonly Rectangle BlackTileFrame = new(984, 28, 16, 16);
+        private static readonly Rectangle SandTileFrame = new(1001, 28, 16, 16);
         private static readonly Rectangle StairsFrame = new(1035, 28, 16, 16);
         private static readonly Rectangle WhiteBrickFrame = new(984, 45, 16, 16);
         private static readonly Rectangle LadderFrame = new(1001, 45, 16, 16);
@@ -46,6 +49,9 @@ namespace Sprites
         public ISprite CreateFishStatueSprite() => Still(FishStatueFrame);
         public ISprite CreateDragonStatueSprite() => Still(DragonStatueFrame);
         public ISprite CreateBlueGapSprite() => Still(BlueGapFrame);
+        public ISprite CreateFloorTileSprite() => Still(FloorTileFrame);
+        public ISprite CreateBlackTileSprite() => Still(BlackTileFrame);
+        public ISprite CreateSandTileSprite() => Still(SandTileFrame);
         public ISprite CreateStairsSprite() => Still(StairsFrame);
         public ISprite CreateWhiteBrickSprite() => Still(WhiteBrickFrame);
         public ISprite CreateLadderSprite() => Still(LadderFrame);
