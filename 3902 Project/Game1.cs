@@ -26,6 +26,10 @@ namespace CSE_3902_Project
         private int blockIndex = 0;
         private KeyboardController keyboard;
 
+        // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
+        private const int ScreenWidth = 1024;
+        private const int ScreenHeight = 704;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -35,8 +39,8 @@ namespace CSE_3902_Project
 
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            graphics.PreferredBackBufferWidth = ScreenWidth;
+            graphics.PreferredBackBufferHeight = ScreenHeight;
             graphics.ApplyChanges();
 
             base.Initialize();
