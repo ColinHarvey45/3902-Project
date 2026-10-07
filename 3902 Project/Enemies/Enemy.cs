@@ -6,32 +6,29 @@ using System;
 
 namespace Enemies
 {
-    // Shared behaviour for enemies that wander: walk in a straight line and
-    // pick a new random direction every couple of seconds
+    // Shared behaviour for enemies that wander: walk in a straight line, pick a new random
+    // direction every couple of seconds, and turn around instead of leaving the screen
     internal abstract class Enemy : IEnemy
     {
-        private const float DirectionChangeTime = 2f;
-        private const float MoveSpeed = 1f; // pixels per frame
-
-        private static readonly Vector2[] FourDirections = [new(1, 0), new(-1, 0), new(0, -1), new(0, 1)];
+        private const float DefaultDirectionChangeTime = 2f;
+        private const float WalkSpeed = 1f; // pixels per frame
 
         protected static readonly Random RandomGenerator = new();
 
-        private readonly RandomMovement movement;
-
-        public Vector2 Position { get; private set; }
-        protected Vector2 CurrentDirection => movement.Direction;
+        public Vector2 Position { get; protected set; }
+        protected RandomMovement Movement { get; }
+        protected Vector2 CurrentDirection => Movement.Direction;
         protected ISprite Sprite { get; set; }
 
-        protected Enemy(Vector2 startPosition)
-            : this(startPosition, FourDirections)
+        protected Enemy(Vector2 startPosition, Rectangle screenBounds)
+            : this(startPosition, screenBounds, RandomMovement.FourDirections, DefaultDirectionChangeTime)
         {
         }
 
-        protected Enemy(Vector2 startPosition, Vector2[] directions)
+        protected Enemy(Vector2 startPosition, Rectangle screenBounds, Vector2[] directions, float directionChangeTime)
         {
             Position = startPosition;
-            movement = new RandomMovement(directions, DirectionChangeTime, MoveSpeed);
+            Movement = new RandomMovement(directions, WalkSpeed, directionChangeTime, screenBounds);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -46,15 +43,17 @@ namespace Enemies
 
         protected void Wander(GameTime gameTime)
         {
-            movement.Update(gameTime);
-            if (movement.JustTurned)
+            Vector2 oldDirection = CurrentDirection;
+            Position = Movement.Wander(gameTime, Position);
+
+            if (CurrentDirection != oldDirection)
                 OnDirectionChanged();
 
-            Position += movement.Velocity;
             Sprite.Update(gameTime);
         }
 
-        // Lets an enemy react when it turns, e.g. by switching to a sprite facing the new way
+        // Lets an enemy react when it turns (on its timer or at the edge of the screen),
+        // e.g. by switching to a sprite facing the new way
         protected virtual void OnDirectionChanged() { }
     }
 }

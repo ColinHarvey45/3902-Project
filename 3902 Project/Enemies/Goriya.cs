@@ -16,8 +16,8 @@ namespace Enemies
         private IEnemyState state;
         private Boomerang boomerang = null;
 
-        public Goriya(Vector2 startPosition)
-            : base(startPosition)
+        public Goriya(Vector2 startPosition, Rectangle screenBounds)
+            : base(startPosition, screenBounds)
         {
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
             state = new GoriyaWalkingState(this);

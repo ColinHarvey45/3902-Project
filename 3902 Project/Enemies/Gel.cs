@@ -3,10 +3,15 @@ using Sprites;
 
 namespace Enemies
 {
-    internal class Gel : Enemy
+    // Darts about a tile at a time with short pauses in between
+    internal class Gel : HoppingEnemy
     {
-        public Gel(Vector2 startPosition)
-            : base(startPosition)
+        private const float GelHopSpeed = 2f; // pixels per frame
+        private const float GelHopTime = 0.5f;
+        private const float GelMaxRestTime = 1f;
+
+        public Gel(Vector2 startPosition, Rectangle screenBounds)
+            : base(startPosition, screenBounds, GelHopSpeed, GelHopTime, GelMaxRestTime)
         {
             Sprite = EnemySpriteFactory.Instance.CreateGelSprite();
         }

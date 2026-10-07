@@ -4,31 +4,24 @@ using Sprites;
 
 namespace Items
 {
-    // Flutters around in short hops instead of staying where it was placed
+    // Flutters around in all eight directions instead of staying where it was placed,
+    // turning back before it leaves the screen
     internal class Fairy : Item
     {
         private const float DirectionChangeTime = 0.5f;
         private const float FlySpeed = 1.5f; // pixels per frame
 
-        // Diagonals are scaled down so the fairy is no faster when flying diagonally
-        private const float Diagonal = 0.7071f;
-        private static readonly Vector2[] FlyingDirections =
-        [
-            new(1, 0), new(-1, 0), new(0, -1), new(0, 1),
-            new(Diagonal, Diagonal), new(Diagonal, -Diagonal), new(-Diagonal, -Diagonal), new(-Diagonal, Diagonal)
-        ];
+        private readonly RandomMovement movement;
 
-        private readonly RandomMovement movement = new(FlyingDirections, DirectionChangeTime, FlySpeed);
-
-        public Fairy(Vector2 position)
+        public Fairy(Vector2 position, Rectangle screenBounds)
             : base(position, ItemSpriteFactory.Instance.CreateFairySprite())
         {
+            movement = new RandomMovement(RandomMovement.EightDirections, FlySpeed, DirectionChangeTime, screenBounds);
         }
 
         public override void Update(GameTime gameTime)
         {
-            movement.Update(gameTime);
-            Position += movement.Velocity;
+            Position = movement.Wander(gameTime, Position);
 
             base.Update(gameTime);
         }

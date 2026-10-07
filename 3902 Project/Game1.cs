@@ -120,19 +120,21 @@ namespace CSE_3902_Project
         // Puts every game object back in its starting state; also used by the reset key
         public void ResetGame()
         {
-            link = new Link(LinkStartPosition, GraphicsDevice.Viewport.Bounds);
+            Rectangle screenBounds = GraphicsDevice.Viewport.Bounds;
+
+            link = new Link(LinkStartPosition, screenBounds);
             RegisterLinkCommands();
 
             enemies = new ShowcaseList<ICharacter>(
             [
-                new Stalfos(EnemyShowcasePosition),
-                new Zol(EnemyShowcasePosition),
-                new Gel(EnemyShowcasePosition),
-                new Keese(EnemyShowcasePosition),
-                new Goriya(EnemyShowcasePosition),
-                new Wallmaster(EnemyShowcasePosition),
+                new Stalfos(EnemyShowcasePosition, screenBounds),
+                new Zol(EnemyShowcasePosition, screenBounds),
+                new Gel(EnemyShowcasePosition, screenBounds),
+                new Keese(EnemyShowcasePosition, screenBounds),
+                new Goriya(EnemyShowcasePosition, screenBounds),
+                new Wallmaster(EnemyShowcasePosition, screenBounds),
                 new BladeTrap(EnemyShowcasePosition),
-                new Aquamentus(EnemyShowcasePosition, GraphicsDevice.Viewport.Bounds),
+                new Aquamentus(EnemyShowcasePosition, screenBounds),
                 new OldMan(EnemyShowcasePosition)
             ]);
 
@@ -162,7 +164,7 @@ namespace CSE_3902_Project
                 new HeartContainer(ItemShowcasePosition),
                 new Rupee(ItemShowcasePosition),
                 new TriforcePiece(ItemShowcasePosition),
-                new Fairy(ItemShowcasePosition),
+                new Fairy(ItemShowcasePosition, screenBounds),
                 new Key(ItemShowcasePosition),
                 new Map(ItemShowcasePosition),
                 new Compass(ItemShowcasePosition),
