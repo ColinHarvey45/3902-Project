@@ -1,0 +1,34 @@
+READABILITY REVIEW
+
+Author of code review: Frank An
+Date of code review: 2026-10-07
+Sprint number: Sprint 2
+File reviewed: Boomerang.cs
+Author of file reviewed: Colin
+Time taken to complete review: 15 minutes
+
+COMMENTS - WHAT IS READABLE:
+- Update() is easy to follow, going out vs coming back is just an if/else.
+- Variable names are clear (isReturning, travelDuration, returnDirection).
+
+COMMENTS - WHAT IS NOT READABLE:
+- The 8f on line 52 is a magic number, should be a named constant.
+- stateTimer is kind of a vague name.
+
+CODE QUALITY REVIEW
+
+Author of code review: Frank An
+Date of code review: 2026-10-07
+Sprint number: Sprint 2
+File reviewed: Boomerang.cs
+Author of file reviewed: Colin
+
+COMMENTS ON CODE QUALITY:
+- Good that it uses IBoomerangThrower so both Link and Goriya can use it.
+- Speed, travel time and catch distance are hardcoded so every boomerang acts the same.
+
+HYPOTHETICAL CHANGE:
+Making the boomerang turn back when it hits a wall would be easy since the return
+part already exists, just set isReturning to true. Actually hitting enemies would
+need a hitbox added, which means changing the constructor and both places that
+create boomerangs.
