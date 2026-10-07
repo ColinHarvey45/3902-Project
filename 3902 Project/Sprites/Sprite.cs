@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Sprites
 {
     // Draws one or more frames from a sprite sheet, moving to the next frame every frameTime seconds
-    internal class Sprite : ISprite
+    internal sealed class Sprite : ISprite
     {
         // Every sprite sheet pixel is drawn as a 4x4 block on screen
         public const float Scale = 4f;
@@ -14,10 +14,10 @@ namespace Sprites
         private readonly SpriteFrame[] frames;
         private readonly float frameTime;
         private readonly bool loops;
-        private int currentFrame = 0;
-        private float frameTimer = 0f;
+        private int currentFrame;
+        private float frameTimer;
 
-        public bool IsFinished { get; private set; } = false;
+        public bool IsFinished { get; private set; }
 
         // A sprite that never changes
         public Sprite(Texture2D texture, SpriteFrame frame)

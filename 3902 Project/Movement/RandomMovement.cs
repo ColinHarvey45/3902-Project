@@ -5,7 +5,7 @@ namespace Movement
 {
     // Moves in a straight line in one of a set of directions, turning to a random new one every
     // so often and whenever the next step would leave the screen. Shared by enemies and the fairy.
-    internal class RandomMovement
+    internal sealed class RandomMovement
     {
         // Nothing that uses this is bigger than one 16px tile at 4x scale
         private const int MaxObjectSize = 64;
@@ -25,7 +25,7 @@ namespace Movement
         private readonly Vector2[] directions;
         private readonly float changeTime;
         private readonly Rectangle area; // where the object's top-left corner is allowed to go
-        private float timer = 0f;
+        private float timer;
 
         public Vector2 Direction { get; private set; }
 

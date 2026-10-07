@@ -4,12 +4,12 @@ using Sprites;
 
 namespace Enemies.States
 {
-    internal class AquamentusWalkingState : IEnemyState
+    internal sealed class AquamentusWalkingState : IEnemyState
     {
         private const float TimeBetweenAttacks = 2.5f;
 
         private readonly Aquamentus aquamentus;
-        private float timer = 0f;
+        private float timer;
 
         public AquamentusWalkingState(Aquamentus aquamentus)
         {

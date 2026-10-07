@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class Ladder(Vector2 position)
+    internal sealed class Ladder(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateLadderSprite())
     {
     }

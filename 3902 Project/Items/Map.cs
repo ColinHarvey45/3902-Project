@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class Map(Vector2 position)
+    internal sealed class Map(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateMapSprite())
     {
     }

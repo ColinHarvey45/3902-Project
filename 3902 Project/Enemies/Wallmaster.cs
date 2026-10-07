@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Enemies
 {
-    internal class Wallmaster : Enemy
+    internal sealed class Wallmaster : Enemy
     {
         public Wallmaster(Vector2 startPosition, Rectangle screenBounds)
             : base(startPosition, screenBounds)

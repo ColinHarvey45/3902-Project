@@ -5,13 +5,13 @@ using System;
 namespace Enemies.States
 {
     // Speeds up after taking off, flutters at full speed, then slows down to land
-    internal class KeeseFlyingState(Keese keese) : IEnemyState
+    internal sealed class KeeseFlyingState(Keese keese) : IEnemyState
     {
         private const float FlightTime = 3f;
         private const float RampTime = 1f; // time spent speeding up after take-off, and slowing down before landing
         private const float TopSpeed = 2f; // pixels per frame
 
-        private float timer = 0f;
+        private float timer;
 
         public void Update(GameTime gameTime)
         {

@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class Compass(Vector2 position)
+    internal sealed class Compass(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateCompassSprite())
     {
     }

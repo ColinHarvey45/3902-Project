@@ -4,21 +4,21 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Projectiles
 {
-    internal class Boomerang : IProjectile
+    internal sealed class Boomerang : IProjectile
     {
         private readonly ISprite sprite;
         private Vector2 position;
         private readonly Vector2 velocity;
         private readonly IBoomerangThrower owner;
 
-        private float stateTimer = 0f;
+        private float stateTimer;
 
         // will need to be changed to return once it hits either Link or an obstacle
         private readonly float travelDuration = 1.5f;
-        private bool isReturning = false;
+        private bool isReturning;
         private readonly float speed = 250f;
 
-        public bool IsFinished { get; private set; } = false;
+        public bool IsFinished { get; private set; }
 
         public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower owner)
         {

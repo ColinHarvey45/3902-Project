@@ -7,7 +7,7 @@ using Player;
 namespace Sprites
 {
     // Builds every sprite used to draw Link himself
-    internal class LinkSpriteFactory
+    internal sealed class LinkSpriteFactory
     {
         private const float WalkFrameTime = 0.15f;
         private const float SwordFrameTime = 0.06f;

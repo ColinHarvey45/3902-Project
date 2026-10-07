@@ -3,7 +3,7 @@ using Player;
 
 namespace Commands
 {
-    internal class LinkThrowBoomerangCommand(IPlayer player) : ICommand
+    internal sealed class LinkThrowBoomerangCommand(IPlayer player) : ICommand
     {
 
         public void Execute()

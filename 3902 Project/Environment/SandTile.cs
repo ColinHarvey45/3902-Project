@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class SandTile(Vector2 position)
+    internal sealed class SandTile(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateSandTileSprite())
     {
     }

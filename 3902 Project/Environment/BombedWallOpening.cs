@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class BombedWallOpening(Vector2 position)
+    internal sealed class BombedWallOpening(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite())
     {
     }

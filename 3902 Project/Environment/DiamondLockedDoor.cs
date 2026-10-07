@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class DiamondLockedDoor(Vector2 position)
+    internal sealed class DiamondLockedDoor(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateDiamondLockedDoorSprite())
     {
     }

@@ -3,7 +3,7 @@ using Player;
 
 namespace Commands
 {
-    internal class LinkPlaceBombCommand(IPlayer player) : ICommand
+    internal sealed class LinkPlaceBombCommand(IPlayer player) : ICommand
     {
 
         public void Execute()

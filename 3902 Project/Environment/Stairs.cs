@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class Stairs(Vector2 position)
+    internal sealed class Stairs(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateStairsSprite())
     {
     }

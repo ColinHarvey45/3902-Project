@@ -4,11 +4,11 @@ using Microsoft.Xna.Framework;
 namespace Enemies.States
 {
     // Sits still without flapping, then takes off again
-    internal class KeeseRestingState(Keese keese) : IEnemyState
+    internal sealed class KeeseRestingState(Keese keese) : IEnemyState
     {
         private const float RestTime = 1f;
 
-        private float timer = 0f;
+        private float timer;
 
         public void Update(GameTime gameTime)
         {

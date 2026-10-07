@@ -5,12 +5,12 @@ using Sprites;
 namespace Enemies.States
 {
     // Opens its mouth, breathes three fireballs, and keeps it open for a moment before closing it again
-    internal class AquamentusAttackingState : IEnemyState
+    internal sealed class AquamentusAttackingState : IEnemyState
     {
         private const float MouthOpenTime = 1f;
 
         private readonly Aquamentus aquamentus;
-        private float timer = 0f;
+        private float timer;
 
         public AquamentusAttackingState(Aquamentus aquamentus)
         {

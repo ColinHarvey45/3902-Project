@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Sprites
 {
     // Builds the sprites for items Link can pick up
-    internal class ItemSpriteFactory
+    internal sealed class ItemSpriteFactory
     {
         private const float FlashFrameTime = 0.15f;
         private const float FairyFlapFrameTime = 0.1f;

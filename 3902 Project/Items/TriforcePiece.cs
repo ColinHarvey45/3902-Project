@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class TriforcePiece(Vector2 position)
+    internal sealed class TriforcePiece(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateTriforcePieceSprite())
     {
     }

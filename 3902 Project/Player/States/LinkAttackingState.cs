@@ -6,7 +6,7 @@ using Sprites;
 namespace Player.States
 {
     // Link stands still and ignores input until his sword swing finishes
-    internal class LinkAttackingState : ILinkState
+    internal sealed class LinkAttackingState : ILinkState
     {
         private readonly Link link;
         private readonly ISprite sprite;

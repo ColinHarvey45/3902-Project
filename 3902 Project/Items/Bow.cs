@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class Bow(Vector2 position)
+    internal sealed class Bow(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateBowSprite())
     {
     }

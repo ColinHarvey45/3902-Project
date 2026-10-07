@@ -3,7 +3,7 @@ using Interfaces;
 
 namespace Commands
 {
-    internal class ResetCommand(Game1 game) : ICommand
+    internal sealed class ResetCommand(Game1 game) : ICommand
     {
 
         public void Execute()

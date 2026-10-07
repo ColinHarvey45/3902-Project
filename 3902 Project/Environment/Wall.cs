@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class Wall(Vector2 position)
+    internal sealed class Wall(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateWallSprite())
     {
     }

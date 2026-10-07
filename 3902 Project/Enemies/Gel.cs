@@ -4,7 +4,7 @@ using Sprites;
 namespace Enemies
 {
     // Darts about a tile at a time with short pauses in between
-    internal class Gel : HoppingEnemy
+    internal sealed class Gel : HoppingEnemy
     {
         private const float GelHopSpeed = 2f; // pixels per frame
         private const float GelHopTime = 0.5f;

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Sprites
 {
     // Builds every enemy sprite: regular enemies from the dungeon enemies sheet, bosses from the bosses sheet
-    internal class EnemySpriteFactory
+    internal sealed class EnemySpriteFactory
     {
         private const float WalkFrameTime = 0.15f;
         private const float BossWalkFrameTime = 0.3f;

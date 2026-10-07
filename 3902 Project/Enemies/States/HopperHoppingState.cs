@@ -4,10 +4,10 @@ using Microsoft.Xna.Framework;
 namespace Enemies.States
 {
     // Hops in a random direction for a moment, then rests
-    internal class HopperHoppingState : IEnemyState
+    internal sealed class HopperHoppingState : IEnemyState
     {
         private readonly HoppingEnemy enemy;
-        private float timer = 0f;
+        private float timer;
 
         public HopperHoppingState(HoppingEnemy enemy)
         {

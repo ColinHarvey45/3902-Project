@@ -10,7 +10,7 @@ namespace Player
 {
     // Link's own data (where he is, which way he faces, what he has thrown). What he does with
     // input is decided by his current State, and whether he is hurt by his HealthState
-    internal class Link : IPlayer, IBoomerangThrower
+    internal sealed class Link : IPlayer, IBoomerangThrower
     {
         private const float MoveSpeed = 3f; // pixels per frame
         private const float TileSize = 16 * Sprite.Scale;
@@ -18,8 +18,8 @@ namespace Player
 
         private readonly Rectangle screenBounds;
         private readonly List<IProjectile> projectiles = [];
-        private Direction? requestedDirection = null;
-        private bool boomerangInFlight = false;
+        private Direction? requestedDirection;
+        private bool boomerangInFlight;
 
         public Vector2 Position { get; private set; }
         public Direction Facing { get; set; } = Direction.Down;

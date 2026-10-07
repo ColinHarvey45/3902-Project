@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Sprites
 {
     // Builds the sprites for characters who don't fight, from the NPC sheet
-    internal class NpcSpriteFactory
+    internal sealed class NpcSpriteFactory
     {
         private static readonly Rectangle OldManFrame = new(1, 11, 16, 16);
 

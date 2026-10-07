@@ -8,7 +8,7 @@ namespace Enemies
 {
     // Sits still, then shoots out in a straight line and slowly slides back to where it started.
     // What it is doing right now is decided by its state (waiting, charging or returning)
-    internal class BladeTrap : IEnemy
+    internal sealed class BladeTrap : IEnemy
     {
         private readonly ISprite sprite = EnemySpriteFactory.Instance.CreateBladeTrapSprite();
         private IEnemyState state;

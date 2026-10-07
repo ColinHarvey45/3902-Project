@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class Rupee(Vector2 position)
+    internal sealed class Rupee(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateRupeeSprite())
     {
     }

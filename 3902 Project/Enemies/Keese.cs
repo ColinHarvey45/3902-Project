@@ -8,7 +8,7 @@ namespace Enemies
 {
     // Takes off, flutters around in all eight directions while speeding up and slowing
     // down, then lands for a moment. Whether it is flying or resting is decided by its state
-    internal class Keese : Enemy
+    internal sealed class Keese : Enemy
     {
         // Keese change direction much more often than walking enemies
         private const float TurnTime = 0.4f;

@@ -7,7 +7,7 @@ using Player;
 namespace Sprites
 {
     // Builds the sprites for things that are thrown, fired or placed: arrows, boomerangs, bombs
-    internal class ProjectileSpriteFactory
+    internal sealed class ProjectileSpriteFactory
     {
         private const float BoomerangFrameTime = 0.1f;
         private const float ExplosionFrameTime = 0.1f;

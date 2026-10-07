@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class BlackTile(Vector2 position)
+    internal sealed class BlackTile(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateBlackTileSprite())
     {
     }

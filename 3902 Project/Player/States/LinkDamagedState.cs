@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace Player.States
 {
     // Link flashes red for a moment after being hit and can't be hurt again until it stops
-    internal class LinkDamagedState(Link link) : ILinkHealthState
+    internal sealed class LinkDamagedState(Link link) : ILinkHealthState
     {
         private const float DamageDuration = 1f;
         private const float FlashInterval = 0.1f;

@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Environment
 {
-    internal class BlueGap(Vector2 position)
+    internal sealed class BlueGap(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateBlueGapSprite())
     {
     }

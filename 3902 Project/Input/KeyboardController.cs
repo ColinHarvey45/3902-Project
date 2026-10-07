@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Input
 {
-    internal class KeyboardController : IController
+    internal sealed class KeyboardController : IController
     {
 
         private KeyboardState currentKeyboardState;

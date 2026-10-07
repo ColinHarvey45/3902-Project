@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Enemies
 {
-    internal class Stalfos : Enemy
+    internal sealed class Stalfos : Enemy
     {
         public Stalfos(Vector2 startPosition, Rectangle screenBounds)
             : base(startPosition, screenBounds)

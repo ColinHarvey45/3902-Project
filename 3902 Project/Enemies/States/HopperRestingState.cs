@@ -5,13 +5,13 @@ using System;
 namespace Enemies.States
 {
     // Sits still for a random moment, then hops again
-    internal class HopperRestingState : IEnemyState
+    internal sealed class HopperRestingState : IEnemyState
     {
         private static readonly Random RandomGenerator = new();
 
         private readonly HoppingEnemy enemy;
         private readonly float restTime;
-        private float timer = 0f;
+        private float timer;
 
         public HopperRestingState(HoppingEnemy enemy)
         {

@@ -3,7 +3,7 @@ using Player;
 
 namespace Commands
 {
-    internal class LinkFireArrowCommand(IPlayer player) : ICommand
+    internal sealed class LinkFireArrowCommand(IPlayer player) : ICommand
     {
 
         public void Execute()

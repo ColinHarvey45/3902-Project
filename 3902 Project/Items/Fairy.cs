@@ -6,7 +6,7 @@ namespace Items
 {
     // Flutters around in all eight directions instead of staying where it was placed,
     // turning back before it leaves the screen
-    internal class Fairy : Item
+    internal sealed class Fairy : Item
     {
         private const float DirectionChangeTime = 0.5f;
         private const float FlySpeed = 1.5f; // pixels per frame

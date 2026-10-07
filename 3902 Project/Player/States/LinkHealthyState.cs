@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Player.States
 {
-    internal class LinkHealthyState(Link link) : ILinkHealthState
+    internal sealed class LinkHealthyState(Link link) : ILinkHealthState
     {
 
         public Color Tint => Color.White;

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Sprites
 {
     // Builds the sprites for blocks, statues, doors, walls and other room pieces
-    internal class BlockSpriteFactory
+    internal sealed class BlockSpriteFactory
     {
         private const float FireFrameTime = 0.15f;
 

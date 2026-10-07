@@ -2,7 +2,7 @@ using Interfaces;
 
 namespace Commands
 {
-    internal class LinkSwordAttackCommand(IPlayer player) : ICommand
+    internal sealed class LinkSwordAttackCommand(IPlayer player) : ICommand
     {
 
         public void Execute()

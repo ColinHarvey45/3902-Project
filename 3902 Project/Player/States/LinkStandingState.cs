@@ -5,7 +5,7 @@ using Sprites;
 
 namespace Player.States
 {
-    internal class LinkStandingState : ILinkState
+    internal sealed class LinkStandingState : ILinkState
     {
         private readonly Link link;
         private readonly ISprite sprite;

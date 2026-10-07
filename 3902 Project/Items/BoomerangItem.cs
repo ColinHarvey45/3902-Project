@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class BoomerangItem(Vector2 position)
+    internal sealed class BoomerangItem(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateBoomerangSprite())
     {
     }

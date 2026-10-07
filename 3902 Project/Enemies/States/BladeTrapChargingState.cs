@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Enemies.States
 {
-    internal class BladeTrapChargingState(BladeTrap trap, Vector2 direction) : IEnemyState
+    internal sealed class BladeTrapChargingState(BladeTrap trap, Vector2 direction) : IEnemyState
     {
         private const float ChargeSpeed = 4f; // pixels per frame
         private const float ChargeDistance = 160f; // how far it shoots out before turning back

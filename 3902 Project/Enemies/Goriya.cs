@@ -8,13 +8,13 @@ using Sprites;
 namespace Enemies
 {
     // Wanders like other enemies, but sometimes stops to throw a boomerang and waits for it to come back
-    internal class Goriya : Enemy, IBoomerangThrower
+    internal sealed class Goriya : Enemy, IBoomerangThrower
     {
         private const int ThrowChancePercent = 40; // chance of throwing each time it turns
         private const float BoomerangSpawnDistance = 24f;
 
         private IEnemyState state;
-        private Boomerang boomerang = null;
+        private Boomerang boomerang;
 
         public Goriya(Vector2 startPosition, Rectangle screenBounds)
             : base(startPosition, screenBounds)

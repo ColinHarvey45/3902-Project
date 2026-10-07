@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class Heart(Vector2 position)
+    internal sealed class Heart(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateHeartSprite())
     {
     }

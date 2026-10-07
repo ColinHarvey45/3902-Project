@@ -6,15 +6,15 @@ using Sprites;
 namespace Projectiles
 {
     // Sits where it was placed until the fuse runs out, then plays its explosion once
-    internal class Bomb : IProjectile
+    internal sealed class Bomb : IProjectile
     {
         private const float FuseTime = 1f;
 
         private readonly Vector2 position;
         private readonly ISprite bombSprite;
         private readonly ISprite explosionSprite;
-        private float fuseTimer = 0f;
-        private bool isExploding = false;
+        private float fuseTimer;
+        private bool isExploding;
 
         public bool IsFinished => explosionSprite.IsFinished;
 

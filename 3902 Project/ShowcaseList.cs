@@ -1,10 +1,10 @@
 namespace CSE_3902_Project
 {
     // A list of objects the player flips through one at a time; going past either end wraps around
-    internal class ShowcaseList<T>(T[] objects)
+    internal sealed class ShowcaseList<T>(T[] objects)
     {
 
-        private int index = 0;
+        private int index;
 
         public T Current => objects[index];
 

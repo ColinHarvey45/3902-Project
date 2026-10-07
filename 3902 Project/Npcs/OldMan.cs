@@ -6,7 +6,7 @@ using Sprites;
 namespace Npcs
 {
     // Stands in place next to the fires; he doesn't move or animate
-    internal class OldMan(Vector2 position) : INpc
+    internal sealed class OldMan(Vector2 position) : INpc
     {
 
         private readonly ISprite sprite = NpcSpriteFactory.Instance.CreateOldManSprite();

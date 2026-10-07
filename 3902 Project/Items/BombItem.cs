@@ -3,7 +3,7 @@ using Sprites;
 
 namespace Items
 {
-    internal class BombItem(Vector2 position)
+    internal sealed class BombItem(Vector2 position)
         : Item(position, ItemSpriteFactory.Instance.CreateBombSprite())
     {
     }
