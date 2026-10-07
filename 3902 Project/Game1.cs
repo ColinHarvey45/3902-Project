@@ -7,6 +7,7 @@ using Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Npcs;
 using Player;
 using Sprites;
 
@@ -17,7 +18,7 @@ namespace CSE_3902_Project
         private readonly GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private IPlayer link;
-        private ShowcaseList<IEnemy> enemies;
+        private ShowcaseList<ICharacter> enemies; // enemies and NPCs, cycled with O/P
         private ShowcaseList<IBlock> blocks;
         private ShowcaseList<IItem> items;
         private KeyboardController keyboard;
@@ -56,6 +57,7 @@ namespace CSE_3902_Project
             EnemySpriteFactory.Instance.LoadAllTextures(Content);
             BlockSpriteFactory.Instance.LoadAllTextures(Content);
             ItemSpriteFactory.Instance.LoadAllTextures(Content);
+            NpcSpriteFactory.Instance.LoadAllTextures(Content);
 
             keyboard = new KeyboardController();
             RegisterCommands();
@@ -121,13 +123,17 @@ namespace CSE_3902_Project
             link = new Link(LinkStartPosition, GraphicsDevice.Viewport.Bounds);
             RegisterLinkCommands();
 
-            enemies = new ShowcaseList<IEnemy>(
+            enemies = new ShowcaseList<ICharacter>(
             [
                 new Stalfos(EnemyShowcasePosition),
                 new Zol(EnemyShowcasePosition),
                 new Gel(EnemyShowcasePosition),
                 new Keese(EnemyShowcasePosition),
-                new Goriya(EnemyShowcasePosition)
+                new Goriya(EnemyShowcasePosition),
+                new Wallmaster(EnemyShowcasePosition),
+                new BladeTrap(EnemyShowcasePosition),
+                new Aquamentus(EnemyShowcasePosition, GraphicsDevice.Viewport.Bounds),
+                new OldMan(EnemyShowcasePosition)
             ]);
 
             blocks = new ShowcaseList<IBlock>(

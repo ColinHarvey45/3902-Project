@@ -1,13 +1,8 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
 namespace Interfaces
 {
-    internal interface IEnemy
+    // A character that fights Link. Enemy-only behaviour (taking damage,
+    // hurting Link on contact) is added here once collisions arrive in Sprint 3
+    internal interface IEnemy : ICharacter
     {
-
-        public void Update(GameTime gameTime);
-        public void Draw(SpriteBatch spriteBatch);
-
     }
 }

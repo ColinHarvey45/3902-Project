@@ -25,8 +25,13 @@ namespace Sprites
         // --- Enemy sheet ---
         private static readonly Rectangle[] GoriyaBoomerangFrames = [new(290, 15, 9, 8), new(299, 15, 9, 8), new(308, 15, 9, 8)];
 
+        // --- Bosses sheet: Aquamentus's fireball cycles through four colours ---
+        private const float FireballFrameTime = 0.05f;
+        private static readonly Rectangle[] FireballFrames = [new(101, 4, 8, 10), new(110, 4, 8, 10), new(119, 4, 8, 10), new(128, 4, 8, 10)];
+
         private Texture2D linkTexture;
         private Texture2D enemyTexture;
+        private Texture2D bossTexture;
 
         public static ProjectileSpriteFactory Instance { get; } = new ProjectileSpriteFactory();
 
@@ -38,6 +43,7 @@ namespace Sprites
         {
             linkTexture = content.Load<Texture2D>("TLOZLink-transparent2");
             enemyTexture = content.Load<Texture2D>("TLOZDungeonEnemies-transparent");
+            bossTexture = content.Load<Texture2D>("TLOZBosses-transparent");
         }
 
         public ISprite CreateArrowSprite(Direction direction)
@@ -75,6 +81,11 @@ namespace Sprites
         public ISprite CreateGoriyaBoomerangSprite()
         {
             return new Sprite(enemyTexture, SpriteFrame.FromSources(GoriyaBoomerangFrames), BoomerangFrameTime, loops: true);
+        }
+
+        public ISprite CreateFireballSprite()
+        {
+            return new Sprite(bossTexture, SpriteFrame.FromSources(FireballFrames), FireballFrameTime, loops: true);
         }
     }
 }
