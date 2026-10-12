@@ -4,7 +4,7 @@ using System;
 namespace Movement
 {
     // Moves in a straight line in one of a set of directions, turning to a random new one every
-    // so often and whenever the next step would leave the screen. Shared by enemies and the fairy.
+    // so often and whenever the next step would leave its bounds. Shared by enemies and the fairy.
     internal sealed class RandomMovement
     {
         // Nothing that uses this is bigger than one 16px tile at 4x scale
@@ -32,12 +32,13 @@ namespace Movement
         // Pixels per frame; enemies that speed up and slow down change this as they go
         public float Speed { get; set; }
 
-        public RandomMovement(Vector2[] directions, float speed, float changeTime, Rectangle screenBounds)
+        // bounds is the area the whole object has to stay inside, e.g. the room's floor
+        public RandomMovement(Vector2[] directions, float speed, float changeTime, Rectangle bounds)
         {
             this.directions = directions;
             Speed = speed;
             this.changeTime = changeTime;
-            area = new Rectangle(screenBounds.X, screenBounds.Y, screenBounds.Width - MaxObjectSize, screenBounds.Height - MaxObjectSize);
+            area = new Rectangle(bounds.X, bounds.Y, bounds.Width - MaxObjectSize, bounds.Height - MaxObjectSize);
 
             TurnRandomly();
         }
@@ -61,8 +62,8 @@ namespace Movement
             return Step(position);
         }
 
-        // Takes one step from position; if that step would leave the screen, it first turns
-        // to a random direction that stays on screen (or turns back if none does)
+        // Takes one step from position; if that step would leave its bounds, it first turns
+        // to a random direction that stays inside them (or turns back if none does)
         public Vector2 Step(Vector2 position)
         {
             Vector2 next = position + Direction * Speed;

@@ -1,10 +1,12 @@
-using Microsoft.Xna.Framework;
+using Player;
+using Rooms;
 using Sprites;
 
 namespace Environment
 {
-    internal sealed class KeyholeLockedDoor(Vector2 position)
-        : Block(position, BlockSpriteFactory.Instance.CreateKeyholeLockedDoorSprite())
+    // Sits in the gap in one of the room's walls (side)
+    internal sealed class KeyholeLockedDoor(Direction side)
+        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateKeyholeLockedDoorSprite(side))
     {
     }
 }

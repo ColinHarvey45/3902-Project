@@ -15,8 +15,8 @@ namespace Enemies
 
         private IEnemyState state;
 
-        public Keese(Vector2 startPosition, Rectangle screenBounds)
-            : base(startPosition, screenBounds, RandomMovement.EightDirections, TurnTime)
+        public Keese(Vector2 startPosition)
+            : base(startPosition, RandomMovement.EightDirections, TurnTime)
         {
             Sprite = EnemySpriteFactory.Instance.CreateKeeseSprite();
             state = new KeeseFlyingState(this);

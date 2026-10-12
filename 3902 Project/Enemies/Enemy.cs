@@ -2,12 +2,13 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Movement;
+using Rooms;
 using System;
 
 namespace Enemies
 {
     // Shared behaviour for enemies that wander: walk in a straight line, pick a new random
-    // direction every couple of seconds, and turn around instead of leaving the screen
+    // direction every couple of seconds, and turn around instead of leaving the room's floor
     internal abstract class Enemy : IEnemy
     {
         private const float DefaultDirectionChangeTime = 2f;
@@ -20,15 +21,15 @@ namespace Enemies
         protected Vector2 CurrentDirection => Movement.Direction;
         protected ISprite Sprite { get; set; }
 
-        protected Enemy(Vector2 startPosition, Rectangle screenBounds)
-            : this(startPosition, screenBounds, RandomMovement.FourDirections, DefaultDirectionChangeTime)
+        protected Enemy(Vector2 startPosition)
+            : this(startPosition, RandomMovement.FourDirections, DefaultDirectionChangeTime)
         {
         }
 
-        protected Enemy(Vector2 startPosition, Rectangle screenBounds, Vector2[] directions, float directionChangeTime)
+        protected Enemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime)
         {
             Position = startPosition;
-            Movement = new RandomMovement(directions, WalkSpeed, directionChangeTime, screenBounds);
+            Movement = new RandomMovement(directions, WalkSpeed, directionChangeTime, RoomLayout.FloorBounds);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -52,7 +53,7 @@ namespace Enemies
             Sprite.Update(gameTime);
         }
 
-        // Lets an enemy react when it turns (on its timer or at the edge of the screen),
+        // Lets an enemy react when it turns (on its timer or at the edge of the floor),
         // e.g. by switching to a sprite facing the new way
         protected virtual void OnDirectionChanged() { }
     }

@@ -28,7 +28,6 @@ namespace Enemies
         ];
 
         private readonly float homeX;
-        private readonly Rectangle screenBounds;
         private readonly List<IProjectile> fireballs = [];
         private float paceDirection = -1f;
         private IEnemyState state;
@@ -36,11 +35,10 @@ namespace Enemies
         public Vector2 Position { get; private set; }
         public ISprite Sprite { get; set; }
 
-        public Aquamentus(Vector2 startPosition, Rectangle screenBounds)
+        public Aquamentus(Vector2 startPosition)
         {
             Position = startPosition;
             homeX = startPosition.X;
-            this.screenBounds = screenBounds;
             state = new AquamentusWalkingState(this);
         }
 
@@ -83,7 +81,7 @@ namespace Enemies
             Vector2 mouth = Position + MouthOffset;
 
             foreach (Vector2 direction in FireballDirections)
-                fireballs.Add(new Fireball(mouth, direction * FireballSpeed, screenBounds));
+                fireballs.Add(new Fireball(mouth, direction * FireballSpeed));
         }
     }
 }

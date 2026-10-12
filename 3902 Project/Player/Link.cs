@@ -16,7 +16,6 @@ namespace Player
         private const float TileSize = 16 * Sprite.Scale;
         private static readonly Vector2 BombTileOffset = new(16, 4); // centres the 8x14 bomb inside its tile
 
-        private readonly Rectangle screenBounds;
         private readonly List<IProjectile> projectiles = [];
         private Direction? requestedDirection;
         private bool boomerangInFlight;
@@ -26,10 +25,9 @@ namespace Player
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
 
-        public Link(Vector2 startPosition, Rectangle screenBounds)
+        public Link(Vector2 startPosition)
         {
             Position = startPosition;
-            this.screenBounds = screenBounds;
 
             State = new LinkStandingState(this);
             HealthState = new LinkHealthyState(this);
@@ -92,7 +90,7 @@ namespace Player
             switch (item)
             {
                 case SecondaryItem.Arrow:
-                    projectiles.Add(new Arrow(Position, Facing, screenBounds));
+                    projectiles.Add(new Arrow(Position, Facing));
                     break;
 
                 case SecondaryItem.Boomerang:

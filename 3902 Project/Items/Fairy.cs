@@ -1,11 +1,12 @@
 using Microsoft.Xna.Framework;
 using Movement;
+using Rooms;
 using Sprites;
 
 namespace Items
 {
     // Flutters around in all eight directions instead of staying where it was placed,
-    // turning back before it leaves the screen
+    // turning back before it leaves the room's floor
     internal sealed class Fairy : Item
     {
         private const float DirectionChangeTime = 0.5f;
@@ -13,10 +14,10 @@ namespace Items
 
         private readonly RandomMovement movement;
 
-        public Fairy(Vector2 position, Rectangle screenBounds)
+        public Fairy(Vector2 position)
             : base(position, ItemSpriteFactory.Instance.CreateFairySprite())
         {
-            movement = new RandomMovement(RandomMovement.EightDirections, FlySpeed, DirectionChangeTime, screenBounds);
+            movement = new RandomMovement(RandomMovement.EightDirections, FlySpeed, DirectionChangeTime, RoomLayout.FloorBounds);
         }
 
         public override void Update(GameTime gameTime)

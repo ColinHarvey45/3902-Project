@@ -1,10 +1,12 @@
-using Microsoft.Xna.Framework;
+using Player;
+using Rooms;
 using Sprites;
 
 namespace Environment
 {
-    internal sealed class BombedWallOpening(Vector2 position)
-        : Block(position, BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite())
+    // Sits in the gap in one of the room's walls (side)
+    internal sealed class BombedWallOpening(Direction side)
+        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite(side))
     {
     }
 }

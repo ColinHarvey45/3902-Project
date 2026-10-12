@@ -5,8 +5,8 @@ namespace Enemies
 {
     internal sealed class Wallmaster : Enemy
     {
-        public Wallmaster(Vector2 startPosition, Rectangle screenBounds)
-            : base(startPosition, screenBounds)
+        public Wallmaster(Vector2 startPosition)
+            : base(startPosition)
         {
             Sprite = EnemySpriteFactory.Instance.CreateWallmasterSprite();
         }

@@ -1,14 +1,15 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Rooms;
 using Sprites;
 
 namespace Projectiles
 {
-    // Breathed by Aquamentus; flickers through its colours and flies straight until it leaves the screen
+    // Breathed by Aquamentus; flickers through its colours and flies straight until it leaves the room
     internal sealed class Fireball : IProjectile
     {
-        private const int OffscreenMargin = 20; // lets the fireball fully leave the screen before it is removed
+        private const int OffscreenMargin = 20; // lets the fireball fully leave the room before it is removed
 
         private readonly ISprite sprite;
         private readonly Vector2 velocity;
@@ -18,13 +19,13 @@ namespace Projectiles
         public bool IsFinished { get; private set; }
 
         // velocity is in pixels per second
-        public Fireball(Vector2 startPosition, Vector2 velocity, Rectangle screenBounds)
+        public Fireball(Vector2 startPosition, Vector2 velocity)
         {
             position = startPosition;
             this.velocity = velocity;
             sprite = ProjectileSpriteFactory.Instance.CreateFireballSprite();
 
-            flightArea = screenBounds;
+            flightArea = RoomLayout.Bounds;
             flightArea.Inflate(OffscreenMargin, OffscreenMargin);
         }
 

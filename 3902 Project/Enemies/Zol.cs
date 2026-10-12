@@ -10,8 +10,8 @@ namespace Enemies
         private const float ZolHopTime = 1f;
         private const float ZolMaxRestTime = 1.5f;
 
-        public Zol(Vector2 startPosition, Rectangle screenBounds)
-            : base(startPosition, screenBounds, ZolHopSpeed, ZolHopTime, ZolMaxRestTime)
+        public Zol(Vector2 startPosition)
+            : base(startPosition, ZolHopSpeed, ZolHopTime, ZolMaxRestTime)
         {
             Sprite = EnemySpriteFactory.Instance.CreateZolSprite();
         }

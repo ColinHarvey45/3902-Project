@@ -1,10 +1,12 @@
-using Microsoft.Xna.Framework;
+using Player;
+using Rooms;
 using Sprites;
 
 namespace Environment
 {
-    internal sealed class Wall(Vector2 position)
-        : Block(position, BlockSpriteFactory.Instance.CreateWallSprite())
+    // Fills the gap in one of the room's walls (side) when there is no door there
+    internal sealed class Wall(Direction side)
+        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateWallSprite(side))
     {
     }
 }

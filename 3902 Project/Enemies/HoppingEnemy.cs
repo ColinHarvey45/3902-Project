@@ -16,8 +16,8 @@ namespace Enemies
         // The longest it rests between hops, in seconds; each rest is somewhere between half this and this
         public float MaxRestTime { get; }
 
-        protected HoppingEnemy(Vector2 startPosition, Rectangle screenBounds, float hopSpeed, float hopTime, float maxRestTime)
-            : base(startPosition, screenBounds)
+        protected HoppingEnemy(Vector2 startPosition, float hopSpeed, float hopTime, float maxRestTime)
+            : base(startPosition)
         {
             Movement.Speed = hopSpeed;
             HopTime = hopTime;

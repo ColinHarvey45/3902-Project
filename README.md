@@ -4,9 +4,9 @@ A remake of the first dungeon of *The Legend of Zelda* (NES), built in C# with M
 
 GitHub: https://github.com/ColinHarvey45/3902-Project.git
 
-## What Sprint 2 does
+## What the game does so far
 
-Link walks around an empty room and can use his sword and items. Alongside him, one **block**, one **item** and one **enemy or NPC** are shown at a time. Keys flip through every object in the dungeon so each can be seen moving and animating. Nothing collides with anything yet; that comes in Sprint 3.
+Link starts in a dungeon room, with its walls, floor and doors, and can walk around and use his sword and items. For now there is one room: a test room with one of every block, door, item, enemy and NPC in the dungeon, so each can be seen moving and animating. Nothing collides with anything yet; collisions, the rest of the dungeon's rooms and switching rooms with the mouse come later in Sprint 3.
 
 ## Building and running
 
@@ -26,28 +26,21 @@ The game opens in a 1024 x 704 window, the size of one dungeon room.
 
 The number keys on the numpad work too.
 
-### Showcase
-| Key | Action |
-|---|---|
-| T / Y | Previous / next block |
-| U / I | Previous / next item |
-| O / P | Previous / next enemy or NPC |
-
-Each list wraps around at both ends.
-
 ### Other
 | Key | Action |
 |---|---|
 | R | Reset everything to how it was when the game started |
 | Q or Escape | Quit |
 
-## What's in the showcase
+## What's in the test room
 
-**Blocks (16, T / Y):** fire, stairs, square block, fish statue, dragon statue, blue gap, floor tile, black tile, sand tile, white brick, ladder, wall, open door, bombed wall opening, keyhole locked door, diamond locked door. The fire flickers; the rest are still.
+**Doors:** one in the gap in each wall: a keyhole locked door at the top, a bombed wall opening on the left, a diamond locked door on the right, and an open door at the bottom, where Link starts. Each door is drawn the right way round for the wall it is in. (A plain wall piece, for a wall with no door, also exists.)
 
-**Items (12, U / I):** heart, heart container, rupee, triforce piece, fairy, key, map, compass, bow, boomerang, bomb, clock. The heart, rupee and triforce piece flash; the fairy flutters around the room.
+**Blocks (top row):** square block, fish statue, dragon statue, blue gap, black tile, sand tile, stairs, white brick, ladder, and two fires with the Old Man between them. The fires flicker; the rest are still. The floor itself is made of plain floor tiles.
 
-**Enemies and NPCs (9, O / P):**
+**Items (second row from the bottom):** heart, heart container, rupee, triforce piece, key, map, compass, bow, boomerang, bomb, clock and fairy. The heart, rupee and triforce piece flash; the fairy flutters around the room.
+
+**Enemies and NPCs (middle of the room):**
 | Character | What it does |
 |---|---|
 | Stalfos | Walks in a random direction, turning every couple of seconds |
@@ -60,23 +53,23 @@ Each list wraps around at both ends.
 | Aquamentus | The boss: paces back and forth and every few seconds opens its mouth to breathe three fireballs |
 | Old Man | Stands still |
 
-Wandering enemies and the fairy turn around at the edge of the window instead of leaving it.
+Wandering enemies and the fairy turn around at the edge of the floor instead of walking onto the walls.
 
 ## Known bugs and limitations
 
 - **Nothing collides yet.** Arrows, boomerangs and fireballs pass through everything, enemies can't hurt Link (use **E** to see Link take damage), and Link's sword doesn't hit anything.
-- **Link can walk off the screen.** There are no room walls yet, so nothing stops him.
-- **The black tile looks like empty space**, because it is drawn black on the black background.
+- **Link can walk through the walls and off the screen.** The walls are drawn but aren't solid until collisions are added.
+- **There is only one room**, the test room. The dungeon's real rooms, loaded from files, come later in Sprint 3.
 - **Arrows and Link's boomerang start from Link's top-left corner**, so they look slightly off-centre, most noticeably when fired up or down.
 - **The Blade Trap and Aquamentus don't react to Link.** In the real game the Blade Trap charges when Link lines up with it and Aquamentus aims at Link; here the Blade Trap charges on a timer in a random direction and Aquamentus always fires to the left. Both need Link's position, which they get once collisions are added.
 - **Stalfos, Goriya and Wallmaster walk freely** instead of tile by tile as in the original game.
 - **Link is drawn on top of everything**, so an enemy that walks under him is hidden until it walks out again.
-- **Only the object being shown moves.** Hidden enemies and items pause, and continue where they left off when you flip back to them.
 
 ## How the code is organized
 
 | Folder | What's in it |
 |---|---|
+| `Rooms/` | A room and everything in it, the room manager that holds every room and knows which one Link is in, `RoomLayout` (where the walls, floor tiles and doors are on screen), and the test room |
 | `Player/` | Link, and his states in `Player/States/` (standing, walking, attacking, plus healthy and damaged) |
 | `Enemies/` | Every enemy, and their states in `Enemies/States/` |
 | `Npcs/` | Characters that don't fight (the Old Man) |

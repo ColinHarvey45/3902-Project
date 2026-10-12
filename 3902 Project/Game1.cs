@@ -1,14 +1,11 @@
 using Commands;
-using Enemies;
-using Environment;
 using Input;
 using Interfaces;
-using Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Npcs;
 using Player;
+using Rooms;
 using Sprites;
 
 namespace CSE_3902_Project
@@ -18,19 +15,15 @@ namespace CSE_3902_Project
         private readonly GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private IPlayer link;
-        private ShowcaseList<ICharacter> enemies; // enemies and NPCs, cycled with O/P
-        private ShowcaseList<IBlock> blocks;
-        private ShowcaseList<IItem> items;
+        private RoomManager rooms;
         private KeyboardController keyboard;
 
         // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
         private const int ScreenWidth = 1024;
         private const int ScreenHeight = 704;
 
-        private static readonly Vector2 LinkStartPosition = new(100, 100);
-        private static readonly Vector2 EnemyShowcasePosition = new(400, 200);
-        private static readonly Vector2 BlockShowcasePosition = new(800, 200);
-        private static readonly Vector2 ItemShowcasePosition = new(600, 450);
+        // The middle of the bottom row of the floor, just inside the door Link comes in by
+        private static readonly Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
 
         public Game1()
         {
@@ -67,15 +60,6 @@ namespace CSE_3902_Project
 
         private void RegisterCommands()
         {
-            keyboard.RegisterCommand(Keys.P, new NextEnemyCommand(this));
-            keyboard.RegisterCommand(Keys.O, new PreviousEnemyCommand(this));
-
-            keyboard.RegisterCommand(Keys.Y, new NextBlockCommand(this));
-            keyboard.RegisterCommand(Keys.T, new PreviousBlockCommand(this));
-
-            keyboard.RegisterCommand(Keys.I, new NextItemCommand(this));
-            keyboard.RegisterCommand(Keys.U, new PreviousItemCommand(this));
-
             ICommand quit = new QuitCommand(this);
             keyboard.RegisterCommand(Keys.Q, quit);
             keyboard.RegisterCommand(Keys.Escape, quit);
@@ -117,72 +101,15 @@ namespace CSE_3902_Project
             keyboard.RegisterHeldCommand(arrowKey, move);
         }
 
-        // Puts every game object back in its starting state; also used by the reset key
+        // Rebuilds every room as it was at the start and puts Link back in the first one;
+        // also used by the reset key
         public void ResetGame()
         {
-            Rectangle screenBounds = GraphicsDevice.Viewport.Bounds;
-
-            link = new Link(LinkStartPosition, screenBounds);
+            link = new Link(LinkStartPosition);
             RegisterLinkCommands();
 
-            enemies = new ShowcaseList<ICharacter>(
-            [
-                new Stalfos(EnemyShowcasePosition, screenBounds),
-                new Zol(EnemyShowcasePosition, screenBounds),
-                new Gel(EnemyShowcasePosition, screenBounds),
-                new Keese(EnemyShowcasePosition, screenBounds),
-                new Goriya(EnemyShowcasePosition, screenBounds),
-                new Wallmaster(EnemyShowcasePosition, screenBounds),
-                new BladeTrap(EnemyShowcasePosition),
-                new Aquamentus(EnemyShowcasePosition, screenBounds),
-                new OldMan(EnemyShowcasePosition)
-            ]);
-
-            blocks = new ShowcaseList<IBlock>(
-            [
-                new FireBlock(BlockShowcasePosition),
-                new Stairs(BlockShowcasePosition),
-                new SquareBlock(BlockShowcasePosition),
-                new FishStatue(BlockShowcasePosition),
-                new DragonStatue(BlockShowcasePosition),
-                new BlueGap(BlockShowcasePosition),
-                new FloorTile(BlockShowcasePosition),
-                new BlackTile(BlockShowcasePosition),
-                new SandTile(BlockShowcasePosition),
-                new WhiteBrick(BlockShowcasePosition),
-                new Ladder(BlockShowcasePosition),
-                new Wall(BlockShowcasePosition),
-                new OpenDoor(BlockShowcasePosition),
-                new BombedWallOpening(BlockShowcasePosition),
-                new KeyholeLockedDoor(BlockShowcasePosition),
-                new DiamondLockedDoor(BlockShowcasePosition)
-            ]);
-
-            items = new ShowcaseList<IItem>(
-            [
-                new Heart(ItemShowcasePosition),
-                new HeartContainer(ItemShowcasePosition),
-                new Rupee(ItemShowcasePosition),
-                new TriforcePiece(ItemShowcasePosition),
-                new Fairy(ItemShowcasePosition, screenBounds),
-                new Key(ItemShowcasePosition),
-                new Map(ItemShowcasePosition),
-                new Compass(ItemShowcasePosition),
-                new Bow(ItemShowcasePosition),
-                new BoomerangItem(ItemShowcasePosition),
-                new BombItem(ItemShowcasePosition),
-                new Clock(ItemShowcasePosition)
-            ]);
+            rooms = new RoomManager(link, [TestRoom.Create()]);
         }
-
-        public void NextEnemy() => enemies.Next();
-        public void PreviousEnemy() => enemies.Previous();
-
-        public void NextBlock() => blocks.Next();
-        public void PreviousBlock() => blocks.Previous();
-
-        public void NextItem() => items.Next();
-        public void PreviousItem() => items.Previous();
 
         protected override void Update(GameTime gameTime)
         {
@@ -192,10 +119,7 @@ namespace CSE_3902_Project
             // Runs the commands for any keys pressed or held this frame
             keyboard.Update();
 
-            link.Update(gameTime);
-            enemies.Current.Update(gameTime);
-            blocks.Current.Update(gameTime);
-            items.Current.Update(gameTime);
+            rooms.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -205,13 +129,7 @@ namespace CSE_3902_Project
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            // Back to front: room pieces, items, enemies, then Link on top
-            blocks.Current.Draw(spriteBatch);
-            items.Current.Draw(spriteBatch);
-            enemies.Current.Draw(spriteBatch);
-            link.Draw(spriteBatch);
-
+            rooms.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

@@ -1,7 +1,7 @@
 namespace CSE_3902_Project
 {
-    // A list of objects the player flips through one at a time; going past either end wraps around
-    internal sealed class ShowcaseList<T>(T[] objects)
+    // A list the player flips through one at a time (e.g. the rooms); going past either end wraps around
+    internal sealed class CyclingList<T>(T[] objects)
     {
 
         private int index;
