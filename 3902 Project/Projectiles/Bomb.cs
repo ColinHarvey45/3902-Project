@@ -17,6 +17,7 @@ namespace Projectiles
         private bool isExploding;
 
         public bool IsFinished => explosionSprite.IsFinished;
+        public ProjectileOwner Owner => ProjectileOwner.Link;
 
         public Bomb(Vector2 position)
         {

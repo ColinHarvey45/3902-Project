@@ -1,7 +1,6 @@
 using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
 using Sprites;
 
@@ -13,14 +12,25 @@ namespace Enemies
         private const int ThrowChancePercent = 40; // chance of throwing each time it turns
         private const float BoomerangSpawnDistance = 24f;
 
+        private readonly ProjectileManager projectiles;
         private IEnemyState state;
         private Boomerang boomerang;
 
-        public Goriya(Vector2 startPosition)
+        // Its boomerang goes into projectiles, along with everything else flying around the room
+        public Goriya(Vector2 startPosition, ProjectileManager projectiles)
             : base(startPosition)
         {
+            this.projectiles = projectiles;
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
             state = new GoriyaWalkingState(this);
+        }
+
+        // True until its boomerang is caught (or cleared away when Link leaves the room)
+        public bool IsBoomerangOut => projectiles.Contains(boomerang);
+
+        public void ChangeState(IEnemyState newState)
+        {
+            state = newState;
         }
 
         public override void Update(GameTime gameTime)
@@ -28,28 +38,10 @@ namespace Enemies
             state.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-            boomerang?.Draw(spriteBatch);
-        }
-
         // Called by the walking state
         public void Walk(GameTime gameTime)
         {
             Wander(gameTime);
-        }
-
-        // Called by the throwing state while Goriya stands still waiting for its boomerang
-        public void UpdateBoomerang(GameTime gameTime)
-        {
-            boomerang?.Update(gameTime);
-        }
-
-        public void OnBoomerangReturned()
-        {
-            boomerang = null;
-            state = new GoriyaWalkingState(this);
         }
 
         protected override void OnDirectionChanged()
@@ -65,8 +57,9 @@ namespace Enemies
             Vector2 spawnPosition = Position + CurrentDirection * BoomerangSpawnDistance;
             ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateGoriyaBoomerangSprite();
 
-            boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this);
-            state = new GoriyaThrowingState(this);
+            boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this, ProjectileOwner.Enemy);
+            projectiles.Add(boomerang);
+            ChangeState(new GoriyaThrowingState(this));
         }
     }
 }

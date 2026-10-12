@@ -3,6 +3,7 @@ using Environment;
 using Items;
 using Npcs;
 using Player;
+using Projectiles;
 
 namespace Rooms
 {
@@ -10,7 +11,8 @@ namespace Rooms
     // It is built here in code until rooms are loaded from files
     internal static class TestRoom
     {
-        public static Room Create()
+        // projectiles is where Goriya and Aquamentus put what they throw and breathe
+        public static Room Create(ProjectileManager projectiles)
         {
             Room room = new();
 
@@ -39,10 +41,10 @@ namespace Rooms
             room.AddCharacter(new Zol(RoomLayout.TilePosition(3, 2)));
             room.AddCharacter(new Gel(RoomLayout.TilePosition(5, 2)));
             room.AddCharacter(new Keese(RoomLayout.TilePosition(7, 2)));
-            room.AddCharacter(new Goriya(RoomLayout.TilePosition(2, 3)));
+            room.AddCharacter(new Goriya(RoomLayout.TilePosition(2, 3), projectiles));
             room.AddCharacter(new Wallmaster(RoomLayout.TilePosition(4, 3)));
             room.AddCharacter(new BladeTrap(RoomLayout.TilePosition(6, 3)));
-            room.AddCharacter(new Aquamentus(RoomLayout.TilePosition(9.5f, 2)));
+            room.AddCharacter(new Aquamentus(RoomLayout.TilePosition(9.5f, 2), projectiles));
 
             // Second row from the bottom: every item
             room.AddItem(new Heart(RoomLayout.TilePosition(0, 5)));

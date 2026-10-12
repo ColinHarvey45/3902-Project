@@ -17,6 +17,7 @@ namespace Projectiles
         private Vector2 position;
 
         public bool IsFinished { get; private set; }
+        public ProjectileOwner Owner => ProjectileOwner.Enemy;
 
         // velocity is in pixels per second
         public Fireball(Vector2 startPosition, Vector2 velocity)

@@ -63,7 +63,7 @@ Wandering enemies and the fairy turn around at the edge of the floor instead of 
 - **Arrows and Link's boomerang start from Link's top-left corner**, so they look slightly off-centre, most noticeably when fired up or down.
 - **The Blade Trap and Aquamentus don't react to Link.** In the real game the Blade Trap charges when Link lines up with it and Aquamentus aims at Link; here the Blade Trap charges on a timer in a random direction and Aquamentus always fires to the left. Both need Link's position, which they get once collisions are added.
 - **Stalfos, Goriya and Wallmaster walk freely** instead of tile by tile as in the original game.
-- **Link is drawn on top of everything**, so an enemy that walks under him is hidden until it walks out again.
+- **Link is drawn on top of every enemy**, so an enemy that walks under him is hidden until it walks out again. Arrows, boomerangs, bombs and fireballs are drawn on top of Link.
 
 ## How the code is organized
 
@@ -75,7 +75,7 @@ Wandering enemies and the fairy turn around at the edge of the floor instead of 
 | `Npcs/` | Characters that don't fight (the Old Man) |
 | `Items/` | Items Link can pick up |
 | `Environment/` | Blocks, tiles, doors and walls |
-| `Projectiles/` | Arrows, boomerangs, bombs and fireballs |
+| `Projectiles/` | Arrows, boomerangs, bombs and fireballs, and `ProjectileManager`, which holds every one in the room whoever fired it (Link, Goriya and Aquamentus all fire into it; changing room clears it) |
 | `Sprites/` | The `Sprite` class and one sprite factory per kind of object |
 | `Commands/` | One command per action a key can trigger |
 | `Input/` | The keyboard controller |

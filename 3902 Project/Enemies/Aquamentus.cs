@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
 using System;
-using System.Collections.Generic;
 
 namespace Enemies
 {
@@ -28,17 +27,19 @@ namespace Enemies
         ];
 
         private readonly float homeX;
-        private readonly List<IProjectile> fireballs = [];
+        private readonly ProjectileManager projectiles;
         private float paceDirection = -1f;
         private IEnemyState state;
 
         public Vector2 Position { get; private set; }
         public ISprite Sprite { get; set; }
 
-        public Aquamentus(Vector2 startPosition)
+        // Its fireballs go into projectiles, along with everything else flying around the room
+        public Aquamentus(Vector2 startPosition, ProjectileManager projectiles)
         {
             Position = startPosition;
             homeX = startPosition.X;
+            this.projectiles = projectiles;
             state = new AquamentusWalkingState(this);
         }
 
@@ -50,18 +51,11 @@ namespace Enemies
         public void Update(GameTime gameTime)
         {
             state.Update(gameTime);
-
-            foreach (IProjectile fireball in fireballs)
-                fireball.Update(gameTime);
-            fireballs.RemoveAll(fireball => fireball.IsFinished);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             Sprite.Draw(spriteBatch, Position);
-
-            foreach (IProjectile fireball in fireballs)
-                fireball.Draw(spriteBatch);
         }
 
         // Called by both states: it keeps walking whether or not its mouth is open
@@ -81,7 +75,7 @@ namespace Enemies
             Vector2 mouth = Position + MouthOffset;
 
             foreach (Vector2 direction in FireballDirections)
-                fireballs.Add(new Fireball(mouth, direction * FireballSpeed));
+                projectiles.Add(new Fireball(mouth, direction * FireballSpeed));
         }
     }
 }

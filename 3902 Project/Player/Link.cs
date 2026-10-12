@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,7 +7,7 @@ using Sprites;
 
 namespace Player
 {
-    // Link's own data (where he is, which way he faces, what he has thrown). What he does with
+    // Link's own data (where he is, which way he faces, the boomerang he has out). What he does with
     // input is decided by his current State, and whether he is hurt by his HealthState
     internal sealed class Link : IPlayer, IBoomerangThrower
     {
@@ -16,18 +15,20 @@ namespace Player
         private const float TileSize = 16 * Sprite.Scale;
         private static readonly Vector2 BombTileOffset = new(16, 4); // centres the 8x14 bomb inside its tile
 
-        private readonly List<IProjectile> projectiles = [];
+        private readonly ProjectileManager projectiles;
         private Direction? requestedDirection;
-        private bool boomerangInFlight;
+        private Boomerang boomerang;
 
         public Vector2 Position { get; private set; }
         public Direction Facing { get; set; } = Direction.Down;
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
 
-        public Link(Vector2 startPosition)
+        // What Link fires goes into projectiles, along with everything else flying around the room
+        public Link(Vector2 startPosition, ProjectileManager projectiles)
         {
             Position = startPosition;
+            this.projectiles = projectiles;
 
             State = new LinkStandingState(this);
             HealthState = new LinkHealthyState(this);
@@ -64,18 +65,11 @@ namespace Player
 
             State.Update(gameTime);
             HealthState.Update(gameTime);
-
-            foreach (IProjectile projectile in projectiles)
-                projectile.Update(gameTime);
-            projectiles.RemoveAll(projectile => projectile.IsFinished);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             State.Draw(spriteBatch, HealthState.Tint);
-
-            foreach (IProjectile projectile in projectiles)
-                projectile.Draw(spriteBatch);
         }
 
         // Called by the walking state once per frame
@@ -94,12 +88,13 @@ namespace Player
                     break;
 
                 case SecondaryItem.Boomerang:
-                    // Only one boomerang can be out at a time; Link can throw again once it comes back
-                    if (boomerangInFlight) return;
+                    // Only one boomerang can be out at a time; Link can throw again once it is caught
+                    // (or cleared away when he leaves the room)
+                    if (projectiles.Contains(boomerang)) return;
 
                     ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateLinkBoomerangSprite();
-                    projectiles.Add(new Boomerang(boomerangSprite, Position, Facing.ToVector(), this));
-                    boomerangInFlight = true;
+                    boomerang = new Boomerang(boomerangSprite, Position, Facing.ToVector(), this, ProjectileOwner.Link);
+                    projectiles.Add(boomerang);
                     break;
 
                 case SecondaryItem.Bomb:
@@ -107,11 +102,6 @@ namespace Player
                     projectiles.Add(new Bomb(Position + Facing.ToVector() * TileSize + BombTileOffset));
                     break;
             }
-        }
-
-        public void OnBoomerangReturned()
-        {
-            boomerangInFlight = false;
         }
     }
 }

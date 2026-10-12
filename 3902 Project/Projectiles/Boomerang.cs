@@ -4,28 +4,35 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Projectiles
 {
+    // Flies out in a straight line, then turns back and flies to whoever threw it until they catch it
     internal sealed class Boomerang : IProjectile
     {
+        private const float Speed = 250f; // pixels per second
+
+        // How long it flies out before turning back; it will also turn back when it hits something once collisions are added
+        private const float TravelTime = 1.5f;
+
+        // How close it has to come back to its thrower to count as caught
+        private const float CatchDistance = 8f;
+
         private readonly ISprite sprite;
         private Vector2 position;
         private readonly Vector2 velocity;
-        private readonly IBoomerangThrower owner;
+        private readonly IBoomerangThrower thrower;
 
-        private float stateTimer;
-
-        // will need to be changed to return once it hits either Link or an obstacle
-        private readonly float travelDuration = 1.5f;
+        private float timeFlyingOut;
         private bool isReturning;
-        private readonly float speed = 250f;
 
         public bool IsFinished { get; private set; }
+        public ProjectileOwner Owner { get; }
 
-        public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower owner)
+        public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower thrower, ProjectileOwner owner)
         {
             this.sprite = sprite;
             this.position = spawnPosition;
-            this.velocity = direction * speed;
-            this.owner = owner;
+            this.velocity = direction * Speed;
+            this.thrower = thrower;
+            Owner = owner;
         }
 
         public void Update(GameTime gameTime)
@@ -33,31 +40,29 @@ namespace Projectiles
             if (IsFinished) return;
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            stateTimer += deltaTime;
 
             if (!isReturning)
             {
                 position += velocity * deltaTime;
+                timeFlyingOut += deltaTime;
 
-                if (stateTimer >= travelDuration)
+                if (timeFlyingOut >= TravelTime)
                 {
                     isReturning = true;
                 }
             }
             else
             {
-                Vector2 targetPos = owner.Position;
-                Vector2 returnDirection = targetPos - position;
+                Vector2 returnDirection = thrower.Position - position;
 
-                if (returnDirection.Length() < 8f)
+                if (returnDirection.Length() < CatchDistance)
                 {
                     IsFinished = true;
-                    owner.OnBoomerangReturned();
                     return;
                 }
 
                 returnDirection.Normalize();
-                position += returnDirection * speed * deltaTime;
+                position += returnDirection * Speed * deltaTime;
             }
 
             sprite.Update(gameTime);

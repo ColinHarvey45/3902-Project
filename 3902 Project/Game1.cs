@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Player;
+using Projectiles;
 using Rooms;
 using Sprites;
 
@@ -105,10 +106,12 @@ namespace CSE_3902_Project
         // also used by the reset key
         public void ResetGame()
         {
-            link = new Link(LinkStartPosition);
+            ProjectileManager projectiles = new();
+
+            link = new Link(LinkStartPosition, projectiles);
             RegisterLinkCommands();
 
-            rooms = new RoomManager(link, [TestRoom.Create()]);
+            rooms = new RoomManager(link, [TestRoom.Create(projectiles)], projectiles);
         }
 
         protected override void Update(GameTime gameTime)

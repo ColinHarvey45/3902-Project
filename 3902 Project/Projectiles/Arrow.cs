@@ -19,6 +19,7 @@ namespace Projectiles
         private Vector2 position;
 
         public bool IsFinished { get; private set; }
+        public ProjectileOwner Owner => ProjectileOwner.Link;
 
         public Arrow(Vector2 startPosition, Direction direction)
         {
