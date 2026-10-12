@@ -60,7 +60,6 @@ Wandering enemies and the fairy turn around at the edge of the floor instead of 
 - **Nothing collides yet.** Arrows, boomerangs and fireballs pass through everything, enemies can't hurt Link (use **E** to see Link take damage), and Link's sword doesn't hit anything.
 - **Link can walk through the walls and off the screen.** The walls are drawn but aren't solid until collisions are added.
 - **There is only one room**, the test room. The dungeon's real rooms, loaded from files, come later in Sprint 3.
-- **Arrows and Link's boomerang start from Link's top-left corner**, so they look slightly off-centre, most noticeably when fired up or down.
 - **The Blade Trap and Aquamentus don't react to Link.** In the real game the Blade Trap charges when Link lines up with it and Aquamentus aims at Link; here the Blade Trap charges on a timer in a random direction and Aquamentus always fires to the left. Both need Link's position, which they get once collisions are added.
 - **Stalfos, Goriya and Wallmaster walk freely** instead of tile by tile as in the original game.
 - **Link is drawn on top of every enemy**, so an enemy that walks under him is hidden until it walks out again. Arrows, boomerangs, bombs and fireballs are drawn on top of Link.

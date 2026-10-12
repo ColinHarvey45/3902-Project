@@ -46,14 +46,16 @@ namespace Sprites
             bossTexture = content.Load<Texture2D>("TLOZBosses-transparent");
         }
 
+        // Arrows and boomerangs are drawn centred on their position, so they can be fired from
+        // the middle of whoever fires them and fly back to it
         public ISprite CreateArrowSprite(Direction direction)
         {
             SpriteFrame frame = direction switch
             {
-                Direction.Up => new SpriteFrame(ArrowUpFrame),
-                Direction.Down => new SpriteFrame(ArrowUpFrame, SpriteEffects.FlipVertically),
-                Direction.Left => new SpriteFrame(ArrowRightFrame, SpriteEffects.FlipHorizontally),
-                _ => new SpriteFrame(ArrowRightFrame)
+                Direction.Up => Centred(ArrowUpFrame),
+                Direction.Down => Centred(ArrowUpFrame, SpriteEffects.FlipVertically),
+                Direction.Left => Centred(ArrowRightFrame, SpriteEffects.FlipHorizontally),
+                _ => Centred(ArrowRightFrame)
             };
 
             return new Sprite(linkTexture, frame);
@@ -61,7 +63,7 @@ namespace Sprites
 
         public ISprite CreateLinkBoomerangSprite()
         {
-            return new Sprite(linkTexture, SpriteFrame.FromSources(LinkBoomerangFrames), BoomerangFrameTime, loops: true);
+            return new Sprite(linkTexture, Centred(LinkBoomerangFrames), BoomerangFrameTime, loops: true);
         }
 
         public ISprite CreateBombSprite()
@@ -80,12 +82,27 @@ namespace Sprites
 
         public ISprite CreateGoriyaBoomerangSprite()
         {
-            return new Sprite(enemyTexture, SpriteFrame.FromSources(GoriyaBoomerangFrames), BoomerangFrameTime, loops: true);
+            return new Sprite(enemyTexture, Centred(GoriyaBoomerangFrames), BoomerangFrameTime, loops: true);
         }
 
         public ISprite CreateFireballSprite()
         {
             return new Sprite(bossTexture, SpriteFrame.FromSources(FireballFrames), FireballFrameTime, loops: true);
+        }
+
+        // Shifted up and left by half its size, so it is drawn centred on the position it is given
+        private static SpriteFrame Centred(Rectangle source, SpriteEffects effects = SpriteEffects.None)
+        {
+            return new SpriteFrame(source, effects, new Vector2(-source.Width / 2f, -source.Height / 2f));
+        }
+
+        private static SpriteFrame[] Centred(Rectangle[] sources)
+        {
+            SpriteFrame[] frames = new SpriteFrame[sources.Length];
+            for (int i = 0; i < frames.Length; i++)
+                frames[i] = Centred(sources[i]);
+
+            return frames;
         }
     }
 }

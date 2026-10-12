@@ -16,7 +16,7 @@ namespace Projectiles
         private const float CatchDistance = 8f;
 
         private readonly ISprite sprite;
-        private Vector2 position;
+        private Vector2 position; // the middle of the boomerang
         private readonly Vector2 velocity;
         private readonly IBoomerangThrower thrower;
 
@@ -53,7 +53,7 @@ namespace Projectiles
             }
             else
             {
-                Vector2 returnDirection = thrower.Position - position;
+                Vector2 returnDirection = thrower.Center - position;
 
                 if (returnDirection.Length() < CatchDistance)
                 {

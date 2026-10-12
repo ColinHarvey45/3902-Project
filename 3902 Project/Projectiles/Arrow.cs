@@ -11,16 +11,19 @@ namespace Projectiles
     internal sealed class Arrow : IProjectile
     {
         private const float Speed = 200f; // pixels per second
-        private const int OffscreenMargin = 20; // lets the arrow fully leave the room before it is removed
+
+        // More than half an arrow's length, so the whole arrow has left the room before it is removed
+        private const int OffscreenMargin = 40;
 
         private readonly ISprite sprite;
         private readonly Vector2 velocity;
         private readonly Rectangle flightArea;
-        private Vector2 position;
+        private Vector2 position; // the middle of the arrow
 
         public bool IsFinished { get; private set; }
         public ProjectileOwner Owner => ProjectileOwner.Link;
 
+        // startPosition is where the middle of the arrow starts
         public Arrow(Vector2 startPosition, Direction direction)
         {
             position = startPosition;

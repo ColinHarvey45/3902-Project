@@ -2,6 +2,7 @@ using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Projectiles;
+using Rooms;
 using Sprites;
 
 namespace Enemies
@@ -24,6 +25,9 @@ namespace Enemies
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
             state = new GoriyaWalkingState(this);
         }
+
+        // The middle of Goriya, who is one tile big; its boomerang is thrown from just in front of here
+        public Vector2 Center => Position + new Vector2(RoomLayout.TileSize / 2f);
 
         // True until its boomerang is caught (or cleared away when Link leaves the room)
         public bool IsBoomerangOut => projectiles.Contains(boomerang);
@@ -54,7 +58,7 @@ namespace Enemies
 
         private void ThrowBoomerang()
         {
-            Vector2 spawnPosition = Position + CurrentDirection * BoomerangSpawnDistance;
+            Vector2 spawnPosition = Center + CurrentDirection * BoomerangSpawnDistance;
             ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateGoriyaBoomerangSprite();
 
             boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this, ProjectileOwner.Enemy);

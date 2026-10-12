@@ -6,7 +6,8 @@ namespace Interfaces
     internal interface IBoomerangThrower
     {
 
-        public Vector2 Position { get; }
+        // The thrower's middle, which the boomerang flies back to
+        public Vector2 Center { get; }
 
     }
 }

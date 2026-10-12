@@ -20,6 +20,10 @@ namespace Player
         private Boomerang boomerang;
 
         public Vector2 Position { get; private set; }
+
+        // The middle of Link, who is one tile big; arrows and his boomerang start here
+        public Vector2 Center => Position + new Vector2(TileSize / 2);
+
         public Direction Facing { get; set; } = Direction.Down;
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
@@ -84,7 +88,7 @@ namespace Player
             switch (item)
             {
                 case SecondaryItem.Arrow:
-                    projectiles.Add(new Arrow(Position, Facing));
+                    projectiles.Add(new Arrow(Center, Facing));
                     break;
 
                 case SecondaryItem.Boomerang:
@@ -93,7 +97,7 @@ namespace Player
                     if (projectiles.Contains(boomerang)) return;
 
                     ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateLinkBoomerangSprite();
-                    boomerang = new Boomerang(boomerangSprite, Position, Facing.ToVector(), this, ProjectileOwner.Link);
+                    boomerang = new Boomerang(boomerangSprite, Center, Facing.ToVector(), this, ProjectileOwner.Link);
                     projectiles.Add(boomerang);
                     break;
 
