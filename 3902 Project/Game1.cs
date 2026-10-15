@@ -94,6 +94,12 @@ namespace CSE_3902_Project
 
             keyboard.RegisterCommand(Keys.E, new LinkTakeDamageCommand(link));
         }
+        
+        private void RegisterRoomCommands()
+        {
+            keyboard.RegisterCommand(Keys.P, new NextRoomCommand(rooms));
+            keyboard.RegisterCommand(Keys.O, new PreviousRoomCommand(rooms));
+        }
 
         private void RegisterMoveKeys(Keys letterKey, Keys arrowKey, Direction direction)
         {
@@ -111,7 +117,8 @@ namespace CSE_3902_Project
             link = new Link(LinkStartPosition, projectiles);
             RegisterLinkCommands();
 
-            rooms = new RoomManager(link, [TestRoom.Create(projectiles)], projectiles);
+            rooms = new RoomManager(link, [TestRoom.Create(projectiles), SecondRoom.Create(projectiles)], projectiles);
+            RegisterRoomCommands();
         }
 
         protected override void Update(GameTime gameTime)
