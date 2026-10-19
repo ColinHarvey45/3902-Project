@@ -8,6 +8,7 @@ using Player;
 using Projectiles;
 using Rooms;
 using Sprites;
+using System.Numerics;
 
 namespace CSE_3902_Project
 {
@@ -24,7 +25,7 @@ namespace CSE_3902_Project
         private const int ScreenHeight = 704;
 
         // The middle of the bottom row of the floor, just inside the door Link comes in by
-        private static readonly Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
+        private static readonly Microsoft.Xna.Framework.Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
 
         public Game1()
         {

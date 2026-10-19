@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Movement;
 using Rooms;
 using System;
+using Colliders;
 
 namespace Enemies
 {
@@ -20,6 +21,10 @@ namespace Enemies
         protected RandomMovement Movement { get; }
         protected Vector2 CurrentDirection => Movement.Direction;
         protected ISprite Sprite { get; set; }
+        public ICollider collider { get; set; }
+        private const int colliderWidth = 16;
+        private const int colliderHeight = 16;
+
 
         protected Enemy(Vector2 startPosition)
             : this(startPosition, RandomMovement.FourDirections, DefaultDirectionChangeTime)
@@ -30,11 +35,13 @@ namespace Enemies
         {
             Position = startPosition;
             Movement = new RandomMovement(directions, WalkSpeed, directionChangeTime, RoomLayout.FloorBounds);
+            this.collider = new BoxCollider(new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight));
         }
 
         public virtual void Update(GameTime gameTime)
         {
             Wander(gameTime);
+            this.collider.Update(Position);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

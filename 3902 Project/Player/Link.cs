@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Player.States;
 using Projectiles;
 using Sprites;
+using Colliders;
 
 namespace Player
 {
@@ -27,6 +28,9 @@ namespace Player
         public Direction Facing { get; set; } = Direction.Down;
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
+        public ICollider collider { get; set; }
+        private const int colliderWidth = 16;
+        private const int colliderHeight = 16;
 
         // What Link fires goes into projectiles, along with everything else flying around the room
         public Link(Vector2 startPosition, ProjectileManager projectiles)
@@ -36,6 +40,8 @@ namespace Player
 
             State = new LinkStandingState(this);
             HealthState = new LinkHealthyState(this);
+            // Initialize collider sized to Link's sprite (one tile)
+            this.collider = new BoxCollider(new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight));
         }
 
         // Link only walks in four directions, so if several are held the first one asked for wins
@@ -69,6 +75,14 @@ namespace Player
 
             State.Update(gameTime);
             HealthState.Update(gameTime);
+            collider.Update(Position);
+        }
+
+        // Apply an immediate displacement to Link (used for knockback)
+        public void ApplyKnockback(Vector2 offset)
+        {
+            Position += offset;
+            collider.Update(Position);
         }
 
         public void Draw(SpriteBatch spriteBatch)

@@ -3,6 +3,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprites;
+using Player;
 
 namespace Rooms
 {
@@ -15,7 +16,7 @@ namespace Rooms
 
         private readonly List<IBlock> blocks = [];
         private readonly List<IItem> items = [];
-        private readonly List<ICharacter> characters = [];
+        public List<ICharacter> characters = [];
 
         // Doors are blocks too: each one fills the gap in one of the walls
         public void AddBlock(IBlock block)
