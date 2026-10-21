@@ -8,7 +8,6 @@ using Player;
 using Projectiles;
 using Rooms;
 using Sprites;
-using System.Numerics;
 
 namespace CSE_3902_Project
 {
@@ -25,7 +24,7 @@ namespace CSE_3902_Project
         private const int ScreenHeight = 704;
 
         // The middle of the bottom row of the floor, just inside the door Link comes in by
-        private static readonly Microsoft.Xna.Framework.Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
+        private static readonly Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
 
         public Game1()
         {
@@ -109,6 +108,17 @@ namespace CSE_3902_Project
             keyboard.RegisterHeldCommand(arrowKey, move);
         }
 
+        private static Room[] BuildRooms(ProjectileManager projectiles)
+        {
+            Room[] built = new Room[DungeonRooms.Count + 1];
+            built[0] = TestRoom.Create(projectiles);
+
+            for (int i = 0; i < DungeonRooms.Count; i++)
+                built[i + 1] = DungeonRooms.Create(i);
+
+            return built;
+        }
+
         // Rebuilds every room as it was at the start and puts Link back in the first one;
         // also used by the reset key
         public void ResetGame()
@@ -118,7 +128,7 @@ namespace CSE_3902_Project
             link = new Link(LinkStartPosition, projectiles);
             RegisterLinkCommands();
 
-            rooms = new RoomManager(link, [TestRoom.Create(projectiles), SecondRoom.Create(projectiles)], projectiles);
+            rooms = new RoomManager(link, BuildRooms(projectiles), projectiles);
             RegisterRoomCommands();
         }
 
