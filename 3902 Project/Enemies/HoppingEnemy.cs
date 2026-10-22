@@ -1,6 +1,7 @@
 using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
+using Movement;
 
 namespace Enemies
 {
@@ -16,8 +17,12 @@ namespace Enemies
         // The longest it rests between hops, in seconds; each rest is somewhere between half this and this
         public float MaxRestTime { get; }
 
-        protected HoppingEnemy(Vector2 startPosition, float hopSpeed, float hopTime, float maxRestTime)
-            : base(startPosition)
+        protected HoppingEnemy(Vector2 startPosition, float hopSpeed, float hopTime, float maxRestTime,
+            int colliderWidth = 12 * (int)Sprites.Sprite.Scale,
+            int colliderHeight = 12 * (int)Sprites.Sprite.Scale,
+            Point colliderOffset = default)
+            : base(startPosition, RandomMovement.FourDirections, 2f,
+                colliderWidth, colliderHeight, colliderOffset)
         {
             Movement.Speed = hopSpeed;
             HopTime = hopTime;
@@ -33,6 +38,9 @@ namespace Enemies
         public override void Update(GameTime gameTime)
         {
             state.Update(gameTime);
+
+            // Hopper states change Position directly, so synchronize after the state update.
+            UpdateCollider();
 
             // Gel and Zol keep wobbling even while they rest
             Sprite.Update(gameTime);

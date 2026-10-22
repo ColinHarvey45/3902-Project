@@ -11,7 +11,6 @@ namespace Interfaces
     {
 
         public Rectangle Overlap(Rectangle boxA, Rectangle boxB);
-        //Rectangle Overlap(object bounds1, object bounds2);
         public void Update(Vector2 position);
         public Rectangle GetCollider();
 

@@ -28,6 +28,7 @@ namespace Sprites
         private static readonly Rectangle[] AquamentusFrames = [new(51, 1, 24, 32), new(76, 1, 24, 32)];
         private static readonly Rectangle[] AquamentusMouthOpenFrames = [new(1, 1, 24, 32), new(26, 1, 24, 32)];
 
+
         private Texture2D texture;
         private Texture2D bossTexture;
 

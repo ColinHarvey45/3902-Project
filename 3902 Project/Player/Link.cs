@@ -29,8 +29,10 @@ namespace Player
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
         public ICollider collider { get; set; }
-        private const int colliderWidth = 16;
-        private const int colliderHeight = 16;
+        private const int colliderWidth = (int)(12 * Sprite.Scale);
+        private const int colliderHeight = (int)(12 * Sprite.Scale);
+        private static readonly Point ColliderOffset = new(
+            (int)(2 * Sprite.Scale), (int)(2 * Sprite.Scale));
 
         // What Link fires goes into projectiles, along with everything else flying around the room
         public Link(Vector2 startPosition, ProjectileManager projectiles)
@@ -41,7 +43,9 @@ namespace Player
             State = new LinkStandingState(this);
             HealthState = new LinkHealthyState(this);
             // Initialize collider sized to Link's sprite (one tile)
-            this.collider = new BoxCollider(new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight));
+            this.collider = new BoxCollider(
+                new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight),
+                ColliderOffset);
         }
 
         // Link only walks in four directions, so if several are held the first one asked for wins

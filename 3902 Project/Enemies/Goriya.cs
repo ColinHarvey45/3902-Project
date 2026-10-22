@@ -40,6 +40,7 @@ namespace Enemies
         public override void Update(GameTime gameTime)
         {
             state.Update(gameTime);
+            UpdateCollider();
         }
 
         // Called by the walking state

@@ -30,6 +30,7 @@ namespace Enemies
         public override void Update(GameTime gameTime)
         {
             state.Update(gameTime);
+            UpdateCollider();
         }
 
         // Called by the flying state every frame: flutters at the given speed, flapping its wings

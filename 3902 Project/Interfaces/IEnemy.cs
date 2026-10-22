@@ -4,5 +4,9 @@ namespace Interfaces
     // hurting Link on contact) is added here once collisions arrive in Sprint 3
     internal interface IEnemy : ICharacter
     {
+
+        ICollider Collider { get; set; }
+        public void UpdateCollider();
+
     }
 }

@@ -1,19 +1,16 @@
 ﻿using Interfaces;
 using Microsoft.Xna.Framework;
-using Projectiles;
-using Sprites;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Colliders
 {
-    internal class BoxCollider(Rectangle collider) : ICollider
+internal class BoxCollider(Rectangle collider, Point offset = default) : ICollider
     {
         private Rectangle overlap;
         private Rectangle collider = collider;
+        private readonly Point offset = offset;
+
+        public int Width => collider.Width;
+        public int Height => collider.Height;
 
         public Rectangle Overlap(Rectangle boxA, Rectangle boxB) 
         {
@@ -28,8 +25,7 @@ namespace Colliders
 
         public void Update(Vector2 position)
         {
-            this.collider.X = (int)position.X;
-            this.collider.Y = (int)position.Y;
+            collider.Location = new Point((int)position.X + offset.X, (int)position.Y + offset.Y);
         }
 
     }

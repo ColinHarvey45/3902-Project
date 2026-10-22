@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
 using System;
+using Colliders;
 
 namespace Enemies
 {
@@ -17,6 +18,10 @@ namespace Enemies
 
         // Where the fireballs come out, relative to its top-left corner (it faces left)
         private static readonly Vector2 MouthOffset = new(0, 32);
+        public ICollider Collider { get; set; }
+        private const int ColliderWidth = (int)(24 * Sprites.Sprite.Scale);
+        private const int ColliderHeight = (int)(32 * Sprites.Sprite.Scale);
+        private static readonly Point ColliderOffset = Point.Zero;
 
         // In the real game the middle fireball aims at Link; until Sprint 3 they fly left in a fan
         private static readonly Vector2[] FireballDirections =
@@ -41,6 +46,10 @@ namespace Enemies
             homeX = startPosition.X;
             this.projectiles = projectiles;
             state = new AquamentusWalkingState(this);
+
+            this.Collider = new BoxCollider(
+                new Rectangle((int)startPosition.X, (int)startPosition.Y, ColliderWidth, ColliderHeight),
+                ColliderOffset);
         }
 
         public void ChangeState(IEnemyState newState)
@@ -51,6 +60,7 @@ namespace Enemies
         public void Update(GameTime gameTime)
         {
             state.Update(gameTime);
+            UpdateCollider();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -76,6 +86,11 @@ namespace Enemies
 
             foreach (Vector2 direction in FireballDirections)
                 projectiles.Add(new Fireball(mouth, direction * FireballSpeed));
+        }
+
+        public void UpdateCollider()
+        {
+            Collider.Update(Position);
         }
     }
 }

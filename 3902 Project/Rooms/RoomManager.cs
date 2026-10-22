@@ -1,6 +1,7 @@
 using CSE_3902_Project;
 using Interfaces;
 using Player;
+using Player.States;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
@@ -42,26 +43,50 @@ namespace Rooms
         {
             link.Update(gameTime);
             CurrentRoom.Update(gameTime);
+            projectiles.Update(gameTime);
+
             // Checks collision between Link and any enemies in the current room.
             // If Link collides with an enemy, put him into the damaged state and knock him back.
             if (link is Link player)
             {
                 foreach (ICharacter character in CurrentRoom.characters)
                 {
-                    if (character is Enemies.Enemy enemy && player.collider != null && enemy.collider != null)
+
+                    if (character is IEnemy enemy && player.collider != null)
                     {
-                        Rectangle overlap = player.collider.Overlap(player.collider.GetCollider(), enemy.collider.GetCollider());
-                        if (!overlap.IsEmpty)
+                        Rectangle overlap = player.collider.Overlap(
+                            player.collider.GetCollider(),
+                            enemy.Collider.GetCollider());
+                        if (!overlap.IsEmpty && player.HealthState is LinkHealthyState)
                         {
-                            // Hurt Link and push him backwards opposite his facing direction
+                            // Hurt Link once and push him backwards opposite his facing direction.
                             player.TakeDamage();
-                            Vector2 knockback = -player.Facing.ToVector() * 50f;
+                            Vector2 knockback = -player.Facing.ToVector() * 4f;
                             player.ApplyKnockback(knockback);
                         }
                     }
                 }
+
+                foreach (IProjectile projectile in projectiles.ActiveProjectiles)
+                {
+                    if (projectile is Fireball fireball && player.collider != null && fireball.collider != null)
+                    {
+                        Rectangle overlap = player.collider.Overlap(player.collider.GetCollider(), fireball.collider.GetCollider());
+                        if (!overlap.IsEmpty)
+                        {
+                            fireball.Hit();
+
+                            if (player.HealthState is LinkHealthyState)
+                            {
+                                // Hurt Link once and push him backwards opposite his facing direction.
+                                player.TakeDamage();
+                                Vector2 knockback = -player.Facing.ToVector() * 4f;
+                                player.ApplyKnockback(knockback);
+                            }
+                        }
+                    }
+                }
             }
-            projectiles.Update(gameTime);
         }
 
         // Back to front: the room, then Link, then anything flying over them

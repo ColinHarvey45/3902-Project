@@ -3,6 +3,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprites;
+using Colliders;
 
 namespace Enemies
 {
@@ -15,12 +16,20 @@ namespace Enemies
 
         public Vector2 Home { get; }
         public Vector2 Position { get; set; }
+        public ICollider Collider { get; set; }
+
+        private const int ColliderWidth = (int)(16 * Sprites.Sprite.Scale);
+        private const int ColliderHeight = (int)(16 * Sprites.Sprite.Scale);
+        private static readonly Point ColliderOffset = Point.Zero;
 
         public BladeTrap(Vector2 position)
         {
             Home = position;
             Position = position;
             state = new BladeTrapWaitingState(this);
+            this.Collider = new BoxCollider(
+                new Rectangle((int)position.X, (int)position.Y, ColliderWidth, ColliderHeight),
+                ColliderOffset);
         }
 
         public void ChangeState(IEnemyState newState)
@@ -31,11 +40,19 @@ namespace Enemies
         public void Update(GameTime gameTime)
         {
             state.Update(gameTime);
+            UpdateCollider();
+        }
+
+        public void UpdateCollider()
+        {
+            Collider.Update(Position);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch, Position);
         }
+
+
     }
 }

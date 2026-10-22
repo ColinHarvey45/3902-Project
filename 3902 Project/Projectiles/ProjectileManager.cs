@@ -11,6 +11,8 @@ namespace Projectiles
     {
         private readonly List<IProjectile> projectiles = [];
 
+        public IReadOnlyList<IProjectile> ActiveProjectiles => projectiles;
+
         public void Add(IProjectile projectile)
         {
             projectiles.Add(projectile);
