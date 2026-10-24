@@ -1,0 +1,53 @@
+READABILITY REVIEW
+
+Author of code review: Sean Kong
+Date of code review: 2026-10-24
+Sprint number: Sprint 3
+File reviewed: BoxCollider.cs
+Author of file reviewed: Colin
+Time taken to complete review: 5 minutes
+
+COMMENTS - WHAT IS READABLE:
+- The class is short and has a single clear job (a rectangle hitbox that follows an
+  entity), so the whole file can be understood in one read.
+- Names are mostly self-explanatory: Width, Height, GetCollider, Update, offset.
+  Update(Vector2 position) clearly means "move the box to follow the entity".
+
+COMMENTS - WHAT IS NOT READABLE:
+
+- It is not documented that Rectangle.Intersect returns an empty rectangle when the
+  boxes do not touch, so callers have to know to check for an empty result (IsEmpty,
+  or Width/Height of 0). A one-line comment would save time.
+- There are no XML or summary comments. It is unclear what "position" means in
+  Update (the top-left corner of the sprite? the center?) and what the units are.
+
+CODE QUALITY REVIEW
+
+Author of code review: Sean Kong
+Date of code review: 2026-10-24
+Sprint number: Sprint 3
+File reviewed: BoxCollider.cs
+Author of file reviewed: Colin
+
+COMMENTS ON CODE QUALITY:
+- Overlap does not use any instance data. It is really a static helper that happens to
+  live on the instance. Either make it static, or (better) change the design so a
+  collider is asked about another collider, for example Overlap(ICollider other),
+  using its own box. Right now every caller has to fetch both rectangles and pass them
+  in, which pushes collision logic to the callers and risks passing the wrong boxes.
+
+HYPOTHETICAL CHANGE:
+Suppose a future sprint needs hitboxes that change at runtime, such as a sword hitbox
+that grows or moves in front of Link during a swing, or one that flips to the other
+side when Link faces left. The current class can only partially support this. Width and
+Height come from the rectangle passed to the constructor, and Update only moves the
+box, so there is no way to resize it or change its offset without creating a new
+BoxCollider object each time. The offset is also a readonly captured value, so
+mirroring it for a facing direction is impossible. Supporting this would mean adding
+something like SetSize / SetOffset (or an Update overload that takes a size and
+offset), and because the code is used through the ICollider interface, ICollider would
+need to change as well. That means every other class that implements ICollider would
+have to be updated too, not just BoxCollider. Making the box data (size, offset)
+mutable up front, or keeping per-state colliders and swapping between them, would have
+avoided that.
+
