@@ -114,9 +114,12 @@ namespace CSE_3902_Project
             built[0] = TestRoom.Create(projectiles);
 
             for (int i = 0; i < DungeonRooms.Count; i++)
-                built[i + 1] = DungeonRooms.Create(i);
-
-            return built;
+            {
+                Room room = DungeonRooms.Create(i);
+                RoomSpawns.AddTo(room, i, projectiles);
+                built[i + 1] = room;
+            }
+            return built;       
         }
 
         // Rebuilds every room as it was at the start and puts Link back in the first one;
