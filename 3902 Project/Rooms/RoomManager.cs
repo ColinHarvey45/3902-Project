@@ -43,12 +43,26 @@ namespace Rooms
         {
             link.Update(gameTime);
             CurrentRoom.Update(gameTime);
-            projectiles.Update(gameTime);
+            projectiles.Update(gameTime, CurrentRoom.characters, link);
 
             // Checks collision between Link and any enemies in the current room.
             // If Link collides with an enemy, put him into the damaged state and knock him back.
             if (link is Link player)
             {
+                // Link's sword hurts every enemy it touches; enemies already hurt or dead are skipped
+                if (player.SwordCollider is ICollider sword)
+                {
+                    foreach (ICharacter character in CurrentRoom.characters)
+                    {
+                        if (character is IDamageable hitEnemy && !hitEnemy.IsDead && !hitEnemy.IsDamaged
+                            && !sword.Overlap(sword.GetCollider(), hitEnemy.Collider.GetCollider()).IsEmpty)
+                            hitEnemy.TakeDamage(player.SwordDamage);
+                    }
+                }
+
+                // Anything killed this frame is gone before it can touch Link
+                CurrentRoom.RemoveDeadCharacters();
+
                 foreach (ICharacter character in CurrentRoom.characters)
                 {
 

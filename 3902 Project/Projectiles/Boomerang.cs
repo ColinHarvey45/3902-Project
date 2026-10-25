@@ -1,6 +1,10 @@
-﻿using Interfaces;
+﻿using Colliders;
+using Enemies;
+using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Player;
+using Sprites;
 
 namespace Projectiles
 {
@@ -8,12 +12,13 @@ namespace Projectiles
     internal sealed class Boomerang : IProjectile
     {
         private const float Speed = 250f; // pixels per second
-
         // How long it flies out before turning back; it will also turn back when it hits something once collisions are added
         private const float TravelTime = 1.5f;
-
         // How close it has to come back to its thrower to count as caught
         private const float CatchDistance = 8f;
+        private const int ColliderWidth = (int)(8 * Sprite.Scale);
+        private const int ColliderHeight = (int)(8 * Sprite.Scale);
+        private static readonly Point ColliderOffset = Point.Zero;
 
         private readonly ISprite sprite;
         private Vector2 position; // the middle of the boomerang
@@ -22,8 +27,10 @@ namespace Projectiles
 
         private float timeFlyingOut;
         private bool isReturning;
+        public ICollider collider { get; set; }
 
         public bool IsFinished { get; private set; }
+        public int Damage { get; } = 1;
         public ProjectileOwner Owner { get; }
 
         public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower thrower, ProjectileOwner owner)
@@ -33,6 +40,10 @@ namespace Projectiles
             this.velocity = direction * Speed;
             this.thrower = thrower;
             Owner = owner;
+
+            collider = new BoxCollider(
+                new Rectangle((int)spawnPosition.X, (int)spawnPosition.Y, ColliderWidth, ColliderHeight),
+                ColliderOffset);
         }
 
         public void Update(GameTime gameTime)
@@ -47,9 +58,7 @@ namespace Projectiles
                 timeFlyingOut += deltaTime;
 
                 if (timeFlyingOut >= TravelTime)
-                {
                     isReturning = true;
-                }
             }
             else
             {
@@ -65,12 +74,19 @@ namespace Projectiles
                 position += returnDirection * Speed * deltaTime;
             }
 
+            collider.Update(position);
             sprite.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch, position);
+        }
+
+        // Turns back when it hits something
+        public void Hit()
+        {
+            isReturning = true;
         }
     }
 }

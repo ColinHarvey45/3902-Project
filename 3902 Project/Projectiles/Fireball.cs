@@ -22,6 +22,7 @@ namespace Projectiles
         public ICollider collider { get; set; }
 
         public bool IsFinished { get; private set; }
+        public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Enemy;
 
         // velocity is in pixels per second
