@@ -177,7 +177,7 @@ These are deliberate for now, or planned for later sprints:
 - **GitHub Projects** for the task board and burndown chart.
 - **.NET code analyzers (Roslyn)** with Microsoft's recommended rules. The build has 0 warnings; every warning the analyzers found, and how it was fixed or why it was suppressed, is in [CodeAnalysis.md](CodeAnalysis.md).
 - **Code reviews** for readability and maintainability, kept in the `CodeReviews/` folder.
-- **Sprint reflections:** [Sprint2Reflections.md](Sprint2Reflections.md) and Sprint3Reflection.md.
+- **Sprint reflections:** [Sprint2Reflections.md](Sprint2Reflections.md) and [Sprint3Reflections.md](Sprint3Reflections.md).
 
 ## Credits
 
