@@ -17,7 +17,9 @@ namespace Projectiles
         private bool isExploding;
 
         public bool IsFinished => explosionSprite.IsFinished;
+        public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Link;
+        public ICollider collider { get; set; } // none yet, so the manager doesn't check it for hits
 
         public Bomb(Vector2 position)
         {
@@ -37,6 +39,8 @@ namespace Projectiles
             fuseTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             isExploding = fuseTimer >= FuseTime;
         }
+
+        public void Hit() { }
 
         public void Draw(SpriteBatch spriteBatch)
         {

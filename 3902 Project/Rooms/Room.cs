@@ -35,6 +35,12 @@ namespace Rooms
             characters.Add(character);
         }
 
+        // Enemies that have died disappear from the room for good
+        public void RemoveDeadCharacters()
+        {
+            characters.RemoveAll(character => character is IDamageable damageable && damageable.IsDead);
+        }
+
         public void Update(GameTime gameTime)
         {
             foreach (IBlock block in blocks)

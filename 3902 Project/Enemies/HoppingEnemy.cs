@@ -35,7 +35,7 @@ namespace Enemies
             state = newState;
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void UpdateBehavior(GameTime gameTime)
         {
             state.Update(gameTime);
 

@@ -10,7 +10,7 @@ namespace Enemies
 {
     // The dungeon 1 boss: paces back and forth, and every so often opens its mouth to breathe
     // a spread of three fireballs. Its state decides whether its mouth is open
-    internal sealed class Aquamentus : IEnemy
+    internal sealed class Aquamentus : IDamageable
     {
         private const float PaceSpeed = 0.5f; // pixels per frame
         private const float PaceDistance = 48f; // how far it walks either side of where it started
@@ -35,9 +35,12 @@ namespace Enemies
         private readonly ProjectileManager projectiles;
         private float paceDirection = -1f;
         private IEnemyState state;
+        private readonly EnemyHealth health = new();
 
         public Vector2 Position { get; private set; }
         public ISprite Sprite { get; set; }
+        public bool IsDamaged => health.IsDamaged;
+        public bool IsDead => health.IsDead;
 
         // Its fireballs go into projectiles, along with everything else flying around the room
         public Aquamentus(Vector2 startPosition, ProjectileManager projectiles)
@@ -57,15 +60,27 @@ namespace Enemies
             state = newState;
         }
 
+        public void TakeDamage(int damage)
+        {
+            health.TakeDamage(damage);
+        }
+
         public void Update(GameTime gameTime)
         {
+            if (IsDead)
+                return;
+
+            health.Update(gameTime);
             state.Update(gameTime);
             UpdateCollider();
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Sprite.Draw(spriteBatch, Position);
+            if (IsDead)
+                return;
+
+            Sprite.Draw(spriteBatch, Position, health.Tint);
         }
 
         // Called by both states: it keeps walking whether or not its mouth is open

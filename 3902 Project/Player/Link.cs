@@ -29,6 +29,13 @@ namespace Player
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
         public ICollider collider { get; set; }
+
+        // His sword's collider while he is swinging it, or null when he isn't
+        // How much health his sword takes off an enemy it hits
+        public int SwordDamage { get; } = 1;
+
+        public ICollider SwordCollider => (State as LinkAttackingState)?.SwordCollider;
+
         private const int colliderWidth = (int)(12 * Sprite.Scale);
         private const int colliderHeight = (int)(12 * Sprite.Scale);
         private static readonly Point ColliderOffset = new(

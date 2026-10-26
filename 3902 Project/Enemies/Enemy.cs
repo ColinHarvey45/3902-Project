@@ -11,10 +11,12 @@ namespace Enemies
 {
     // Shared behaviour for enemies that wander: walk in a straight line, pick a new random
     // direction every couple of seconds, and turn around instead of leaving the room's floor
-    internal abstract class Enemy : IEnemy
+    internal abstract class Enemy : IDamageable
     {
         private const float DefaultDirectionChangeTime = 2f;
         private const float WalkSpeed = 1f; // pixels per frame
+        // Every enemy starts with 1 health; a subclass that should be tougher sets Health to a new EnemyHealth(n)
+        protected EnemyHealth Health { get; set; } = new();
 
         protected static readonly Random RandomGenerator = new();
 
@@ -24,6 +26,8 @@ namespace Enemies
         protected ISprite Sprite { get; set; }
         public ICollider Collider { get; set; }
 
+        public bool IsDamaged => Health.IsDamaged;
+        public bool IsDead => Health.IsDead;
 
         protected Enemy(Vector2 startPosition)
             : this(startPosition, RandomMovement.FourDirections, DefaultDirectionChangeTime)
@@ -47,7 +51,23 @@ namespace Enemies
                 colliderOffset);
         }
 
-        public virtual void Update(GameTime gameTime)
+        public void TakeDamage(int damage)
+        {
+            Health.TakeDamage(damage);
+        }
+
+        // The hurt flash is always updated here, so enemies that move differently only override UpdateBehavior
+        public void Update(GameTime gameTime)
+        {
+            if (IsDead)
+                return;
+
+            Health.Update(gameTime);
+            UpdateBehavior(gameTime);
+        }
+
+        // How this enemy moves each frame; walks around at random unless overridden
+        protected virtual void UpdateBehavior(GameTime gameTime)
         {
             Wander(gameTime);
             this.Collider.Update(Position);
@@ -55,7 +75,10 @@ namespace Enemies
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            Sprite.Draw(spriteBatch, Position);
+            if (IsDead)
+                return;
+
+            Sprite.Draw(spriteBatch, Position, Health.Tint);
         }
 
         protected void Wander(GameTime gameTime)
