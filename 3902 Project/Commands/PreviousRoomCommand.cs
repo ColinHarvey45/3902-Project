@@ -3,7 +3,7 @@ using Rooms;
 
 namespace Commands
 {
-    internal class PreviousRoomCommand(RoomManager rooms) : ICommand
+    internal sealed class PreviousRoomCommand(RoomManager rooms) : ICommand
     {
         public void Execute()
         {

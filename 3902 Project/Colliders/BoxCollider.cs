@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Colliders
 {
-internal class BoxCollider(Rectangle collider, Point offset = default) : ICollider
+    internal sealed class BoxCollider(Rectangle collider, Point offset = default) : ICollider
     {
         private Rectangle overlap;
         private Rectangle collider = collider;

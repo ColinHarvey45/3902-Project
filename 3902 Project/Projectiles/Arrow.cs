@@ -14,9 +14,10 @@ namespace Projectiles
         private const float Speed = 200f; // pixels per second
         // More than half an arrow's length, so the whole arrow has left the room before it is removed
         private const int OffscreenMargin = 40;
-        private const int ColliderWidth = (int)(8 * Sprite.Scale);
-        private const int ColliderHeight = (int)(8 * Sprite.Scale);
-        private static readonly Point ColliderOffset = Point.Zero;
+
+        // The hitbox is the arrow itself (16 x 5 on the sheet), lying the way it flies
+        private const int ColliderLength = (int)(16 * Sprite.Scale);
+        private const int ColliderThickness = (int)(5 * Sprite.Scale);
 
         private readonly ISprite sprite;
         private readonly Vector2 velocity;
@@ -39,9 +40,12 @@ namespace Projectiles
             flightArea = RoomLayout.Bounds;
             flightArea.Inflate(OffscreenMargin, OffscreenMargin);
 
-            collider = new BoxCollider(
-                new Rectangle((int)startPosition.X, (int)startPosition.Y, ColliderWidth, ColliderHeight),
-                ColliderOffset);
+            bool flyingUpOrDown = direction is Direction.Up or Direction.Down;
+            Point size = flyingUpOrDown ? new Point(ColliderThickness, ColliderLength) : new Point(ColliderLength, ColliderThickness);
+
+            // position is the arrow's middle, so the box starts half its size up and left of it
+            collider = new BoxCollider(new Rectangle(Point.Zero, size), new Point(-size.X / 2, -size.Y / 2));
+            collider.Update(position);
         }
 
         public void Update(GameTime gameTime)

@@ -18,7 +18,9 @@ namespace Projectiles
         private const float CatchDistance = 8f;
         private const int ColliderWidth = (int)(8 * Sprite.Scale);
         private const int ColliderHeight = (int)(8 * Sprite.Scale);
-        private static readonly Point ColliderOffset = Point.Zero;
+
+        // position is the boomerang's middle, so the box starts half its size up and left of it
+        private static readonly Point ColliderOffset = new(-ColliderWidth / 2, -ColliderHeight / 2);
 
         private readonly ISprite sprite;
         private Vector2 position; // the middle of the boomerang
@@ -41,9 +43,8 @@ namespace Projectiles
             this.thrower = thrower;
             Owner = owner;
 
-            collider = new BoxCollider(
-                new Rectangle((int)spawnPosition.X, (int)spawnPosition.Y, ColliderWidth, ColliderHeight),
-                ColliderOffset);
+            collider = new BoxCollider(new Rectangle(0, 0, ColliderWidth, ColliderHeight), ColliderOffset);
+            collider.Update(position);
         }
 
         public void Update(GameTime gameTime)
