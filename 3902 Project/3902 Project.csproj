@@ -25,6 +25,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <!-- The room files, read by Rooms/RoomLoader.cs when the game starts, are copied next to the game -->
+    <None Update="Levels\**\*.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>

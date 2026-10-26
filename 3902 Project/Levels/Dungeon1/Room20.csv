@@ -1,0 +1,18 @@
+# Room 20 (sheet row 4, column 2): floor layout from the dungeon sprite sheet; 2 Wallmaster
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,............
+Floor,.QQQQQQQQQQ.
+Floor,..........Q.
+Floor,..........Q.
+Floor,..........Q.
+Floor,.QQQQQQQQQQ.
+Floor,............
+
+Enemy,Wallmaster,9,0
+Enemy,Wallmaster,0,3

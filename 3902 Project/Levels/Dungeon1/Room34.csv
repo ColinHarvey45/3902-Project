@@ -1,0 +1,20 @@
+# Room 34 (sheet row 6, column 4): floor layout from the dungeon sprite sheet; 4 Keese
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,............
+Floor,GGGGGGGGGGGG
+Floor,............
+Floor,............
+Floor,............
+Floor,GGGGGGGGGGGG
+Floor,............
+
+Enemy,Keese,7,0
+Enemy,Keese,11,3
+Enemy,Keese,2,4
+Enemy,Keese,3,6

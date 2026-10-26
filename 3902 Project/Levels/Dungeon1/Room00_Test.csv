@@ -1,0 +1,46 @@
+# Room 0: a test room with one of every kind of object in the first dungeon, for trying things out.
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+# Link comes in through the open door at the bottom
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+# Top row: every kind of block, then the Old Man between two fires
+Block,SquareBlock,0,0
+Block,FishStatue,1,0
+Block,DragonStatue,2,0
+Block,BlueGap,3,0
+Block,BlackTile,4,0
+Block,SandTile,5,0
+Block,Stairs,6,0
+Block,WhiteBrick,7,0
+Block,Ladder,8,0
+Block,FireBlock,9,0
+Npc,OldMan,10,0
+Block,FireBlock,11,0
+
+# Middle: every enemy, with Aquamentus on the right breathing fire across the room
+Enemy,Stalfos,1,2
+Enemy,Zol,3,2
+Enemy,Gel,5,2
+Enemy,Keese,7,2
+Enemy,Goriya,2,3
+Enemy,Wallmaster,4,3
+Enemy,BladeTrap,6,3
+Enemy,Aquamentus,9.5,2
+
+# Second row from the bottom: every item
+Item,Heart,0,5
+Item,HeartContainer,1,5
+Item,Rupee,2,5
+Item,TriforcePiece,3,5
+Item,Key,4,5
+Item,Map,5,5
+Item,Compass,6,5
+Item,Bow,7,5
+Item,BoomerangItem,8,5
+Item,BombItem,9,5
+Item,Clock,10,5
+Item,Fairy,11,5

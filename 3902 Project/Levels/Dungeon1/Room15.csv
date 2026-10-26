@@ -1,0 +1,19 @@
+# Room 15 (sheet row 3, column 3): floor layout from the dungeon sprite sheet; 3 Stalfos
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,F..........D
+Floor,............
+Floor,............
+Floor,............
+Floor,............
+Floor,............
+Floor,F..........D
+
+Enemy,Stalfos,6,2
+Enemy,Stalfos,11,4
+Enemy,Stalfos,3,5

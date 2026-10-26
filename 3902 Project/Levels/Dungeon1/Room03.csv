@@ -1,0 +1,21 @@
+# Room 3 (sheet row 1, column 3): floor layout from the dungeon sprite sheet; 1 Goriya, 4 Stalfos
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,............
+Floor,............
+Floor,..QQ....QQ..
+Floor,..QQ....QQ..
+Floor,..QQ....QQ..
+Floor,............
+Floor,............
+
+Enemy,Goriya,2.5,0
+Enemy,Stalfos,6,1.5
+Enemy,Stalfos,10,1
+Enemy,Stalfos,6.5,4
+Enemy,Stalfos,3,5.5

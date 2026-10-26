@@ -1,0 +1,18 @@
+# Room 24 (sheet row 4, column 6): floor layout from the dungeon sprite sheet; 2 Goriya
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,............
+Floor,.GGGGGGGGGG.
+Floor,.GGGGGGGGGG.
+Floor,.GG......GG.
+Floor,.GG......GG.
+Floor,.GGGG..GGGG.
+Floor,.GGGG..GGGG.
+
+Enemy,Goriya,0,3
+Enemy,Goriya,7,4

@@ -1,0 +1,17 @@
+# Room 11 (sheet row 2, column 5): floor layout from the dungeon sprite sheet; 1 Aquamentus
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,.......QQQQQ
+Floor,.........QQQ
+Floor,..........QQ
+Floor,............
+Floor,..........QQ
+Floor,.........QQQ
+Floor,.......QQQQQ
+
+Enemy,Aquamentus,8.5,2.5

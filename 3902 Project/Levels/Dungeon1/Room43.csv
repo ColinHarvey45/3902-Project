@@ -1,0 +1,18 @@
+# Room 43 (prototype room 1 at the bottom of the sheet): floor layout from the dungeon sprite sheet; 2 Goriya
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Down,OpenDoor
+Door,Up,KeyholeLockedDoor
+Door,Left,BombedWallOpening
+Door,Right,DiamondLockedDoor
+
+Floor,....Q.......
+Floor,...QQ.......
+Floor,..Q.QQQQQQQQ
+Floor,.Q..........
+Floor,..Q.QQQQQQQQ
+Floor,...QQ.......
+Floor,....Q.......
+
+Enemy,Goriya,8,5
+Enemy,Goriya,2,6
