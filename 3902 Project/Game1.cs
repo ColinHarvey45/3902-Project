@@ -18,6 +18,7 @@ namespace CSE_3902_Project
         private IPlayer link;
         private RoomManager rooms;
         private KeyboardController keyboard;
+        private MouseController mouse;
 
         // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
         private const int ScreenWidth = 1024;
@@ -54,6 +55,7 @@ namespace CSE_3902_Project
             NpcSpriteFactory.Instance.LoadAllTextures(Content);
 
             keyboard = new KeyboardController();
+            mouse = new MouseController(GraphicsDevice.Viewport.Bounds);
             RegisterCommands();
 
             ResetGame();
@@ -95,10 +97,17 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.E, new LinkTakeDamageCommand(link));
         }
         
+        // The rooms are rebuilt on every reset too, so these are rebound to the new rooms each time.
+        // Right click or P goes to the next room, left click or O to the previous one
         private void RegisterRoomCommands()
         {
-            keyboard.RegisterCommand(Keys.P, new NextRoomCommand(rooms));
-            keyboard.RegisterCommand(Keys.O, new PreviousRoomCommand(rooms));
+            ICommand nextRoom = new NextRoomCommand(rooms);
+            ICommand previousRoom = new PreviousRoomCommand(rooms);
+
+            keyboard.RegisterCommand(Keys.P, nextRoom);
+            keyboard.RegisterCommand(Keys.O, previousRoom);
+            mouse.RegisterRightClick(nextRoom);
+            mouse.RegisterLeftClick(previousRoom);
         }
 
         private void RegisterMoveKeys(Keys letterKey, Keys arrowKey, Direction direction)
@@ -140,8 +149,9 @@ namespace CSE_3902_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            // Runs the commands for any keys pressed or held this frame
+            // Runs the commands for any keys pressed or held, and mouse buttons clicked, this frame
             keyboard.Update();
+            mouse.Update();
 
             rooms.Update(gameTime);
 
