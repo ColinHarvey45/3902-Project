@@ -15,6 +15,7 @@ namespace Rooms
         private readonly ISprite floor = BlockSpriteFactory.Instance.CreateRoomFloorSprite();
 
         private readonly List<IBlock> blocks = [];
+        public IReadOnlyList<IBlock> Blocks => blocks;
         private readonly List<IItem> items = [];
         public List<ICharacter> characters = [];
 

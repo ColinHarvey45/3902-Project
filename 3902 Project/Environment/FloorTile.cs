@@ -6,5 +6,6 @@ namespace Environment
     internal sealed class FloorTile(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateFloorTileSprite())
     {
+                public override bool IsSolid => false;
     }
 }

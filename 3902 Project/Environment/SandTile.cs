@@ -6,5 +6,6 @@ namespace Environment
     internal sealed class SandTile(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateSandTileSprite())
     {
+                public override bool IsSolid => false;
     }
 }

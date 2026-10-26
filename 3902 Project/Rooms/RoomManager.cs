@@ -86,6 +86,27 @@ namespace Rooms
                         }
                     }
                 }
+
+                // Stop Link walking into solid blocks: push him back out the shortest way
+                foreach (IBlock block in CurrentRoom.Blocks)
+                {
+                    if (!block.IsSolid) continue;
+
+                    Rectangle linkBox = player.collider.GetCollider();
+                    Rectangle blockBox = block.Collider.GetCollider();
+                    Rectangle overlap = player.collider.Overlap(linkBox, blockBox);
+                    if (overlap.IsEmpty) continue;
+
+                    Vector2 push;
+                    if (overlap.Width < overlap.Height)
+                        // Overlapping less side-to-side, so push him left or right
+                        push = new Vector2(linkBox.Center.X < blockBox.Center.X ? -overlap.Width : overlap.Width, 0);
+                    else
+                        // Otherwise push him up or down
+                        push = new Vector2(0, linkBox.Center.Y < blockBox.Center.Y ? -overlap.Height : overlap.Height);
+
+                    player.ApplyKnockback(push);
+                }
             }
         }
 

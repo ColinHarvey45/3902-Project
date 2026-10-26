@@ -8,5 +8,6 @@ namespace Environment
     internal sealed class BombedWallOpening(Direction side)
         : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite(side))
     {
+        public override bool IsSolid => false;
     }
 }

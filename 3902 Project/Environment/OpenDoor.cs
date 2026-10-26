@@ -8,5 +8,6 @@ namespace Environment
     internal sealed class OpenDoor(Direction side)
         : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateOpenDoorSprite(side))
     {
+        public override bool IsSolid => false;
     }
 }

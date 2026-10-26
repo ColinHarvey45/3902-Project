@@ -6,5 +6,6 @@ namespace Environment
     internal sealed class BlackTile(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateBlackTileSprite())
     {
+                public override bool IsSolid => false;
     }
 }

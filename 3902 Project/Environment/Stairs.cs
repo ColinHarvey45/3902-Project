@@ -6,5 +6,6 @@ namespace Environment
     internal sealed class Stairs(Vector2 position)
         : Block(position, BlockSpriteFactory.Instance.CreateStairsSprite())
     {
+                public override bool IsSolid => false;
     }
 }
