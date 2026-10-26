@@ -16,7 +16,9 @@ namespace Rooms
 {
     // Builds rooms from the CSV files in Levels/. Each line of a room file adds something to the room:
     //   Door,<wall>,<kind>            the door (or plain wall) filling the gap in that wall, e.g. Door,Up,KeyholeLockedDoor
-    //   Floor,<12 symbols>            one row of the 12 x 7 floor, top row first; the symbols are in FloorSymbols
+    //   Floor,<12 symbols>            one row of the 12 x 7 floor, top row first; the symbols are in TileSymbols
+    //   Tiles,<16 symbols>            one row of the whole 16 x 11 room, walls included, for a room without the
+    //                                 usual walls (the underground passage); same symbols, and '.' is empty black
     //   Block,<kind>,<column>,<row>   e.g. Block,FireBlock,9,0
     //   Enemy,<kind>,<column>,<row>   e.g. Enemy,Stalfos,6,4
     //   Npc,<kind>,<column>,<row>     e.g. Npc,OldMan,5.5,2
@@ -26,10 +28,10 @@ namespace Rooms
     // projectiles is where Goriya and Aquamentus put what they throw and breathe
     internal sealed class RoomLoader(ProjectileManager projectiles)
     {
-        private const char PlainFloor = '.';
+        private const char NothingOnTile = '.';
 
-        // What each symbol on a Floor line puts on its tile; '.' leaves the plain floor showing
-        private static readonly Dictionary<char, Func<Vector2, IBlock>> FloorSymbols = new()
+        // What each symbol on a Floor or Tiles line puts on its tile; '.' leaves the tile as it is
+        private static readonly Dictionary<char, Func<Vector2, IBlock>> TileSymbols = new()
         {
             ['Q'] = position => new SquareBlock(position),
             ['F'] = position => new FishStatue(position),
@@ -117,7 +119,8 @@ namespace Rooms
         public Room Load(string path)
         {
             Room room = new();
-            int floorRowsRead = 0;
+            TileGrid floor = new("Floor", RoomLayout.FloorColumns, RoomLayout.FloorRows, RoomLayout.TilePosition);
+            TileGrid wholeRoom = new("Tiles", RoomLayout.RoomColumns, RoomLayout.RoomRows, RoomLayout.RoomTilePosition);
             string[] lines = File.ReadAllLines(path);
 
             for (int i = 0; i < lines.Length; i++)
@@ -128,7 +131,7 @@ namespace Rooms
 
                 try
                 {
-                    AddLine(room, line.Split(',', StringSplitOptions.TrimEntries), ref floorRowsRead);
+                    AddLine(room, line.Split(',', StringSplitOptions.TrimEntries), floor, wholeRoom);
                 }
                 catch (InvalidDataException e)
                 {
@@ -136,14 +139,20 @@ namespace Rooms
                 }
             }
 
-            if (floorRowsRead is not 0 and not RoomLayout.FloorRows)
-                throw new InvalidDataException(
-                    $"{Path.GetFileName(path)}: has {floorRowsRead} Floor lines, but a room needs all {RoomLayout.FloorRows} or none");
+            try
+            {
+                floor.CheckComplete();
+                wholeRoom.CheckComplete();
+            }
+            catch (InvalidDataException e)
+            {
+                throw new InvalidDataException($"{Path.GetFileName(path)}: {e.Message}", e);
+            }
 
             return room;
         }
 
-        private void AddLine(Room room, string[] fields, ref int floorRowsRead)
+        private void AddLine(Room room, string[] fields, TileGrid floor, TileGrid wholeRoom)
         {
             switch (fields[0])
             {
@@ -154,7 +163,13 @@ namespace Rooms
 
                 case "Floor":
                     ExpectValues(fields, 1);
-                    AddFloorRow(room, fields[1], floorRowsRead++);
+                    floor.AddRow(room, fields[1]);
+                    break;
+
+                case "Tiles":
+                    ExpectValues(fields, 1);
+                    room.RemoveDungeonWalls();
+                    wholeRoom.AddRow(room, fields[1]);
                     break;
 
                 case "Block":
@@ -175,29 +190,47 @@ namespace Rooms
 
                 default:
                     throw new InvalidDataException(
-                        $"'{fields[0]}' isn't a kind of line (Door, Floor, Block, Enemy, Npc or Item)");
+                        $"'{fields[0]}' isn't a kind of line (Door, Floor, Tiles, Block, Enemy, Npc or Item)");
             }
         }
 
-        private static void AddFloorRow(Room room, string symbols, int row)
+        // Reads a grid of tile symbols one line at a time (the Floor lines, or the Tiles lines), and checks
+        // that a room has either none of those lines or all of them, each the right length.
+        // tilePosition turns a column and row in the grid into a position on screen
+        private sealed class TileGrid(string lineKind, int columns, int rows, Func<float, float, Vector2> tilePosition)
         {
-            if (row >= RoomLayout.FloorRows)
-                throw new InvalidDataException($"a room has only {RoomLayout.FloorRows} Floor lines");
 
-            if (symbols.Length != RoomLayout.FloorColumns)
-                throw new InvalidDataException(
-                    $"a Floor line needs {RoomLayout.FloorColumns} symbols, one per tile, but has {symbols.Length}");
+            private int rowsRead;
 
-            for (int column = 0; column < symbols.Length; column++)
+            public void AddRow(Room room, string symbols)
             {
-                if (symbols[column] == PlainFloor)
-                    continue;
+                if (rowsRead == rows)
+                    throw new InvalidDataException($"a room has only {rows} {lineKind} lines");
 
-                if (!FloorSymbols.TryGetValue(symbols[column], out Func<Vector2, IBlock> create))
-                    throw new InvalidDataException($"'{symbols[column]}' isn't a floor symbol");
+                if (symbols.Length != columns)
+                    throw new InvalidDataException(
+                        $"a {lineKind} line needs {columns} symbols, one per tile, but has {symbols.Length}");
 
-                room.AddBlock(create(RoomLayout.TilePosition(column, row)));
+                for (int column = 0; column < columns; column++)
+                {
+                    if (symbols[column] == NothingOnTile)
+                        continue;
+
+                    if (!TileSymbols.TryGetValue(symbols[column], out Func<Vector2, IBlock> create))
+                        throw new InvalidDataException($"'{symbols[column]}' isn't a tile symbol");
+
+                    room.AddBlock(create(tilePosition(column, rowsRead)));
+                }
+
+                rowsRead++;
             }
+
+            public void CheckComplete()
+            {
+                if (rowsRead is not 0 && rowsRead != rows)
+                    throw new InvalidDataException($"has {rowsRead} {lineKind} lines, but a room needs all {rows} or none");
+            }
+
         }
 
         // A Block, Enemy, Npc or Item line: its kind, then the column and row of its top-left corner

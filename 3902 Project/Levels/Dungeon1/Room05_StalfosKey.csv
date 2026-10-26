@@ -1,0 +1,23 @@
+# Level 1: 5 Stalfos and a key, with a bombed hole in the top wall.
+# From the NESMaps Level 1 (Quest 1) map, room 3 across and 4 down.
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Up,BombedWallOpening
+Door,Left,OpenDoor
+Door,Right,OpenDoor
+Door,Down,OpenDoor
+
+Floor,............
+Floor,............
+Floor,..Q......Q..
+Floor,............
+Floor,..Q......Q..
+Floor,............
+Floor,............
+
+Enemy,Stalfos,7.5,0
+Enemy,Stalfos,4.5,2
+Enemy,Stalfos,7,2
+Enemy,Stalfos,6,3.5
+Enemy,Stalfos,3,4.5
+Item,Key,6.25,1

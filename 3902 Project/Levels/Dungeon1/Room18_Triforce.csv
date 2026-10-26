@@ -1,10 +1,11 @@
-# Room 12 (sheet row 2, column 6): floor layout from the dungeon sprite sheet; no enemies
+# Level 1: the triforce piece.
+# From the NESMaps Level 1 (Quest 1) map, room 6 across and 2 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
-Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
-Door,Right,DiamondLockedDoor
+Door,Up,Wall
+Door,Left,OpenDoor
+Door,Right,Wall
+Door,Down,Wall
 
 Floor,............
 Floor,.QQQQQQQQQQ.
@@ -13,3 +14,5 @@ Floor,.Q.F....D.Q.
 Floor,.Q........Q.
 Floor,.QQQQ..QQQQ.
 Floor,............
+
+Item,TriforcePiece,5.75,3.5

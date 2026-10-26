@@ -12,6 +12,10 @@ namespace Rooms
         public const int FloorColumns = 12;
         public const int FloorRows = 7;
 
+        // The whole room, walls included
+        public const int RoomColumns = FloorColumns + 4;
+        public const int RoomRows = FloorRows + 4;
+
         private const int WallThickness = 2 * TileSize;
         private const int Width = FloorColumns * TileSize + 2 * WallThickness;
         private const int Height = FloorRows * TileSize + 2 * WallThickness;
@@ -34,6 +38,13 @@ namespace Rooms
         public static Vector2 TilePosition(float column, float row)
         {
             return FloorOrigin + new Vector2(column, row) * TileSize;
+        }
+
+        // The top-left corner of a tile counted from the room's own corner, walls included: columns run
+        // 0-15 and rows 0-10. Used by rooms without the usual walls, like the underground passage
+        public static Vector2 RoomTilePosition(float column, float row)
+        {
+            return Origin + new Vector2(column, row) * TileSize;
         }
 
         // The top-left corner of the gap in the given wall, where a door (or a wall piece filling it) goes

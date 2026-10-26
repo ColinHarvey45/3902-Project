@@ -1,10 +1,11 @@
-# Room 2 (sheet row 1, column 2): floor layout from the dungeon sprite sheet; no enemies
+# Level 1: the entrance, with 12 statues and some sand; Link comes in through the bottom door.
+# From the NESMaps Level 1 (Quest 1) map, room 3 across and 6 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
 Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
-Door,Right,DiamondLockedDoor
+Door,Left,OpenDoor
+Door,Right,OpenDoor
+Door,Down,OpenDoor
 
 Floor,............
 Floor,.F..F..D..D.

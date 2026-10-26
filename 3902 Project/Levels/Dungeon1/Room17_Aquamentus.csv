@@ -1,10 +1,11 @@
-# Room 11 (sheet row 2, column 5): floor layout from the dungeon sprite sheet; 1 Aquamentus
+# Level 1: Aquamentus, the boss, and a heart container.
+# From the NESMaps Level 1 (Quest 1) map, room 5 across and 2 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
-Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
+Door,Up,Wall
+Door,Left,Wall
 Door,Right,DiamondLockedDoor
+Door,Down,KeyholeLockedDoor
 
 Floor,.......QQQQQ
 Floor,.........QQQ
@@ -14,4 +15,5 @@ Floor,..........QQ
 Floor,.........QQQ
 Floor,.......QQQQQ
 
-Enemy,Aquamentus,8.5,2.5
+Enemy,Aquamentus,7.5,2
+Item,HeartContainer,10,3.25

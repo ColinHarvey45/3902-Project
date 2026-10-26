@@ -14,6 +14,9 @@ namespace Rooms
         private readonly ISprite walls = BlockSpriteFactory.Instance.CreateRoomWallsSprite();
         private readonly ISprite floor = BlockSpriteFactory.Instance.CreateRoomFloorSprite();
 
+        // False for rooms like the underground passage, whose walls are blocks listed in the room's file
+        private bool hasDungeonWalls = true;
+
         private readonly List<IBlock> blocks = [];
         public IReadOnlyList<IBlock> Blocks => blocks;
         private readonly List<IItem> items = [];
@@ -33,6 +36,12 @@ namespace Rooms
         public void AddCharacter(ICharacter character)
         {
             characters.Add(character);
+        }
+
+        // Leaves out the usual teal walls and floor, so the room is just black behind its own blocks
+        public void RemoveDungeonWalls()
+        {
+            hasDungeonWalls = false;
         }
 
         // Enemies that have died disappear from the room for good
@@ -56,8 +65,11 @@ namespace Rooms
         // Back to front: walls and floor, blocks and doors, items, then characters
         public void Draw(SpriteBatch spriteBatch)
         {
-            walls.Draw(spriteBatch, RoomLayout.Origin);
-            floor.Draw(spriteBatch, RoomLayout.FloorOrigin);
+            if (hasDungeonWalls)
+            {
+                walls.Draw(spriteBatch, RoomLayout.Origin);
+                floor.Draw(spriteBatch, RoomLayout.FloorOrigin);
+            }
 
             foreach (IBlock block in blocks)
                 block.Draw(spriteBatch);

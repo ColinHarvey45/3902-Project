@@ -1,10 +1,11 @@
-# Room 1 (sheet row 1, column 1): floor layout from the dungeon sprite sheet; 3 Keese
+# Level 1: west of the entrance: 3 Keese and a key.
+# From the NESMaps Level 1 (Quest 1) map, room 2 across and 6 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
-Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
-Door,Right,DiamondLockedDoor
+Door,Up,Wall
+Door,Left,Wall
+Door,Right,OpenDoor
+Door,Down,Wall
 
 Floor,............
 Floor,............
@@ -14,6 +15,7 @@ Floor,............
 Floor,............
 Floor,............
 
+Enemy,Keese,1,1
 Enemy,Keese,3,2
-Enemy,Keese,3,4
 Enemy,Keese,1,5
+Item,Key,8.25,6

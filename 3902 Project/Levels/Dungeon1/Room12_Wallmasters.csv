@@ -1,0 +1,26 @@
+# Level 1: 8 Wallmasters and a key.
+# From the NESMaps Level 1 (Quest 1) map, room 5 across and 3 down.
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Up,KeyholeLockedDoor
+Door,Left,OpenDoor
+Door,Right,Wall
+Door,Down,Wall
+
+Floor,............
+Floor,.Q.Q.QQ.Q.Q.
+Floor,............
+Floor,.Q.Q.QQ.Q.Q.
+Floor,............
+Floor,.Q.Q.QQ.Q.Q.
+Floor,............
+
+Enemy,Wallmaster,2,0
+Enemy,Wallmaster,3.5,0
+Enemy,Wallmaster,9.5,0
+Enemy,Wallmaster,11,0
+Enemy,Wallmaster,0,3
+Enemy,Wallmaster,11,4
+Enemy,Wallmaster,0,4.5
+Enemy,Wallmaster,11,5.5
+Item,Key,8.25,6

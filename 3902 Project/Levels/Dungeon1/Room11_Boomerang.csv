@@ -1,0 +1,21 @@
+# Level 1: 3 Goriyas and the boomerang.
+# From the NESMaps Level 1 (Quest 1) map, room 4 across and 3 down.
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Up,Wall
+Door,Left,KeyholeLockedDoor
+Door,Right,OpenDoor
+Door,Down,BombedWallOpening
+
+Floor,............
+Floor,............
+Floor,..Q......Q..
+Floor,............
+Floor,..Q......Q..
+Floor,............
+Floor,............
+
+Enemy,Goriya,7,0
+Enemy,Goriya,9.5,1
+Enemy,Goriya,7,4
+Item,BoomerangItem,6.25,1.25

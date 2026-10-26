@@ -1,0 +1,21 @@
+# Level 1: the underground passage below the stairs, with the bow and 4 Keese.
+# The whole screen is bricks and ladders, so it uses Tiles lines (16 x 11, walls included) instead of
+# the usual walls and Floor lines. Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Tiles,................
+Tiles,WWWLWWWWWWWWWWWW
+Tiles,WWWLWWWWWWWWWWWW
+Tiles,WWWLWWW.......WW
+Tiles,WWWLWWW.......WW
+Tiles,WWWLWWW.......WW
+Tiles,WWWLWWWWWWWLWWWW
+Tiles,WW.L.......L..WW
+Tiles,WW.L.......L..WW
+Tiles,WWWWWWWWWWWWWWWW
+Tiles,WWWWWWWWWWWWWWWW
+
+Item,Bow,6.25,3
+Enemy,Keese,1,3
+Enemy,Keese,8.5,3
+Enemy,Keese,10,4
+Enemy,Keese,5.5,5.5

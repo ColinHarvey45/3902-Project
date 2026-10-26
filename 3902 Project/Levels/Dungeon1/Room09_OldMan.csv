@@ -1,10 +1,11 @@
-# Room 42 (sheet row 7, column 6): floor layout from the dungeon sprite sheet; 2 Fire, 1 OldMan
+# Level 1: the Old Man between two fires, who says "EASTMOST PENNINSULA IS THE SECRET.".
+# From the NESMaps Level 1 (Quest 1) map, room 1 across and 3 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
-Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
-Door,Right,DiamondLockedDoor
+Door,Up,Wall
+Door,Left,Wall
+Door,Right,OpenDoor
+Door,Down,Wall
 
 Floor,BBBBBBBBBBBB
 Floor,BBBBBBBBBBBB

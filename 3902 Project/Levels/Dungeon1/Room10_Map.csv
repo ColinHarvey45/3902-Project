@@ -1,0 +1,23 @@
+# Level 1: 5 Gels and the dungeon map.
+# From the NESMaps Level 1 (Quest 1) map, room 3 across and 3 down.
+# Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+
+Door,Up,OpenDoor
+Door,Left,OpenDoor
+Door,Right,KeyholeLockedDoor
+Door,Down,BombedWallOpening
+
+Floor,............
+Floor,.QQ......QQ.
+Floor,............
+Floor,.....QQ.....
+Floor,............
+Floor,.QQ......QQ.
+Floor,............
+
+Enemy,Gel,2,0
+Enemy,Gel,7.5,0
+Enemy,Gel,3.5,2
+Enemy,Gel,8,2
+Enemy,Gel,3,5
+Item,Map,10.25,3

@@ -1,10 +1,11 @@
-# Room 13 (sheet row 3, column 1): floor layout from the dungeon sprite sheet; 4 BladeTrap
+# Level 1: 4 Blade Traps, and the stairs down to the bow.
+# From the NESMaps Level 1 (Quest 1) map, room 2 across and 1 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
-Door,Down,OpenDoor
-Door,Up,KeyholeLockedDoor
-Door,Left,BombedWallOpening
-Door,Right,DiamondLockedDoor
+Door,Up,Wall
+Door,Left,Wall
+Door,Right,KeyholeLockedDoor
+Door,Down,Wall
 
 Floor,............
 Floor,......Q.....
