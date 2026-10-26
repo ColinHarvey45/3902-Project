@@ -1,0 +1,53 @@
+﻿READABILITY REVIEW
+
+
+Author of code review: Colin Harvey
+Date of code review: 2026-10-26
+Sprint number: Sprint 3
+Files reviewed: Roomspawns.cs, Spawning.cs , and SecondRoom.cs
+Author of file reviewed: Sean Kong
+Time taken to complete review: 30 minutes
+
+
+COMMENTS - WHAT IS READABLE:
+
+
+Spawning.cs:
+* Short and readable, clear naming conventions (e.g. Spawn, SpawnPoint, SpawnPosition, and Enums named after the exact enemy). 
+* Uses a clear switch case with an exception for out of range.
+
+
+Roomspawns.cs:
+* Very clear and concise comments that explain any non clearly named variables. 
+* Clear variable and method names like Addto() and SpawnKind
+
+
+SecondRoom.cs:
+* Clear comments and great use of switch statements and arrays to create the room layouts.
+
+
+COMMENTS - WHAT IS NOT READABLE:
+
+
+Roomspawns.cs:
+* Float values like 7.5f or 2.5f in RoomSpawns are used inline without context. While the header comment clarifies they represent tile grid offsets, individual values lack labels explaining why an enemy is placed at a half-tile (e.g., to center a boss character like Aquamentus).
+
+
+CODE QUALITY REVIEW
+
+
+Author of code review: Colin Harvey
+Date of code review: 2026-10-26
+Sprint number: Sprint 3
+Files reviewed: Roomspawns.cs, Spawning.cs , and SecondRoom.cs
+Author of file reviewed: Sean Kong
+
+
+COMMENTS ON CODE QUALITY:
+
+
+* Code is highly cohesive allowing the creation or addition of new tiles and rooms, though this process is required to be hard coded rather than relying on an outside file format like CSV or XML. Use of magic numbers should be changed to constants. RoomSpawns.AddTo relies heavily on matching integer indices from DungeonRooms (index + 1). If someone reorders or shifts a layout in the map spreadsheet array, the spawn points silently map to the wrong room configurations.
+
+
+HYPOTHETICAL CHANGE:
+Use of a CSV or XML file for creating the rooms would make adding and storing rooms easier in the long run and allow the replacement or addition of new files by users to create custom dungeons. Instead of having a separate class for SecondRoom it should be part of the CSV. Replace the floating point magic numbers with constants.
