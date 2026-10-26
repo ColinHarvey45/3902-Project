@@ -24,7 +24,7 @@ namespace Projectiles
         private readonly Rectangle flightArea;
         private Vector2 position; // the middle of the arrow
 
-        public ICollider collider { get; set; }
+        public ICollider Collider { get; set; }
 
         public bool IsFinished { get; private set; }
         public int Damage { get; } = 1;
@@ -44,14 +44,14 @@ namespace Projectiles
             Point size = flyingUpOrDown ? new Point(ColliderThickness, ColliderLength) : new Point(ColliderLength, ColliderThickness);
 
             // position is the arrow's middle, so the box starts half its size up and left of it
-            collider = new BoxCollider(new Rectangle(Point.Zero, size), new Point(-size.X / 2, -size.Y / 2));
-            collider.Update(position);
+            Collider = new BoxCollider(new Rectangle(Point.Zero, size), new Point(-size.X / 2, -size.Y / 2));
+            Collider.Update(position);
         }
 
         public void Update(GameTime gameTime)
         {
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            collider.Update(position);
+            Collider.Update(position);
 
             if (!flightArea.Contains(position))
                 IsFinished = true;

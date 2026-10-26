@@ -9,9 +9,14 @@ namespace Player.States
     // Link stands still and ignores input until his sword swing finishes
     internal sealed class LinkAttackingState : ILinkState
     {
+        private const float AttackDuration = 0.2f; // seconds
+
+        // The sword's hitbox is 12 x 12 sheet pixels, one tile (16 sheet pixels) in front of Link
+        private const float SwordReach = 16 * Sprite.Scale;
+        private const int SwordHitboxSize = (int)(12 * Sprite.Scale);
+
         private readonly Link link;
         private readonly ISprite sprite;
-        private readonly float attackDuration = 0.2f;
         private float timer;
 
         // The sword's collider for this swing; RoomManager checks it against the enemies in the room
@@ -23,10 +28,8 @@ namespace Player.States
             sprite = LinkSpriteFactory.Instance.CreateSwordSprite(link.Facing);
 
             // Sized to the sword and offset from Link's position to the tile he is facing
-            Point swordOffset = (link.Facing.ToVector() * (16 * Sprite.Scale)).ToPoint();
-            SwordCollider = new BoxCollider(
-                new Rectangle(0, 0, (int)(12 * Sprite.Scale), (int)(12 * Sprite.Scale)),
-                swordOffset);
+            Point swordOffset = (link.Facing.ToVector() * SwordReach).ToPoint();
+            SwordCollider = new BoxCollider(new Rectangle(0, 0, SwordHitboxSize, SwordHitboxSize), swordOffset);
             SwordCollider.Update(link.Position);
         }
 
@@ -44,7 +47,7 @@ namespace Player.States
 
             sprite.Update(gameTime);
 
-            if (timer >= attackDuration)
+            if (timer >= AttackDuration)
             {
                 link.State = new LinkStandingState(link);
                 return;

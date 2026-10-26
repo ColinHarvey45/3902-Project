@@ -24,24 +24,16 @@ namespace Projectiles
             return projectiles.Contains(projectile);
         }
 
-        public void Update(GameTime gameTime)
-        {
-            foreach (IProjectile projectile in projectiles)
-                projectile.Update(gameTime);
-
-            projectiles.RemoveAll(projectile => projectile.IsFinished);
-        }
-
         // Moves every projectile, then checks it for hits. What a projectile can hurt depends on who
         // fired it: Link's only hurt enemies, and an enemy's only hurt Link
-        public void Update(GameTime gameTime, List<ICharacter> characters, IPlayer link)
+        public void Update(GameTime gameTime, IEnumerable<ICharacter> characters, IPlayer link)
         {
             foreach (IProjectile projectile in projectiles)
             {
                 projectile.Update(gameTime);
 
                 // Nothing to hit with (a bomb has no collider yet) or already used up this frame
-                if (projectile.IsFinished || projectile.collider == null)
+                if (projectile.IsFinished || projectile.Collider == null)
                     continue;
 
                 bool hitSomething = projectile.Owner switch
@@ -60,14 +52,14 @@ namespace Projectiles
 
         // Damages the first enemy the projectile is touching; true if it hit one. Enemies that are
         // already hurt or dead are skipped, and so are NPCs and blade traps, who can't be hurt
-        private static bool HitsEnemy(IProjectile projectile, List<ICharacter> characters)
+        private static bool HitsEnemy(IProjectile projectile, IEnumerable<ICharacter> characters)
         {
             foreach (ICharacter character in characters)
             {
-                if (character is not IDamageable enemy || enemy.IsDead || enemy.IsDamaged || enemy.Collider == null)
+                if (character is not IDamageable enemy || enemy.IsDead || enemy.IsInvincible || enemy.Collider == null)
                     continue;
 
-                if (!projectile.collider.Overlap(projectile.collider.GetCollider(), enemy.Collider.GetCollider()).IsEmpty)
+                if (projectile.Collider.Intersects(enemy.Collider))
                 {
                     enemy.TakeDamage(projectile.Damage);
                     return true;
@@ -77,13 +69,10 @@ namespace Projectiles
             return false;
         }
 
-        // Damages Link if the projectile is touching him; true if it hit
+        // Damages Link (and knocks him back) if the projectile is touching him; true if it hit
         private static bool HitsLink(IProjectile projectile, IPlayer link)
         {
-            if (link?.collider == null)
-                return false;
-
-            if (link.collider.Overlap(link.collider.GetCollider(), projectile.collider.GetCollider()).IsEmpty)
+            if (link?.Collider == null || !link.Collider.Intersects(projectile.Collider))
                 return false;
 
             link.TakeDamage();

@@ -4,7 +4,7 @@ namespace Interfaces
     internal interface IDamageable : IEnemy
     {
 
-        public bool IsDamaged { get; }
+        public bool IsInvincible { get; }
         public bool IsDead { get; }
 
         public void TakeDamage(int damage);

@@ -39,7 +39,7 @@ namespace Enemies
 
         public Vector2 Position { get; private set; }
         public ISprite Sprite { get; set; }
-        public bool IsDamaged => health.IsDamaged;
+        public bool IsInvincible => health.IsInvincible;
         public bool IsDead => health.IsDead;
 
         // Its fireballs go into projectiles, along with everything else flying around the room

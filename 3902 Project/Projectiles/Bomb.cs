@@ -19,7 +19,7 @@ namespace Projectiles
         public bool IsFinished => explosionSprite.IsFinished;
         public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Link;
-        public ICollider collider { get; set; } // none yet, so the manager doesn't check it for hits
+        public ICollider Collider { get; set; } // none yet, so the manager doesn't check it for hits
 
         public Bomb(Vector2 position)
         {

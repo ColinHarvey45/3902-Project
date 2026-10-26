@@ -1,9 +1,7 @@
 ﻿using Colliders;
-using Enemies;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Player;
 using Sprites;
 
 namespace Projectiles
@@ -29,7 +27,7 @@ namespace Projectiles
 
         private float timeFlyingOut;
         private bool isReturning;
-        public ICollider collider { get; set; }
+        public ICollider Collider { get; set; }
 
         public bool IsFinished { get; private set; }
         public int Damage { get; } = 1;
@@ -43,8 +41,8 @@ namespace Projectiles
             this.thrower = thrower;
             Owner = owner;
 
-            collider = new BoxCollider(new Rectangle(0, 0, ColliderWidth, ColliderHeight), ColliderOffset);
-            collider.Update(position);
+            Collider = new BoxCollider(new Rectangle(0, 0, ColliderWidth, ColliderHeight), ColliderOffset);
+            Collider.Update(position);
         }
 
         public void Update(GameTime gameTime)
@@ -75,7 +73,7 @@ namespace Projectiles
                 position += returnDirection * Speed * deltaTime;
             }
 
-            collider.Update(position);
+            Collider.Update(position);
             sprite.Update(gameTime);
         }
 

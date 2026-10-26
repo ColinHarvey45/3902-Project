@@ -1,11 +1,9 @@
 using CSE_3902_Project;
 using Interfaces;
 using Player;
-using Player.States;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
-using Colliders;
 
 namespace Rooms
 {
@@ -45,17 +43,17 @@ namespace Rooms
             CurrentRoom.Update(gameTime);
             projectiles.Update(gameTime, CurrentRoom.characters, link);
 
-            // Checks collision between Link and any enemies in the current room.
-            // If Link collides with an enemy, put him into the damaged state and knock him back.
+            // Projectiles were checked against Link and the enemies above; the rest of the collisions are here
             if (link is Link player)
             {
-                // Link's sword hurts every enemy it touches; enemies already hurt or dead are skipped
+                // Link's sword hurts every enemy it touches; enemies that are dead, still flashing from a hit,
+                // or have no collider are skipped
                 if (player.SwordCollider is ICollider sword)
                 {
                     foreach (ICharacter character in CurrentRoom.characters)
                     {
-                        if (character is IDamageable hitEnemy && !hitEnemy.IsDead && !hitEnemy.IsDamaged
-                            && !sword.Overlap(sword.GetCollider(), hitEnemy.Collider.GetCollider()).IsEmpty)
+                        if (character is IDamageable hitEnemy && !hitEnemy.IsDead && !hitEnemy.IsInvincible
+                            && hitEnemy.Collider != null && sword.Intersects(hitEnemy.Collider))
                             hitEnemy.TakeDamage(player.SwordDamage);
                     }
                 }
@@ -63,42 +61,11 @@ namespace Rooms
                 // Anything killed this frame is gone before it can touch Link
                 CurrentRoom.RemoveDeadCharacters();
 
+                // Touching an enemy hurts Link and knocks him back; while he is flashing from a hit, it does nothing
                 foreach (ICharacter character in CurrentRoom.characters)
                 {
-
-                    if (character is IEnemy enemy && player.collider != null)
-                    {
-                        Rectangle overlap = player.collider.Overlap(
-                            player.collider.GetCollider(),
-                            enemy.Collider.GetCollider());
-                        if (!overlap.IsEmpty && player.HealthState is LinkHealthyState)
-                        {
-                            // Hurt Link once and push him backwards opposite his facing direction.
-                            player.TakeDamage();
-                            Vector2 knockback = -player.Facing.ToVector() * 4f;
-                            player.ApplyKnockback(knockback);
-                        }
-                    }
-                }
-
-                foreach (IProjectile projectile in projectiles.ActiveProjectiles)
-                {
-                    if (projectile is Fireball fireball && player.collider != null && fireball.collider != null)
-                    {
-                        Rectangle overlap = player.collider.Overlap(player.collider.GetCollider(), fireball.collider.GetCollider());
-                        if (!overlap.IsEmpty)
-                        {
-                            fireball.Hit();
-
-                            if (player.HealthState is LinkHealthyState)
-                            {
-                                // Hurt Link once and push him backwards opposite his facing direction.
-                                player.TakeDamage();
-                                Vector2 knockback = -player.Facing.ToVector() * 4f;
-                                player.ApplyKnockback(knockback);
-                            }
-                        }
-                    }
+                    if (character is IEnemy enemy && enemy.Collider != null && player.Collider.Intersects(enemy.Collider))
+                        player.TakeDamage();
                 }
 
                 // Stop Link walking into solid blocks: push him back out the shortest way
@@ -106,10 +73,11 @@ namespace Rooms
                 {
                     if (!block.IsSolid) continue;
 
-                    Rectangle linkBox = player.collider.GetCollider();
-                    Rectangle blockBox = block.Collider.GetCollider();
-                    Rectangle overlap = player.collider.Overlap(linkBox, blockBox);
+                    Rectangle overlap = player.Collider.OverlapWith(block.Collider);
                     if (overlap.IsEmpty) continue;
+
+                    Rectangle linkBox = player.Collider.GetCollider();
+                    Rectangle blockBox = block.Collider.GetCollider();
 
                     Vector2 push;
                     if (overlap.Width < overlap.Height)

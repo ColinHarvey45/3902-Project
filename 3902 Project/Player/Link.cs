@@ -13,6 +13,7 @@ namespace Player
     internal sealed class Link : IPlayer, IBoomerangThrower
     {
         private const float MoveSpeed = 3f; // pixels per frame
+        private const float KnockbackDistance = 4f; // pixels he is pushed back when hurt
         private const float TileSize = 16 * Sprite.Scale;
         private static readonly Vector2 BombTileOffset = new(16, 4); // centres the 8x14 bomb inside its tile
 
@@ -28,16 +29,16 @@ namespace Player
         public Direction Facing { get; set; } = Direction.Down;
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
-        public ICollider collider { get; set; }
+        public ICollider Collider { get; set; }
 
-        // His sword's collider while he is swinging it, or null when he isn't
         // How much health his sword takes off an enemy it hits
         public int SwordDamage { get; } = 1;
 
+        // His sword's collider while he is swinging it, or null when he isn't
         public ICollider SwordCollider => (State as LinkAttackingState)?.SwordCollider;
 
-        private const int colliderWidth = (int)(12 * Sprite.Scale);
-        private const int colliderHeight = (int)(12 * Sprite.Scale);
+        private const int ColliderWidth = (int)(12 * Sprite.Scale);
+        private const int ColliderHeight = (int)(12 * Sprite.Scale);
         private static readonly Point ColliderOffset = new(
             (int)(2 * Sprite.Scale), (int)(2 * Sprite.Scale));
 
@@ -50,8 +51,8 @@ namespace Player
             State = new LinkStandingState(this);
             HealthState = new LinkHealthyState(this);
             // Initialize collider sized to Link's sprite (one tile)
-            this.collider = new BoxCollider(
-                new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight),
+            this.Collider = new BoxCollider(
+                new Rectangle((int)startPosition.X, (int)startPosition.Y, ColliderWidth, ColliderHeight),
                 ColliderOffset);
         }
 
@@ -86,14 +87,20 @@ namespace Player
 
             State.Update(gameTime);
             HealthState.Update(gameTime);
-            collider.Update(Position);
+            Collider.Update(Position);
         }
 
         // Apply an immediate displacement to Link (used for knockback)
         public void ApplyKnockback(Vector2 offset)
         {
             Position += offset;
-            collider.Update(Position);
+            Collider.Update(Position);
+        }
+
+        // Called by the healthy state when Link is hurt: he is pushed back a little, opposite the way he faces
+        public void KnockBack()
+        {
+            ApplyKnockback(-Facing.ToVector() * KnockbackDistance);
         }
 
         public void Draw(SpriteBatch spriteBatch)

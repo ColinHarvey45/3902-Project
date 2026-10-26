@@ -5,17 +5,20 @@ namespace Colliders
 {
     internal sealed class BoxCollider(Rectangle collider, Point offset = default) : ICollider
     {
-        private Rectangle overlap;
         private Rectangle collider = collider;
         private readonly Point offset = offset;
 
         public int Width => collider.Width;
         public int Height => collider.Height;
 
-        public Rectangle Overlap(Rectangle boxA, Rectangle boxB) 
+        public bool Intersects(ICollider other)
         {
-            Rectangle.Intersect(ref boxA, ref boxB, out overlap);
-            return overlap;
+            return collider.Intersects(other.GetCollider());
+        }
+
+        public Rectangle OverlapWith(ICollider other)
+        {
+            return Rectangle.Intersect(collider, other.GetCollider());
         }
 
         public Rectangle GetCollider()

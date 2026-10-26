@@ -23,38 +23,36 @@ namespace Enemies
         private float flashTimer;
         private float hurtTimer;
 
-        public int Current { get; private set; }
-        public bool IsDamaged { get; private set; }
-        public bool IsDead => Current <= 0;
+        public int HitPoints { get; private set; }
+        public bool IsInvincible { get; private set; }
+        public bool IsDead => HitPoints <= 0;
 
         // What to tint the sprite this frame
-        public Color Tint => IsDamaged ? FlashColors[flashIndex] : Color.White;
+        public Color Tint => IsInvincible ? FlashColors[flashIndex] : Color.White;
 
         public EnemyHealth(int health = DefaultHealth)
         {
-            Current = health;
+            HitPoints = health;
         }
 
         // Ignored while already hurt (it flashes and can't be hit again for a moment) or dead
         public void TakeDamage(int damage)
         {
-            if (IsDead || IsDamaged)
+            if (IsDead || IsInvincible)
                 return;
 
-            Current -= damage;
+            HitPoints -= damage;
 
             if (IsDead)
                 return;
 
-            IsDamaged = true;
-            flashIndex = 0;
-            flashTimer = 0f;
-            hurtTimer = 0f;
+            IsInvincible = true;
+            ResetFlash();
         }
 
         public void Update(GameTime gameTime)
         {
-            if (!IsDamaged)
+            if (!IsInvincible)
                 return;
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -69,11 +67,17 @@ namespace Enemies
 
             if (hurtTimer >= HurtDuration)
             {
-                IsDamaged = false;
-                flashIndex = 0;
-                flashTimer = 0f;
-                hurtTimer = 0f;
+                IsInvincible = false;
+                ResetFlash();
             }
+        }
+
+        // Starts the flash from its first colour, with both timers back at zero
+        private void ResetFlash()
+        {
+            flashIndex = 0;
+            flashTimer = 0f;
+            hurtTimer = 0f;
         }
     }
 }

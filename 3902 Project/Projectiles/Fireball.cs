@@ -19,7 +19,7 @@ namespace Projectiles
         private readonly Vector2 velocity;
         private readonly Rectangle flightArea;
         private Vector2 position;
-        public ICollider collider { get; set; }
+        public ICollider Collider { get; set; }
 
         public bool IsFinished { get; private set; }
         public int Damage { get; } = 1;
@@ -35,7 +35,7 @@ namespace Projectiles
             flightArea = RoomLayout.Bounds;
             flightArea.Inflate(OffscreenMargin, OffscreenMargin);
 
-            this.collider = new BoxCollider(
+            this.Collider = new BoxCollider(
                 new Rectangle((int)startPosition.X, (int)startPosition.Y, ColliderWidth, ColliderHeight),
                 ColliderOffset);
         }
@@ -62,7 +62,7 @@ namespace Projectiles
 
         private void UpdateCollider()
         {
-            collider.Update(position);
+            Collider.Update(position);
         }
     }
 }

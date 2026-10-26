@@ -26,7 +26,7 @@ namespace Enemies
         protected ISprite Sprite { get; set; }
         public ICollider Collider { get; set; }
 
-        public bool IsDamaged => Health.IsDamaged;
+        public bool IsInvincible => Health.IsInvincible;
         public bool IsDead => Health.IsDead;
 
         protected Enemy(Vector2 startPosition)

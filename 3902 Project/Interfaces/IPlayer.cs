@@ -12,7 +12,7 @@ namespace Interfaces
         public void SwordAttack();
         public void UseItem(SecondaryItem item);
         public void TakeDamage();
-        public ICollider collider { get; }
+        public ICollider Collider { get; }
 
         public void Update(GameTime gameTime);
         public void Draw(SpriteBatch spriteBatch);
