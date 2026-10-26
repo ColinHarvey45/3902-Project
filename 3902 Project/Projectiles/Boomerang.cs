@@ -32,6 +32,7 @@ namespace Projectiles
         public bool IsFinished { get; private set; }
         public int Damage { get; } = 1;
         public ProjectileOwner Owner { get; }
+        public bool HitsEveryEnemyInRange => false;
 
         public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower thrower, ProjectileOwner owner)
         {

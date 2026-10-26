@@ -14,8 +14,5 @@ namespace Interfaces
         // True if this box and other overlap
         public bool Intersects(ICollider other);
 
-        // The area where this box and other overlap, which is empty if they don't
-        public Rectangle OverlapWith(ICollider other);
-
     }
 }

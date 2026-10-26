@@ -97,6 +97,18 @@ namespace Enemies
             Collider.Update(Position);
         }
 
+        // Walked into a wall or a solid block: step back out, and head off a new way
+        public virtual void OnBlocked(Vector2 push)
+        {
+            Position += push;
+            UpdateCollider();
+
+            Vector2 oldDirection = CurrentDirection;
+            Movement.TurnRandomly();
+            if (CurrentDirection != oldDirection)
+                OnDirectionChanged();
+        }
+
         // Lets an enemy react when it turns (on its timer or at the edge of the floor),
         // e.g. by switching to a sprite facing the new way
         protected virtual void OnDirectionChanged() { }

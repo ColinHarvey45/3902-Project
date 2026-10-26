@@ -29,6 +29,7 @@ namespace Projectiles
         public bool IsFinished { get; private set; }
         public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Link;
+        public bool HitsEveryEnemyInRange => false;
 
         // startPosition is where the middle of the arrow starts
         public Arrow(Vector2 startPosition, Direction direction)

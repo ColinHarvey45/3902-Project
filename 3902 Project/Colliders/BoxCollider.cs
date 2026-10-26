@@ -16,11 +16,6 @@ namespace Colliders
             return collider.Intersects(other.GetCollider());
         }
 
-        public Rectangle OverlapWith(ICollider other)
-        {
-            return Rectangle.Intersect(collider, other.GetCollider());
-        }
-
         public Rectangle GetCollider()
         {
             return collider;

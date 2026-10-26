@@ -68,7 +68,7 @@ namespace Rooms
             [nameof(FireBlock)] = position => new FireBlock(position)
         };
 
-        private readonly Dictionary<string, Func<Vector2, ICharacter>> enemyKinds = new()
+        private readonly Dictionary<string, Func<Vector2, IEnemy>> enemyKinds = new()
         {
             [nameof(Stalfos)] = position => new Stalfos(position),
             [nameof(Zol)] = position => new Zol(position),
@@ -80,7 +80,7 @@ namespace Rooms
             [nameof(Aquamentus)] = position => new Aquamentus(position, projectiles)
         };
 
-        private static readonly Dictionary<string, Func<Vector2, ICharacter>> NpcKinds = new()
+        private static readonly Dictionary<string, Func<Vector2, INpc>> NpcKinds = new()
         {
             [nameof(OldMan)] = position => new OldMan(position)
         };
@@ -177,11 +177,11 @@ namespace Rooms
                     break;
 
                 case "Enemy":
-                    room.AddCharacter(CreateOnTile(enemyKinds, fields, "enemy"));
+                    room.AddEnemy(CreateOnTile(enemyKinds, fields, "enemy"));
                     break;
 
                 case "Npc":
-                    room.AddCharacter(CreateOnTile(NpcKinds, fields, "NPC"));
+                    room.AddNpc(CreateOnTile(NpcKinds, fields, "NPC"));
                     break;
 
                 case "Item":

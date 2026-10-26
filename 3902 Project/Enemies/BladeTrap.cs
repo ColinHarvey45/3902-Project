@@ -48,11 +48,17 @@ namespace Enemies
             Collider.Update(Position);
         }
 
+        // Charged into a wall or a block: stop there and start sliding back home
+        public void OnBlocked(Vector2 push)
+        {
+            Position += push;
+            UpdateCollider();
+            ChangeState(new BladeTrapReturningState(this));
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch, Position);
         }
-
-
     }
 }

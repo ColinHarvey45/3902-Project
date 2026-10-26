@@ -90,8 +90,8 @@ namespace Player
             Collider.Update(Position);
         }
 
-        // Apply an immediate displacement to Link (used for knockback)
-        public void ApplyKnockback(Vector2 offset)
+        // Moves Link straight away: knocked back when hurt, or pushed back out of a wall or block
+        public void Push(Vector2 offset)
         {
             Position += offset;
             Collider.Update(Position);
@@ -100,7 +100,7 @@ namespace Player
         // Called by the healthy state when Link is hurt: he is pushed back a little, opposite the way he faces
         public void KnockBack()
         {
-            ApplyKnockback(-Facing.ToVector() * KnockbackDistance);
+            Push(-Facing.ToVector() * KnockbackDistance);
         }
 
         public void Draw(SpriteBatch spriteBatch)

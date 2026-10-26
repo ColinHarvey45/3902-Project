@@ -3,11 +3,10 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sprites;
-using Player;
 
 namespace Rooms
 {
-    // One screen of the dungeon: its walls and floor, and the blocks, doors, items and characters in it.
+    // One screen of the dungeon: its walls and floor, and the blocks, doors, items, NPCs and enemies in it.
     // Only the room Link is in gets updated and drawn
     internal sealed class Room
     {
@@ -18,9 +17,18 @@ namespace Rooms
         private bool hasDungeonWalls = true;
 
         private readonly List<IBlock> blocks = [];
-        public IReadOnlyList<IBlock> Blocks => blocks;
         private readonly List<IItem> items = [];
-        public List<ICharacter> characters = [];
+        private readonly List<INpc> npcs = [];
+        private readonly List<IEnemy> enemies = [];
+
+        public IReadOnlyList<IBlock> Blocks => blocks;
+        public IReadOnlyList<IItem> Items => items;
+        public IReadOnlyList<INpc> Npcs => npcs;
+        public IReadOnlyList<IEnemy> Enemies => enemies;
+
+        // The solid parts of the room's walls, which nothing can walk or fly into, and the strips just
+        // outside the room. A room without the usual walls has only the strips; its blocks are its walls
+        public IReadOnlyList<Rectangle> Walls => hasDungeonWalls ? RoomLayout.WallsAndOutside : RoomLayout.Outside;
 
         // Doors are blocks too: each one fills the gap in one of the walls
         public void AddBlock(IBlock block)
@@ -33,9 +41,14 @@ namespace Rooms
             items.Add(item);
         }
 
-        public void AddCharacter(ICharacter character)
+        public void AddNpc(INpc npc)
         {
-            characters.Add(character);
+            npcs.Add(npc);
+        }
+
+        public void AddEnemy(IEnemy enemy)
+        {
+            enemies.Add(enemy);
         }
 
         // Leaves out the usual teal walls and floor, so the room is just black behind its own blocks
@@ -44,10 +57,16 @@ namespace Rooms
             hasDungeonWalls = false;
         }
 
-        // Enemies that have died disappear from the room for good
-        public void RemoveDeadCharacters()
+        // An item Link has picked up is gone from the room for good
+        public void RemoveItem(IItem item)
         {
-            characters.RemoveAll(character => character is IDamageable damageable && damageable.IsDead);
+            items.Remove(item);
+        }
+
+        // Enemies that have died disappear from the room for good
+        public void RemoveDeadEnemies()
+        {
+            enemies.RemoveAll(enemy => enemy is IDamageable damageable && damageable.IsDead);
         }
 
         public void Update(GameTime gameTime)
@@ -58,11 +77,14 @@ namespace Rooms
             foreach (IItem item in items)
                 item.Update(gameTime);
 
-            foreach (ICharacter character in characters)
-                character.Update(gameTime);
+            foreach (INpc npc in npcs)
+                npc.Update(gameTime);
+
+            foreach (IEnemy enemy in enemies)
+                enemy.Update(gameTime);
         }
 
-        // Back to front: walls and floor, blocks and doors, items, then characters
+        // Back to front: walls and floor, blocks and doors, items, NPCs, then enemies
         public void Draw(SpriteBatch spriteBatch)
         {
             if (hasDungeonWalls)
@@ -77,8 +99,11 @@ namespace Rooms
             foreach (IItem item in items)
                 item.Draw(spriteBatch);
 
-            foreach (ICharacter character in characters)
-                character.Draw(spriteBatch);
+            foreach (INpc npc in npcs)
+                npc.Draw(spriteBatch);
+
+            foreach (IEnemy enemy in enemies)
+                enemy.Draw(spriteBatch);
         }
     }
 }

@@ -17,12 +17,45 @@ namespace Rooms
         public const int RoomRows = FloorRows + 4;
 
         private const int WallThickness = 2 * TileSize;
+
+        // A door gap, and the door piece (or wall piece) that fills it, is as wide and as tall as the wall is thick
+        public const int DoorSize = WallThickness;
+
         private const int Width = FloorColumns * TileSize + 2 * WallThickness;
         private const int Height = FloorRows * TileSize + 2 * WallThickness;
+
+        // Where the door gaps start: the top and bottom gaps across, the left and right gaps down.
+        // Each gap is as wide as the wall is thick
+        private const int DoorGapStartX = (Width - WallThickness) / 2;
+        private const int DoorGapStartY = (Height - WallThickness) / 2;
 
         // The room's top-left corner on screen. It is the window's corner for now; when the HUD is
         // added above the room, moving this moves everything in the room with it
         public static readonly Vector2 Origin = Vector2.Zero;
+
+        // Strips just outside the room on every side, so nothing can leave the screen through a doorway
+        public static readonly Rectangle[] Outside =
+        [
+            At(0, -TileSize, Width, TileSize),
+            At(0, Height, Width, TileSize),
+            At(-TileSize, 0, TileSize, Height),
+            At(Width, 0, TileSize, Height)
+        ];
+
+        // The solid parts of the four walls, and the strips outside the room. Each wall is two pieces,
+        // either side of its door gap; whatever fills the gap (a door, or a wall piece) is a block
+        public static readonly Rectangle[] WallsAndOutside =
+        [
+            .. Outside,
+            At(0, 0, DoorGapStartX, WallThickness),
+            At(DoorGapStartX + WallThickness, 0, DoorGapStartX, WallThickness),
+            At(0, Height - WallThickness, DoorGapStartX, WallThickness),
+            At(DoorGapStartX + WallThickness, Height - WallThickness, DoorGapStartX, WallThickness),
+            At(0, WallThickness, WallThickness, DoorGapStartY - WallThickness),
+            At(0, DoorGapStartY + WallThickness, WallThickness, DoorGapStartY - WallThickness),
+            At(Width - WallThickness, WallThickness, WallThickness, DoorGapStartY - WallThickness),
+            At(Width - WallThickness, DoorGapStartY + WallThickness, WallThickness, DoorGapStartY - WallThickness)
+        ];
 
         public static Vector2 FloorOrigin => Origin + new Vector2(WallThickness);
 
@@ -50,18 +83,21 @@ namespace Rooms
         // The top-left corner of the gap in the given wall, where a door (or a wall piece filling it) goes
         public static Vector2 DoorPosition(Direction side)
         {
-            float middleX = (Width - WallThickness) / 2f;
-            float middleY = (Height - WallThickness) / 2f;
-
             Vector2 offset = side switch
             {
-                Direction.Up => new Vector2(middleX, 0),
-                Direction.Down => new Vector2(middleX, Height - WallThickness),
-                Direction.Left => new Vector2(0, middleY),
-                _ => new Vector2(Width - WallThickness, middleY)
+                Direction.Up => new Vector2(DoorGapStartX, 0),
+                Direction.Down => new Vector2(DoorGapStartX, Height - WallThickness),
+                Direction.Left => new Vector2(0, DoorGapStartY),
+                _ => new Vector2(Width - WallThickness, DoorGapStartY)
             };
 
             return Origin + offset;
+        }
+
+        // A rectangle given relative to the room's top-left corner
+        private static Rectangle At(int x, int y, int width, int height)
+        {
+            return new Rectangle((int)Origin.X + x, (int)Origin.Y + y, width, height);
         }
     }
 }

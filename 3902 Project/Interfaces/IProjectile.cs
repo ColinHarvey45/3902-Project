@@ -13,7 +13,11 @@ namespace Interfaces
         public int Damage { get; }
         public ICollider Collider { get; set; }
 
-        // Called when it hits whoever it is allowed to hurt
+        // False for most projectiles, which hurt the first enemy they touch and are used up (or turn back);
+        // true for a bomb's explosion, which hurts every enemy in the blast
+        public bool HitsEveryEnemyInRange { get; }
+
+        // Called when it hits whoever it is allowed to hurt, or runs into a wall or a solid block
         public void Hit();
 
         public void Update(GameTime gameTime);

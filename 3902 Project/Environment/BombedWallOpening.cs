@@ -6,7 +6,7 @@ namespace Environment
 {
     // Sits in the gap in one of the room's walls (side)
     internal sealed class BombedWallOpening(Direction side)
-        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite(side))
+        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateBombedWallOpeningSprite(side), RoomLayout.DoorSize)
     {
         public override bool IsSolid => false;
     }

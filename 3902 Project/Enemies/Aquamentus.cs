@@ -107,5 +107,13 @@ namespace Enemies
         {
             Collider.Update(Position);
         }
+
+        // Paced into a wall or a block: step back out and pace the other way
+        public void OnBlocked(Vector2 push)
+        {
+            Position += push;
+            UpdateCollider();
+            paceDirection = -paceDirection;
+        }
     }
 }
