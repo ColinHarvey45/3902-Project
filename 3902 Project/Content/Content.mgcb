@@ -156,3 +156,8 @@
 /processorParam:Version=3.8.5.0
 /build:TLOZTitleScreen-transparent.png
 
+#begin BackgroundMusic.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:BackgroundMusic.wav

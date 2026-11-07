@@ -10,6 +10,7 @@ using Rooms;
 using Sprites;
 using System;
 using System.IO;
+using Audio;
 
 namespace CSE_3902_Project
 {
@@ -58,12 +59,14 @@ namespace CSE_3902_Project
             BlockSpriteFactory.Instance.LoadAllTextures(Content);
             ItemSpriteFactory.Instance.LoadAllTextures(Content);
             NpcSpriteFactory.Instance.LoadAllTextures(Content);
+            AudioManager.Instance.LoadAllSounds(Content);
 
             keyboard = new KeyboardController();
             mouse = new MouseController(GraphicsDevice.Viewport.Bounds);
             RegisterCommands();
 
             ResetGame();
+            AudioManager.Instance.PlayMusic();
         }
 
         private void RegisterCommands()
@@ -72,6 +75,7 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.Q, quit);
             keyboard.RegisterCommand(Keys.Escape, quit);
             keyboard.RegisterCommand(Keys.R, new ResetCommand(this));
+            keyboard.RegisterCommand(Keys.M, new ToggleMuteCommand());
         }
 
         // Link is rebuilt on every reset, so his keys are rebound to the new Link each time
