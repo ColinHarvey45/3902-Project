@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Player;
 using Sprites;
+using UI;
 
 namespace Rooms
 {
@@ -29,9 +30,9 @@ namespace Rooms
         private const int DoorGapStartX = (Width - WallThickness) / 2;
         private const int DoorGapStartY = (Height - WallThickness) / 2;
 
-        // The room's top-left corner on screen. It is the window's corner for now; when the HUD is
-        // added above the room, moving this moves everything in the room with it
-        public static readonly Vector2 Origin = Vector2.Zero;
+        // The room's top-left corner on screen: just under the HUD. Everything in the room is placed
+        // from here, so moving this moves all of it
+        public static readonly Vector2 Origin = new(0, Hud.Height);
 
         // Strips just outside the room on every side, so nothing can leave the screen through a doorway
         public static readonly Rectangle[] Outside =

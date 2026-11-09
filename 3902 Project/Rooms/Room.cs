@@ -16,10 +16,18 @@ namespace Rooms
         // False for rooms like the underground passage, whose walls are blocks listed in the room's file
         private bool hasDungeonWalls = true;
 
+        // The dungeon map in the HUD is this many rooms across and down
+        public const int MapColumns = 8;
+        public const int MapRows = 8;
+
         private readonly List<IBlock> blocks = [];
         private readonly List<IItem> items = [];
         private readonly List<INpc> npcs = [];
         private readonly List<IEnemy> enemies = [];
+
+        // Where the room is on the dungeon map in the HUD (column and row, counted from 0), or null for
+        // a room that isn't on it, like the test room and the underground passage
+        public Point? MapPosition { get; private set; }
 
         public IReadOnlyList<IBlock> Blocks => blocks;
         public IReadOnlyList<IItem> Items => items;
@@ -29,6 +37,11 @@ namespace Rooms
         // The solid parts of the room's walls, which nothing can walk or fly into, and the strips just
         // outside the room. A room without the usual walls has only the strips; its blocks are its walls
         public IReadOnlyList<Rectangle> Walls => hasDungeonWalls ? RoomLayout.WallsAndOutside : RoomLayout.Outside;
+
+        public void SetMapPosition(int column, int row)
+        {
+            MapPosition = new Point(column, row);
+        }
 
         // Doors are blocks too: each one fills the gap in one of the walls
         public void AddBlock(IBlock block)

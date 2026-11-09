@@ -11,6 +11,7 @@ using Sprites;
 using System;
 using System.IO;
 using Audio;
+using UI;
 
 namespace CSE_3902_Project
 {
@@ -22,10 +23,13 @@ namespace CSE_3902_Project
         private RoomManager rooms;
         private KeyboardController keyboard;
         private MouseController mouse;
+        private Hud hud;
 
-        // One dungeon room: 16 x 11 tiles of 16px, drawn at 4x scale
+        // The HUD above one dungeon room: the room is 16 x 11 tiles of 16px, drawn at 4x scale
         private const int ScreenWidth = 1024;
-        private const int ScreenHeight = 704;
+        private const int ScreenHeight = Hud.Height + 704;
+
+        private const int DungeonLevel = 1;
 
         // The middle of the bottom row of the floor, just inside the door Link comes in by
         private static readonly Vector2 LinkStartPosition = RoomLayout.TilePosition(5.5f, 6);
@@ -58,6 +62,7 @@ namespace CSE_3902_Project
             EnemySpriteFactory.Instance.LoadAllTextures(Content);
             BlockSpriteFactory.Instance.LoadAllTextures(Content);
             ItemSpriteFactory.Instance.LoadAllTextures(Content);
+            HudSpriteFactory.Instance.LoadAllTextures(Content);
             NpcSpriteFactory.Instance.LoadAllTextures(Content);
             AudioManager.Instance.LoadAllSounds(Content);
 
@@ -138,6 +143,8 @@ namespace CSE_3902_Project
             Room[] dungeon = new RoomLoader(projectiles).LoadAll(RoomFolder);
             rooms = new RoomManager(link, dungeon, projectiles);
             RegisterRoomCommands();
+
+            hud = new Hud(link, rooms, DungeonLevel, GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
@@ -160,6 +167,7 @@ namespace CSE_3902_Project
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             rooms.Draw(spriteBatch);
+            hud.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
