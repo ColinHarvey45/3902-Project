@@ -2,6 +2,7 @@
 # From the NESMaps Level 1 (Quest 1) map, room 2 across and 6 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
+Map,2,6
 Door,Up,Wall
 Door,Left,Wall
 Door,Right,OpenDoor

@@ -129,14 +129,17 @@ namespace Collisions
             }
         }
 
-        // Link picks up any item he touches, and it disappears from the room
+        // Link picks up any item he touches: it does what it does for him, and disappears from the room
         private static void LinkPicksUpItems(IPlayer link, Room room)
         {
             for (int i = room.Items.Count - 1; i >= 0; i--)
             {
                 IItem item = room.Items[i];
                 if (link.Collider.Intersects(item.Collider))
+                {
+                    item.OnPickedUp(link);
                     room.RemoveItem(item);
+                }
             }
         }
 

@@ -15,6 +15,8 @@ using Projectiles;
 namespace Rooms
 {
     // Builds rooms from the CSV files in Levels/. Each line of a room file adds something to the room:
+    //   Map,<column>,<row>            where the room is on the dungeon map in the HUD, 1-8 across and 1-8 down, as in
+    //                                 the NESMaps map; leave it out for a room that isn't on the map
     //   Door,<wall>,<kind>            the door (or plain wall) filling the gap in that wall, e.g. Door,Up,KeyholeLockedDoor
     //   Floor,<12 symbols>            one row of the 12 x 7 floor, top row first; the symbols are in TileSymbols
     //   Tiles,<16 symbols>            one row of the whole 16 x 11 room, walls included, for a room without the
@@ -156,6 +158,12 @@ namespace Rooms
         {
             switch (fields[0])
             {
+                case "Map":
+                    ExpectValues(fields, 2);
+                    room.SetMapPosition(ParseMapNumber(fields[1], Room.MapColumns, "column") - 1,
+                        ParseMapNumber(fields[2], Room.MapRows, "row") - 1);
+                    break;
+
                 case "Door":
                     ExpectValues(fields, 2);
                     room.AddBlock(Find(DoorKinds, fields[2], "door")(ParseWall(fields[1])));
@@ -190,7 +198,7 @@ namespace Rooms
 
                 default:
                     throw new InvalidDataException(
-                        $"'{fields[0]}' isn't a kind of line (Door, Floor, Tiles, Block, Enemy, Npc or Item)");
+                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc or Item)");
             }
         }
 
@@ -260,6 +268,15 @@ namespace Rooms
             return float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float number)
                 ? number
                 : throw new InvalidDataException($"'{text}' isn't a number");
+        }
+
+        // A whole number from 1 to largest, for a column or row on the dungeon map
+        private static int ParseMapNumber(string text, int largest, string description)
+        {
+            if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int number) || number < 1 || number > largest)
+                throw new InvalidDataException($"'{text}' isn't a map {description} (1 to {largest})");
+
+            return number;
         }
 
         private static Direction ParseWall(string text)

@@ -19,6 +19,9 @@ namespace Items
         public ICollider Collider { get; } =
             new BoxCollider(new Rectangle((int)position.X, (int)position.Y, HitboxWidth, HitboxHeight));
 
+        // Most items do nothing for Link yet; the ones that do override this
+        public virtual void OnPickedUp(IPlayer player) { }
+
         public virtual void Update(GameTime gameTime)
         {
             sprite.Update(gameTime);

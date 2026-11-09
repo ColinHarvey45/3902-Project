@@ -5,6 +5,7 @@ using Player.States;
 using Projectiles;
 using Sprites;
 using Colliders;
+using System;
 
 namespace Player
 {
@@ -15,6 +16,8 @@ namespace Player
         private const float MoveSpeed = 3f; // pixels per frame
         private const float KnockbackDistance = 4f; // pixels he is pushed back when hurt
         private const float TileSize = 16 * Sprite.Scale;
+        private const int StartingHealth = 3;
+        private const int MostHearts = 16; // all the HUD has room to show
         private static readonly Vector2 BombTileOffset = new(16, 4); // centres the 8x14 bomb inside its tile
 
         private readonly ProjectileManager projectiles;
@@ -30,6 +33,12 @@ namespace Player
         public ILinkState State { get; set; }
         public ILinkHealthState HealthState { get; set; }
         public ICollider Collider { get; set; }
+
+        // He starts with 3 hearts, and each hit takes one away
+        public int Health { get; private set; } = StartingHealth;
+        public int MaxHealth { get; private set; } = StartingHealth;
+
+        public PlayerInventory Inventory { get; } = new();
 
         // How much health his sword takes off an enemy it hits
         public int SwordDamage { get; } = 1;
@@ -75,6 +84,23 @@ namespace Player
         public void TakeDamage()
         {
             HealthState.TakeDamage();
+        }
+
+        // Called by the healthy state when Link is hurt; he can't go below no hearts
+        public void LoseHealth(int amount)
+        {
+            Health = Math.Max(0, Health - amount);
+        }
+
+        public void Heal(int amount)
+        {
+            Health = Math.Min(MaxHealth, Health + amount);
+        }
+
+        public void IncreaseMaxHealth()
+        {
+            MaxHealth = Math.Min(MostHearts, MaxHealth + 1);
+            Health = MaxHealth;
         }
 
         public void Update(GameTime gameTime)
@@ -134,7 +160,9 @@ namespace Player
                     break;
 
                 case SecondaryItem.Bomb:
-                    // Placed on the tile in front of Link
+                    // Placed on the tile in front of Link; each one uses up a bomb, and with none left nothing is placed
+                    if (!Inventory.TryUseBomb()) return;
+
                     projectiles.Add(new Bomb(Position + Facing.ToVector() * TileSize + BombTileOffset));
                     break;
             }

@@ -23,6 +23,7 @@ namespace Sprites
         private static readonly Rectangle BoomerangFrame = new(129, 3, 5, 8);
         private static readonly Rectangle BombFrame = new(136, 0, 8, 16);
         private static readonly Rectangle BowFrame = new(144, 0, 8, 16);
+        private static readonly Rectangle SwordFrame = new(104, 16, 7, 16); // the white sword
         private static readonly Rectangle KeyFrame = new(240, 0, 8, 16);
         private static readonly Rectangle CompassFrame = new(258, 1, 11, 12);
 
@@ -54,6 +55,7 @@ namespace Sprites
         public ISprite CreateBoomerangSprite() => Still(BoomerangFrame);
         public ISprite CreateBombSprite() => Still(BombFrame);
         public ISprite CreateBowSprite() => Still(BowFrame);
+        public ISprite CreateSwordSprite() => Still(SwordFrame);
         public ISprite CreateKeySprite() => Still(KeyFrame);
         public ISprite CreateCompassSprite() => Still(CompassFrame);
 

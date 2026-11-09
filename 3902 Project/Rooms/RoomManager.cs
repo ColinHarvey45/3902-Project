@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Collisions;
 using CSE_3902_Project;
 using Interfaces;
@@ -17,10 +18,14 @@ namespace Rooms
 
         public Room CurrentRoom => rooms.Current;
 
+        // Every room in the dungeon, which the HUD draws on its map
+        public IReadOnlyList<Room> AllRooms { get; }
+
         // Link starts in the first room. projectiles is shared with Link and the enemies, who fire into it
         public RoomManager(IPlayer link, Room[] rooms, ProjectileManager projectiles)
         {
             this.link = link;
+            AllRooms = rooms;
             this.rooms = new CyclingList<Room>(rooms);
             this.projectiles = projectiles;
         }
