@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Player;
 using Sprites;
 
 namespace Rooms
@@ -29,6 +30,12 @@ namespace Rooms
         // a room that isn't on it, like the test room and the underground passage
         public Point? MapPosition { get; private set; }
 
+        // True once Link has been in the room, which is when it appears on the pause screen's map
+        public bool Visited { get; private set; }
+
+        // The sides of the room that have a doorway (a door, locked or not, or an opening) rather than a plain wall
+        private readonly HashSet<Direction> doorways = [];
+
         public IReadOnlyList<IBlock> Blocks => blocks;
         public IReadOnlyList<IItem> Items => items;
         public IReadOnlyList<INpc> Npcs => npcs;
@@ -41,6 +48,21 @@ namespace Rooms
         public void SetMapPosition(int column, int row)
         {
             MapPosition = new Point(column, row);
+        }
+
+        public void MarkVisited()
+        {
+            Visited = true;
+        }
+
+        public void AddDoorway(Direction side)
+        {
+            doorways.Add(side);
+        }
+
+        public bool HasDoorway(Direction side)
+        {
+            return doorways.Contains(side);
         }
 
         // Doors are blocks too: each one fills the gap in one of the walls

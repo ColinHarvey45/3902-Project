@@ -8,7 +8,7 @@ using Projectiles;
 
 namespace Rooms
 {
-    // Holds every room in the dungeon and knows which one Link is in. Link goes wherever the
+    // Holds every room in the dungeon and knows which one Link is in (and which he has been in). Link goes wherever the
     // current room is, so he is updated and drawn along with it, as is everything fired in it
     internal sealed class RoomManager
     {
@@ -28,6 +28,8 @@ namespace Rooms
             AllRooms = rooms;
             this.rooms = new CyclingList<Room>(rooms);
             this.projectiles = projectiles;
+
+            CurrentRoom.MarkVisited();
         }
 
         public void NextRoom()
@@ -65,6 +67,7 @@ namespace Rooms
         private void OnRoomChanged()
         {
             projectiles.Clear();
+            CurrentRoom.MarkVisited();
         }
     }
 }

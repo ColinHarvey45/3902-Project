@@ -2,6 +2,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Player;
 
 namespace Sprites
 {
@@ -26,6 +27,10 @@ namespace Sprites
         private static readonly Rectangle SwordFrame = new(104, 16, 7, 16); // the white sword
         private static readonly Rectangle KeyFrame = new(240, 0, 8, 16);
         private static readonly Rectangle CompassFrame = new(258, 1, 11, 12);
+
+        // The slots for Link's items on the HUD and the pause screen are 8 x 16
+        private const int SlotWidth = 8;
+        private const int SlotHeight = 16;
 
         private Texture2D texture;
 
@@ -58,6 +63,23 @@ namespace Sprites
         public ISprite CreateSwordSprite() => Still(SwordFrame);
         public ISprite CreateKeySprite() => Still(KeyFrame);
         public ISprite CreateCompassSprite() => Still(CompassFrame);
+
+        // The picture of an item Link can use, for a slot on the HUD or the pause screen: one that is
+        // smaller than the slot (the boomerang) is centred in it
+        public ISprite CreateInventorySprite(SecondaryItem item)
+        {
+            return item switch
+            {
+                SecondaryItem.Bomb => Still(BombFrame),
+                SecondaryItem.Arrow => Still(BowFrame),
+                _ => new Sprite(texture, new SpriteFrame(BoomerangFrame, SpriteEffects.None, CentredInSlot(BoomerangFrame)))
+            };
+        }
+
+        private static Vector2 CentredInSlot(Rectangle frame)
+        {
+            return new Vector2((SlotWidth - frame.Width) / 2f, (SlotHeight - frame.Height) / 2f);
+        }
 
         private Sprite Flashing(Rectangle[] frames)
         {

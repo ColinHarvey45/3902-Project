@@ -23,6 +23,9 @@ namespace Interfaces
         // The rupees, keys and bombs he is carrying
         public PlayerInventory Inventory { get; }
 
+        // The item in his B slot, which is the one he uses with the B key; it is chosen on the pause screen
+        public SecondaryItem EquippedItem { get; set; }
+
         public ICollider Collider { get; }
 
         // His sword's hitbox while he is swinging it, or null when he isn't, and how much it hurts an enemy

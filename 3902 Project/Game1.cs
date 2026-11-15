@@ -24,6 +24,11 @@ namespace CSE_3902_Project
         private KeyboardController keyboard;
         private MouseController mouse;
         private Hud hud;
+        private PauseScreen pauseScreen;
+
+        // The game and the pause screen each have their own keys; only one set is live at a time
+        private KeyboardController pauseKeyboard;
+        private bool isPaused;
 
         // The HUD above one dungeon room: the room is 16 x 11 tiles of 16px, drawn at 4x scale
         private const int ScreenWidth = 1024;
@@ -66,7 +71,10 @@ namespace CSE_3902_Project
             NpcSpriteFactory.Instance.LoadAllTextures(Content);
             AudioManager.Instance.LoadAllSounds(Content);
 
+            Solid.Load(GraphicsDevice);
+
             keyboard = new KeyboardController();
+            pauseKeyboard = new KeyboardController();
             mouse = new MouseController(GraphicsDevice.Viewport.Bounds);
             RegisterCommands();
 
@@ -81,6 +89,11 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.Escape, quit);
             keyboard.RegisterCommand(Keys.R, new ResetCommand(this));
             keyboard.RegisterCommand(Keys.M, new ToggleMuteCommand());
+
+            // The pause key works in both places, so it can also take the game out of pause
+            ICommand togglePause = new TogglePauseCommand(this);
+            keyboard.RegisterCommand(Keys.F, togglePause);
+            pauseKeyboard.RegisterCommand(Keys.F, togglePause);
         }
 
         // Link is rebuilt on every reset, so his keys are rebound to the new Link each time
@@ -108,7 +121,23 @@ namespace CSE_3902_Project
             keyboard.RegisterCommand(Keys.D3, placeBomb);
             keyboard.RegisterCommand(Keys.NumPad3, placeBomb);
 
+            // Uses the item in the B slot, which is chosen on the pause screen
+            ICommand useEquippedItem = new LinkUseEquippedItemCommand(link);
+            keyboard.RegisterCommand(Keys.X, useEquippedItem);
+            keyboard.RegisterCommand(Keys.B, useEquippedItem);
+
             keyboard.RegisterCommand(Keys.E, new LinkTakeDamageCommand(link));
+        }
+
+        // The pause screen is rebuilt on every reset too. The arrow keys move the highlight between the items,
+        // and G makes the highlighted one the item Link uses
+        private void RegisterPauseCommands()
+        {
+            pauseKeyboard.RegisterCommand(Keys.Up, new PauseMoveSelectionCommand(pauseScreen, Direction.Up));
+            pauseKeyboard.RegisterCommand(Keys.Down, new PauseMoveSelectionCommand(pauseScreen, Direction.Down));
+            pauseKeyboard.RegisterCommand(Keys.Left, new PauseMoveSelectionCommand(pauseScreen, Direction.Left));
+            pauseKeyboard.RegisterCommand(Keys.Right, new PauseMoveSelectionCommand(pauseScreen, Direction.Right));
+            pauseKeyboard.RegisterCommand(Keys.G, new PauseEquipItemCommand(pauseScreen));
         }
         
         // The rooms are rebuilt on every reset too, so these are rebound to the new rooms each time.
@@ -144,7 +173,20 @@ namespace CSE_3902_Project
             rooms = new RoomManager(link, dungeon, projectiles);
             RegisterRoomCommands();
 
-            hud = new Hud(link, rooms, DungeonLevel, GraphicsDevice);
+            hud = new Hud(link, rooms, DungeonLevel);
+
+            pauseScreen = new PauseScreen(link, rooms, hud);
+            RegisterPauseCommands();
+            isPaused = false;
+        }
+
+        // Pauses the game, or carries on if it is already paused; the pause key does this
+        public void TogglePause()
+        {
+            isPaused = !isPaused;
+
+            if (isPaused)
+                pauseScreen.Open();
         }
 
         protected override void Update(GameTime gameTime)
@@ -152,11 +194,21 @@ namespace CSE_3902_Project
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
+            // While the game is paused only the pause screen's keys work: the game's keys and the mouse are
+            // switched off (they still watch, so what was held when the pause ended isn't taken as a new press)
+            bool wasPaused = isPaused;
+            keyboard.IsEnabled = !wasPaused;
+            pauseKeyboard.IsEnabled = wasPaused;
+            mouse.IsEnabled = !wasPaused;
+
             // Runs the commands for any keys pressed or held, and mouse buttons clicked, this frame
             keyboard.Update();
+            pauseKeyboard.Update();
             mouse.Update();
 
-            rooms.Update(gameTime);
+            // Nothing moves or attacks while the game is paused
+            if (!wasPaused)
+                rooms.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -166,8 +218,17 @@ namespace CSE_3902_Project
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            rooms.Draw(spriteBatch);
-            hud.Draw(spriteBatch);
+
+            if (isPaused)
+            {
+                pauseScreen.Draw(spriteBatch);
+            }
+            else
+            {
+                rooms.Draw(spriteBatch);
+                hud.Draw(spriteBatch);
+            }
+
             spriteBatch.End();
 
             base.Draw(gameTime);

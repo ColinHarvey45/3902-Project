@@ -40,6 +40,9 @@ namespace Player
 
         public PlayerInventory Inventory { get; } = new();
 
+        // He starts with bombs in his B slot
+        public SecondaryItem EquippedItem { get; set; } = SecondaryItem.Bomb;
+
         // How much health his sword takes off an enemy it hits
         public int SwordDamage { get; } = 1;
 
