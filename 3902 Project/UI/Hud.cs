@@ -1,15 +1,14 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Player;
 using Rooms;
 using Sprites;
 using System;
+using System.Collections.Generic;
 
 namespace UI
 {
-    // The bar across the top of the screen: the dungeon's level and map (with the room Link is in), how many
-    // rupees, keys and bombs he has, what is in his B and A slots, and his hearts.
-    // Everything below is laid out in sheet pixels, like the HUD picture it is drawn on, and scaled up when drawn
     internal sealed class Hud
     {
         private const int Scale = (int)Sprite.Scale;
@@ -55,9 +54,6 @@ namespace UI
         private static readonly Rectangle MapMarker = new(2, 0, 3, 3);
         private static readonly Color MapMarkerColor = new(252, 252, 252);
 
-        // A single white pixel, stretched and tinted to fill in areas and draw the map marker
-        private static Texture2D pixel;
-
         private readonly IPlayer link;
         private readonly RoomManager rooms;
         private readonly int level;
@@ -70,12 +66,15 @@ namespace UI
         private readonly ISprite emptyHeart = HudSpriteFactory.Instance.CreateEmptyHeartSprite();
         private readonly ISprite mapRoom = HudSpriteFactory.Instance.CreateMapRoomSprite();
 
-        // Link's B slot holds a bomb, and his A slot his sword
-        private readonly ISprite bItem = ItemSpriteFactory.Instance.CreateBombSprite();
+        // The B slot shows whichever item Link has equipped, and the A slot his sword
+        private readonly Dictionary<SecondaryItem, ISprite> bItems = [];
         private readonly ISprite aItem = ItemSpriteFactory.Instance.CreateSwordSprite();
 
+        // Where the top-left corner of the HUD is on screen this time it is drawn
+        private Vector2 origin;
+
         // level is the dungeon's number, shown after "LEVEL-"
-        public Hud(IPlayer link, RoomManager rooms, int level, GraphicsDevice graphicsDevice)
+        public Hud(IPlayer link, RoomManager rooms, int level)
         {
             this.link = link;
             this.rooms = rooms;
@@ -84,16 +83,21 @@ namespace UI
             for (int digit = 0; digit < digits.Length; digit++)
                 digits[digit] = HudSpriteFactory.Instance.CreateDigitSprite(digit);
 
-            if (pixel == null)
-            {
-                pixel = new Texture2D(graphicsDevice, 1, 1);
-                pixel.SetData(new[] { Color.White });
-            }
+            foreach (SecondaryItem item in Enum.GetValues<SecondaryItem>())
+                bItems[item] = ItemSpriteFactory.Instance.CreateInventorySprite(item);
         }
 
+        // At the top of the screen
         public void Draw(SpriteBatch spriteBatch)
         {
-            frame.Draw(spriteBatch, Vector2.Zero);
+            Draw(spriteBatch, Vector2.Zero);
+        }
+
+        // The pause screen draws the HUD at the bottom of the screen, so it can go anywhere: at is its top-left corner
+        public void Draw(SpriteBatch spriteBatch, Vector2 at)
+        {
+            origin = at;
+            frame.Draw(spriteBatch, origin);
 
             foreach (Rectangle standIn in StandIns)
                 Fill(spriteBatch, standIn, Color.Black);
@@ -105,7 +109,7 @@ namespace UI
             DrawCount(spriteBatch, KeyCounterAt, link.Inventory.Keys);
             DrawCount(spriteBatch, BombCounterAt, link.Inventory.Bombs);
 
-            bItem.Draw(spriteBatch, Screen(BItemAt));
+            bItems[link.EquippedItem].Draw(spriteBatch, Screen(BItemAt));
             // The sword is 7 pixels wide in a slot 8 wide, so it is shifted half a pixel to sit in the middle
             aItem.Draw(spriteBatch, Screen(AItemAt) + new Vector2(Scale / 2f, 0));
 
@@ -165,15 +169,17 @@ namespace UI
         }
 
         // area is in sheet pixels
-        private static void Fill(SpriteBatch spriteBatch, Rectangle area, Color color)
+        private void Fill(SpriteBatch spriteBatch, Rectangle area, Color color)
         {
-            spriteBatch.Draw(pixel, new Rectangle(area.X * Scale, area.Y * Scale, area.Width * Scale, area.Height * Scale), color);
+            Solid.Fill(spriteBatch,
+                new Rectangle((int)origin.X + area.X * Scale, (int)origin.Y + area.Y * Scale, area.Width * Scale, area.Height * Scale),
+                color);
         }
 
         // Where a point on the frame, in sheet pixels, is on screen
-        private static Vector2 Screen(Point sheetPixels)
+        private Vector2 Screen(Point sheetPixels)
         {
-            return new Vector2(sheetPixels.X * Scale, sheetPixels.Y * Scale);
+            return origin + new Vector2(sheetPixels.X * Scale, sheetPixels.Y * Scale);
         }
     }
 }

@@ -14,6 +14,10 @@ namespace Player
         public int Keys { get; private set; }
         public int Bombs { get; private set; } = StartingBombs;
 
+        // The dungeon's map and compass, which the pause screen shows once Link has found them
+        public bool HasMap { get; private set; }
+        public bool HasCompass { get; private set; }
+
         public void AddRupees(int amount)
         {
             Rupees = Math.Min(MaxCount, Rupees + amount);
@@ -27,6 +31,16 @@ namespace Player
         public void AddBombs(int amount)
         {
             Bombs = Math.Min(MaxCount, Bombs + amount);
+        }
+
+        public void CollectMap()
+        {
+            HasMap = true;
+        }
+
+        public void CollectCompass()
+        {
+            HasCompass = true;
         }
 
         // Uses up a bomb if he has one; false if he has none left

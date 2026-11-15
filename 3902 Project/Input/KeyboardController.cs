@@ -33,10 +33,17 @@ namespace Input
                 heldCommands.Add(binding);
         }
 
+        // While this is false no commands run, but the keys are still watched, so a key that was already held
+        // when it turns back on doesn't count as newly pressed
+        public bool IsEnabled { get; set; } = true;
+
         public void Update()
         {
             previousKeyboardState = currentKeyboardState;
             currentKeyboardState = Keyboard.GetState();
+
+            if (!IsEnabled)
+                return;
 
             foreach (Keys key in currentKeyboardState.GetPressedKeys())
             {

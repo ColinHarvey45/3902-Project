@@ -23,12 +23,15 @@ namespace Input
             rightClickCommand = command;
         }
 
+        // While this is false clicks do nothing, but the buttons are still watched
+        public bool IsEnabled { get; set; } = true;
+
         public void Update()
         {
             previousMouseState = currentMouseState;
             currentMouseState = Mouse.GetState();
 
-            if (!window.Contains(currentMouseState.Position))
+            if (!IsEnabled || !window.Contains(currentMouseState.Position))
                 return;
 
             if (WasClicked(currentMouseState.LeftButton, previousMouseState.LeftButton))

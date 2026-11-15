@@ -165,9 +165,17 @@ namespace Rooms
                     break;
 
                 case "Door":
+                {
                     ExpectValues(fields, 2);
-                    room.AddBlock(Find(DoorKinds, fields[2], "door")(ParseWall(fields[1])));
+                    Direction side = ParseWall(fields[1]);
+                    room.AddBlock(Find(DoorKinds, fields[2], "door")(side));
+
+                    // Anything but a plain wall is a doorway, which the pause screen's map shows
+                    if (fields[2] != nameof(Wall))
+                        room.AddDoorway(side);
+
                     break;
+                }
 
                 case "Floor":
                     ExpectValues(fields, 1);
