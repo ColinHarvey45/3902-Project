@@ -34,7 +34,9 @@ namespace Audio
             [Sound.GetRupee] = "LOZ_Get_Rupee",
             [Sound.Fanfare] = "LOZ_Fanfare",
             [Sound.DoorUnlock] = "LOZ_Door_Unlock",
-            [Sound.Stairs] = "LOZ_Stairs"
+            [Sound.Stairs] = "LOZ_Stairs",
+            [Sound.Secret] = "LOZ_Secret",
+            [Sound.Text] = "LOZ_Text"
         };
 
         private readonly Dictionary<Sound, SoundEffect> soundEffects = [];

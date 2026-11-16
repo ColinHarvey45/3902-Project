@@ -26,10 +26,12 @@ namespace Projectiles
 
         public ICollider Collider { get; set; }
 
+        // Twice the sword's damage
+        private const int ArrowDamage = 2;
+
         public bool IsFinished { get; private set; }
-        public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Link;
-        public bool HitsEveryEnemyInRange => false;
+        public bool IsBlast => false;
 
         // startPosition is where the middle of the arrow starts
         public Arrow(Vector2 startPosition, Direction direction)
@@ -61,6 +63,11 @@ namespace Projectiles
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch, position);
+        }
+
+        public void HitEnemy(IDamageable enemy)
+        {
+            enemy.TakeDamage(ArrowDamage, position);
         }
 
         public void Hit()

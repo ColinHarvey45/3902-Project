@@ -27,6 +27,8 @@ namespace Audio
 
         // The dungeon
         DoorUnlock,
-        Stairs
+        Stairs,
+        Secret,
+        Text
     }
 }

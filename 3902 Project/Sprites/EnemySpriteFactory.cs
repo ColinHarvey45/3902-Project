@@ -28,9 +28,14 @@ namespace Sprites
         private static readonly Rectangle[] AquamentusFrames = [new(51, 1, 24, 32), new(76, 1, 24, 32)];
         private static readonly Rectangle[] AquamentusMouthOpenFrames = [new(1, 1, 24, 32), new(26, 1, 24, 32)];
 
+        // --- Enemy death sheet: a burst of light that shrinks away ---
+        private static readonly Rectangle[] DeathPuffFrames = [new(0, 0, 16, 16), new(16, 0, 16, 16), new(32, 0, 16, 16), new(48, 0, 15, 16)];
+        private const float DeathPuffFrameTime = 0.08f;
+
 
         private Texture2D texture;
         private Texture2D bossTexture;
+        private Texture2D deathTexture;
 
         public static EnemySpriteFactory Instance { get; } = new EnemySpriteFactory();
 
@@ -42,6 +47,13 @@ namespace Sprites
         {
             texture = content.Load<Texture2D>("TLOZDungeonEnemies-transparent");
             bossTexture = content.Load<Texture2D>("TLOZBosses-transparent");
+            deathTexture = content.Load<Texture2D>("TLOZEnemyDeath");
+        }
+
+        // Plays once, then IsFinished
+        public ISprite CreateDeathPuffSprite()
+        {
+            return new Sprite(deathTexture, SpriteFrame.FromSources(DeathPuffFrames), DeathPuffFrameTime, loops: false);
         }
 
         public ISprite CreateStalfosSprite()

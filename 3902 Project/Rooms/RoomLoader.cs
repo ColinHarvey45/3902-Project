@@ -28,10 +28,12 @@ namespace Rooms
     //   Warp,<column>,<row>,<room>,<column>,<row>
     //                                 stepping onto that tile takes Link to the room with that file name, where he
     //                                 is put on the second tile, e.g. the stairs: Warp,6,3,Room16_BowPassage,1,-1
+    //   SideView                      the room is seen from the side, like the underground passage: Link walks along
+    //                                 the bricks, climbs only ladders, and falls (see SideView)
     // Kinds are class names. Columns run 0-11 and rows 0-6 across the floor, and halves like 5.5 are
     // allowed (as are tiles past the floor, like -1, in a room without the usual walls).
     // Blank lines, and lines starting with #, are ignored.
-    // projectiles is where Goriya and Aquamentus put what they throw and breathe
+    // projectiles is where Goriya, Aquamentus and the Old Man's fires put what they throw, breathe and shoot
     internal sealed class RoomLoader(ProjectileManager projectiles)
     {
         private const char NothingOnTile = '.';
@@ -40,6 +42,7 @@ namespace Rooms
         private static readonly Dictionary<char, Func<Vector2, IBlock>> TileSymbols = new()
         {
             ['Q'] = position => new SquareBlock(position),
+            ['P'] = position => new PushableBlock(position),
             ['F'] = position => new FishStatue(position),
             ['D'] = position => new DragonStatue(position),
             ['G'] = position => new BlueGap(position),
@@ -59,7 +62,7 @@ namespace Rooms
             [nameof(Wall)] = side => new Wall(side)
         };
 
-        private static readonly Dictionary<string, Func<Vector2, IBlock>> BlockKinds = new()
+        private readonly Dictionary<string, Func<Vector2, IBlock>> blockKinds = new()
         {
             [nameof(SquareBlock)] = position => new SquareBlock(position),
             [nameof(FishStatue)] = position => new FishStatue(position),
@@ -71,7 +74,7 @@ namespace Rooms
             [nameof(Stairs)] = position => new Stairs(position),
             [nameof(WhiteBrick)] = position => new WhiteBrick(position),
             [nameof(Ladder)] = position => new Ladder(position),
-            [nameof(FireBlock)] = position => new FireBlock(position)
+            [nameof(FireBlock)] = position => new FireBlock(position, projectiles)
         };
 
         private readonly Dictionary<string, Func<Vector2, IEnemy>> enemyKinds = new()
@@ -190,7 +193,7 @@ namespace Rooms
                     break;
 
                 case "Block":
-                    room.AddBlock(CreateOnTile(BlockKinds, fields, "block"));
+                    room.AddBlock(CreateOnTile(blockKinds, fields, "block"));
                     break;
 
                 case "Enemy":
@@ -209,9 +212,14 @@ namespace Rooms
                     room.AddWarp(ParseWarp(fields));
                     break;
 
+                case "SideView":
+                    ExpectValues(fields, 0);
+                    room.ViewFromTheSide();
+                    break;
+
                 default:
                     throw new InvalidDataException(
-                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc, Item or Warp)");
+                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc, Item, Warp or SideView)");
             }
         }
 

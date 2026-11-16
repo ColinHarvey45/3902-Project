@@ -22,9 +22,8 @@ namespace Projectiles
         public ICollider Collider { get; set; }
 
         public bool IsFinished { get; private set; }
-        public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Enemy;
-        public bool HitsEveryEnemyInRange => false;
+        public bool IsBlast => false;
 
         // velocity is in pixels per second
         public Fireball(Vector2 startPosition, Vector2 velocity)
@@ -55,6 +54,9 @@ namespace Projectiles
         {
             sprite.Draw(spriteBatch, position);
         }
+
+        // Fireballs only ever hurt Link
+        public void HitEnemy(IDamageable enemy) { }
 
         public void Hit()
         {

@@ -13,6 +13,9 @@ namespace Enemies
         private const int ThrowChancePercent = 40; // chance of throwing each time it turns
         private const float BoomerangSpawnDistance = 24f;
 
+        // Three sword hits, as in the NES
+        private const int GoriyaHealth = 3;
+
         private readonly ProjectileManager projectiles;
         private IEnemyState state;
         private Boomerang boomerang;
@@ -22,6 +25,7 @@ namespace Enemies
             : base(startPosition)
         {
             this.projectiles = projectiles;
+            Health = new EnemyHealth(GoriyaHealth);
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
             state = new GoriyaWalkingState(this);
         }

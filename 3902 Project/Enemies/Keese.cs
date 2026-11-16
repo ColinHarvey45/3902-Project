@@ -36,6 +36,8 @@ namespace Enemies
         // Keese fly over blocks, and their wandering already keeps them off the walls
         public override void OnBlocked(Vector2 push) { }
 
+        protected override bool KilledByBoomerang => true;
+
         // Called by the flying state every frame: flutters at the given speed, flapping its wings
         public void Fly(GameTime gameTime, float speed)
         {

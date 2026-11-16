@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Audio;
+using Enemies;
 using Interfaces;
+using Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Player;
@@ -27,9 +29,20 @@ namespace Rooms
         private readonly List<INpc> npcs = [];
         private readonly List<IEnemy> enemies = [];
 
+        // The bursts left where enemies have just died
+        private readonly List<DeathPuff> deathPuffs = [];
+
         // Where the room is on the dungeon map in the HUD (column and row, counted from 0), or null for
         // a room that isn't on it, like the test room and the underground passage
         public Point? MapPosition { get; private set; }
+
+        // True for a room seen from the side, like the underground passage (see SideView)
+        public bool IsSideView { get; private set; }
+
+        public void ViewFromTheSide()
+        {
+            IsSideView = true;
+        }
 
         // True once Link has been in the room, which is when it appears on the pause screen's map
         public bool Visited { get; private set; }
@@ -121,10 +134,55 @@ namespace Rooms
             items.Remove(item);
         }
 
-        // Enemies that have died disappear from the room for good
+        // Enemies that have died disappear from the room for good, leaving a burst of light where they were, and
+        // sometimes an item (see ItemDrops); a Zol that split leaves its two Gels instead
         public void RemoveDeadEnemies()
         {
-            enemies.RemoveAll(enemy => enemy is IDamageable damageable && damageable.IsDead);
+            List<IEnemy> dead = enemies.FindAll(enemy => enemy is IDamageable { IsDead: true });
+
+            foreach (IEnemy enemy in dead)
+            {
+                enemies.Remove(enemy);
+
+                if (enemy is ISplittingEnemy { Pieces.Count: > 0 } splitEnemy)
+                {
+                    enemies.AddRange(splitEnemy.Pieces);
+                    continue;
+                }
+
+                Vector2 middle = enemy.Collider.GetCollider().Center.ToVector2();
+                deathPuffs.Add(new DeathPuff(middle, ItemDrops.Roll(middle)));
+            }
+        }
+
+        // Once a burst has gone, whatever the enemy dropped is left lying there
+        private void UpdateDeathPuffs(GameTime gameTime)
+        {
+            foreach (DeathPuff deathPuff in deathPuffs)
+            {
+                deathPuff.Update(gameTime);
+
+                if (deathPuff.IsFinished && deathPuff.Drop != null)
+                    items.Add(deathPuff.Drop);
+            }
+
+            deathPuffs.RemoveAll(deathPuff => deathPuff.IsFinished);
+        }
+
+        // Lets everything that reacts to Link (like the Blade Traps) see where he is
+        public void ShowLinkToWatchers(Rectangle link)
+        {
+            foreach (IEnemy enemy in enemies)
+            {
+                if (enemy is ILinkWatcher watcher)
+                    watcher.Watch(link);
+            }
+
+            foreach (IBlock block in blocks)
+            {
+                if (block is ILinkWatcher watcher)
+                    watcher.Watch(link);
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -141,11 +199,18 @@ namespace Rooms
             foreach (IEnemy enemy in enemies)
                 enemy.Update(gameTime);
 
-            if (enemies.Count == 0)
+            UpdateDeathPuffs(gameTime);
+
+            if (ShuttersShouldOpen)
                 OpenShutters();
         }
 
-        // Shutter doors open once every enemy in the room is gone, with the door sound
+        // As in the NES, a room with a block to push opens its shutters once the block has been pushed; any other
+        // room opens them once every enemy in it is gone
+        private bool ShuttersShouldOpen =>
+            blocks.Find(block => block is IPushableBlock) is IPushableBlock pushable ? pushable.HasMoved : enemies.Count == 0;
+
+        // Opens the shutter doors, with the door sound
         private void OpenShutters()
         {
             bool opened = false;
@@ -162,7 +227,7 @@ namespace Rooms
                 AudioManager.Instance.Play(Sound.DoorUnlock);
         }
 
-        // Back to front: walls and floor, blocks and doors, items, NPCs, then enemies
+        // Back to front: walls and floor, blocks and doors, items, NPCs, enemies, then the bursts where enemies died
         public void Draw(SpriteBatch spriteBatch)
         {
             if (hasDungeonWalls)
@@ -182,6 +247,9 @@ namespace Rooms
 
             foreach (IEnemy enemy in enemies)
                 enemy.Draw(spriteBatch);
+
+            foreach (DeathPuff deathPuff in deathPuffs)
+                deathPuff.Draw(spriteBatch);
         }
 
         // The arches over the doorways, drawn after Link and his weapons so they go under them (see IDoor)

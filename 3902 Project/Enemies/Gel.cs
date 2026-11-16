@@ -13,11 +13,17 @@ namespace Enemies
         private const int GelColliderHeight = (int)(12 * Sprites.Sprite.Scale);
         private static readonly Point GelColliderOffset = new(0, (int)(2 * Sprites.Sprite.Scale));
 
-        public Gel(Vector2 startPosition)
+        // fromSplit is true for the two Gels a Zol splits into, which can't be hurt for a moment (see Zol)
+        public Gel(Vector2 startPosition, bool fromSplit = false)
             : base(startPosition, GelHopSpeed, GelHopTime, GelMaxRestTime,
                 GelColliderWidth, GelColliderHeight, GelColliderOffset)
         {
             Sprite = EnemySpriteFactory.Instance.CreateGelSprite();
+
+            if (fromSplit)
+                Health.StartGracePeriod();
         }
+
+        protected override bool KilledByBoomerang => true;
     }
 }

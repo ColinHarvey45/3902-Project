@@ -15,8 +15,20 @@ namespace Enemies
     {
         private const float DefaultDirectionChangeTime = 2f;
         private const float WalkSpeed = 1f; // pixels per frame
+
+        // How long the boomerang stops an enemy for
+        private const float StunTime = 2f; // seconds
+
+        // A blow an enemy survives knocks it back a tile, quickly, unless it hits a wall or a block first
+        private const float KnockbackDistance = RoomLayout.TileSize;
+        private const float KnockbackSpeed = 8f; // pixels per frame
+
         // Every enemy starts with 1 health; a subclass that should be tougher sets Health to a new EnemyHealth(n)
         protected EnemyHealth Health { get; set; } = new();
+
+        private float stunTimeLeft;
+        private Vector2 knockbackDirection;
+        private float knockbackLeft;
 
         protected static readonly Random RandomGenerator = new();
 
@@ -49,20 +61,70 @@ namespace Enemies
             this.Collider = new BoxCollider(
                 new Rectangle((int)startPosition.X, (int)startPosition.Y, colliderWidth, colliderHeight),
                 colliderOffset);
+
+            // Where the hitbox really is, offset and all, before the enemy has first moved
+            UpdateCollider();
         }
 
-        public void TakeDamage(int damage)
+        public virtual void TakeDamage(int damage, Vector2 hitFrom)
         {
+            if (IsDead || IsInvincible)
+                return;
+
             Health.TakeDamage(damage);
+
+            if (!IsDead)
+                KnockBackFrom(hitFrom);
         }
 
-        // The hurt flash is always updated here, so enemies that move differently only override UpdateBehavior
+        // The smallest enemies (Gel and Keese) are killed by the boomerang; the rest are only stunned
+        protected virtual bool KilledByBoomerang => false;
+
+        public void Stun()
+        {
+            if (KilledByBoomerang)
+                TakeDamage(Health.HitPoints, Position);
+            else
+                stunTimeLeft = StunTime;
+        }
+
+        // Straight back along whichever way the blow mostly came from
+        private void KnockBackFrom(Vector2 hitFrom)
+        {
+            Vector2 away = Collider.GetCollider().Center.ToVector2() - hitFrom;
+            if (away == Vector2.Zero)
+                return;
+
+            knockbackDirection = Math.Abs(away.X) >= Math.Abs(away.Y)
+                ? new Vector2(Math.Sign(away.X), 0)
+                : new Vector2(0, Math.Sign(away.Y));
+            knockbackLeft = KnockbackDistance;
+        }
+
+        // The hurt flash is always updated here, so enemies that move differently only override UpdateBehavior.
+        // While it is being knocked back, or is stunned, it does nothing else
         public void Update(GameTime gameTime)
         {
             if (IsDead)
                 return;
 
             Health.Update(gameTime);
+
+            if (knockbackLeft > 0)
+            {
+                float step = Math.Min(KnockbackSpeed, knockbackLeft);
+                Position += knockbackDirection * step;
+                knockbackLeft -= step;
+                UpdateCollider();
+                return;
+            }
+
+            if (stunTimeLeft > 0)
+            {
+                stunTimeLeft -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                return;
+            }
+
             UpdateBehavior(gameTime);
         }
 
@@ -97,11 +159,13 @@ namespace Enemies
             Collider.Update(Position);
         }
 
-        // Walked into a wall or a solid block: step back out, and head off a new way
+        // Walked into a wall or a solid block: step back out, and head off a new way. Knocked back into one,
+        // it stops there
         public virtual void OnBlocked(Vector2 push)
         {
             Position += push;
             UpdateCollider();
+            knockbackLeft = 0;
 
             Vector2 oldDirection = CurrentDirection;
             Movement.TurnRandomly();

@@ -26,10 +26,12 @@ namespace Projectiles
         private float fuseTimer;
         private bool isExploding;
 
+        // Four times the sword's damage
+        private const int BlastDamage = 4;
+
         public bool IsFinished => explosionSprite.IsFinished;
-        public int Damage { get; } = 1;
         public ProjectileOwner Owner => ProjectileOwner.Link;
-        public bool HitsEveryEnemyInRange => true;
+        public bool IsBlast => true;
 
         // None until it explodes, so nothing is hurt while the fuse burns
         public ICollider Collider { get; set; }
@@ -57,6 +59,12 @@ namespace Projectiles
             Collider = new BoxCollider(new Rectangle(0, 0, BlastSize, BlastSize), BlastOffset);
             Collider.Update(position);
             AudioManager.Instance.Play(Sound.BombBlow);
+        }
+
+        // Enemies are blown away from the middle of the smoke cloud
+        public void HitEnemy(IDamageable enemy)
+        {
+            enemy.TakeDamage(BlastDamage, position + CloudCenter.ToVector2());
         }
 
         public void Hit() { }

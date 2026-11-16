@@ -1,6 +1,9 @@
 # Level 1: the underground passage below the stairs, with the bow and 4 Keese.
 # The whole screen is bricks and ladders, so it uses Tiles lines (16 x 11, walls included) instead of
 # the usual walls and Floor lines. Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
+# As in the NES it is seen from the side: Link walks along the bricks and climbs the ladders
+
+SideView
 
 Tiles,................
 Tiles,WWWLWWWWWWWWWWWW

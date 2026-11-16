@@ -26,6 +26,9 @@ namespace Rooms
         // The rooms on the dungeon map, by their place on it
         private readonly Dictionary<Point, Room> roomsOnMap = [];
 
+        // Where Link starts, and where a Wallmaster takes him back to
+        private readonly Room entrance;
+
         public Room CurrentRoom => rooms.Current;
 
         // Every room in the dungeon, which the HUD draws on its map
@@ -52,7 +55,8 @@ namespace Rooms
 
             CheckWarpsLeadSomewhere();
 
-            this.rooms.MoveTo(FindRoom(startRoom));
+            entrance = FindRoom(startRoom);
+            this.rooms.MoveTo(entrance);
             CurrentRoom.MarkVisited();
         }
 
@@ -88,7 +92,12 @@ namespace Rooms
         // Everything moves first, then whatever ended up touching is sorted out
         public void Update(GameTime gameTime)
         {
+            Vector2 linkBefore = link.Position;
             link.Update(gameTime);
+            if (CurrentRoom.IsSideView)
+                SideView.Apply(link, CurrentRoom, linkBefore);
+
+            CurrentRoom.ShowLinkToWatchers(link.Collider.GetCollider());
             CurrentRoom.Update(gameTime);
             projectiles.Update(gameTime);
 
@@ -103,6 +112,18 @@ namespace Rooms
 
             UnlockDoorsOnTheOtherSide();
             TakeWarp();
+            ReturnLinkIfCarriedOff();
+        }
+
+        // A Wallmaster that has carried Link off takes him back to the entrance of the dungeon, as in the NES
+        private void ReturnLinkIfCarriedOff()
+        {
+            if (CurrentRoom.Enemies.FirstOrDefault(enemy => enemy is ILinkGrabber { HasCarriedLinkOff: true }) is not ILinkGrabber grabber)
+                return;
+
+            grabber.Release();
+            EnterRoom(entrance);
+            link.PlaceAt(RoomLayout.EntryPosition(Direction.Down));
         }
 
         // Back to front: the room, then Link, then anything flying over them, then the doorways' arches, which

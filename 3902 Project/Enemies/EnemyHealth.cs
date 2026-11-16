@@ -60,6 +60,20 @@ namespace Enemies
             ResetFlash();
         }
 
+        // Gone at once, with no sound: for a Zol that splits into two Gels
+        public void Vanish()
+        {
+            HitPoints = 0;
+        }
+
+        // Flashes and can't be hurt for a moment, as if just hit: for the Gels a Zol splits into, so the blow
+        // that split it doesn't kill them too
+        public void StartGracePeriod()
+        {
+            IsInvincible = true;
+            ResetFlash();
+        }
+
         public void Update(GameTime gameTime)
         {
             if (!IsInvincible)

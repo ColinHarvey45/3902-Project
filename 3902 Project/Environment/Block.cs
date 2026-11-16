@@ -19,7 +19,10 @@ namespace Environment
         // Blocks are solid unless a kind of block says otherwise
         public virtual bool IsSolid => true;
 
-        public void Update(GameTime gameTime)
+        // Only ladders can be climbed
+        public virtual bool IsClimbable => false;
+
+        public virtual void Update(GameTime gameTime)
         {
             Sprite.Update(gameTime);
         }

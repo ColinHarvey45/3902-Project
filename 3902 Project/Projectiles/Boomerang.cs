@@ -30,9 +30,8 @@ namespace Projectiles
         public ICollider Collider { get; set; }
 
         public bool IsFinished { get; private set; }
-        public int Damage { get; } = 1;
         public ProjectileOwner Owner { get; }
-        public bool HitsEveryEnemyInRange => false;
+        public bool IsBlast => false;
 
         public Boomerang(ISprite sprite, Vector2 spawnPosition, Vector2 direction, IBoomerangThrower thrower, ProjectileOwner owner)
         {
@@ -81,6 +80,12 @@ namespace Projectiles
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch, position);
+        }
+
+        // Link's boomerang doesn't hurt: it stuns (see IDamageable.Stun)
+        public void HitEnemy(IDamageable enemy)
+        {
+            enemy.Stun();
         }
 
         // Turns back when it hits something

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Interfaces;
 using Microsoft.Xna.Framework;
+using Player;
 using Projectiles;
 using Rooms;
 
@@ -22,6 +23,7 @@ namespace Collisions
         public static void HandleCollisions(IPlayer link, Room room, ProjectileManager projectiles)
         {
             SwordHitsEnemies(link, room);
+            SwordProvokesGuards(link, room);
             LinksProjectilesHitEnemies(room, projectiles);
 
             // Anything killed this frame is gone before it can touch Link
@@ -29,6 +31,7 @@ namespace Collisions
 
             EnemiesHurtLink(link, room);
             EnemyProjectilesHitLink(link, projectiles);
+            BlastsHurtLink(link, projectiles);
             ProjectilesHitWallsAndBlocks(room, projectiles);
 
             // A door Link unlocks this frame no longer stops him
@@ -38,18 +41,32 @@ namespace Collisions
             LinkPicksUpItems(link, room);
         }
 
-        // Link's sword hurts every enemy it touches
+        // Link's sword hurts every enemy it touches, knocking it back away from him
         private static void SwordHitsEnemies(IPlayer link, Room room)
         {
             if (link.SwordCollider is not ICollider sword)
                 return;
 
+            Vector2 linkMiddle = link.Collider.GetCollider().Center.ToVector2();
             foreach (IDamageable enemy in HurtableEnemiesTouching(sword, room))
-                enemy.TakeDamage(link.SwordDamage);
+                enemy.TakeDamage(link.SwordDamage, linkMiddle);
         }
 
-        // An arrow or boomerang hurts the first enemy it touches and is used up (or turns back);
-        // a bomb's explosion hurts every enemy in the blast
+        // Attacking the Old Man with the sword sets off the fires beside him, as in the NES
+        private static void SwordProvokesGuards(IPlayer link, Room room)
+        {
+            if (link.SwordCollider is not ICollider sword || !room.Npcs.Any(npc => sword.Intersects(npc.Collider)))
+                return;
+
+            foreach (IBlock block in room.Blocks)
+            {
+                if (block is INpcGuard guard)
+                    guard.Provoke();
+            }
+        }
+
+        // An arrow or boomerang hits the first enemy it touches and is used up (or turns back);
+        // a bomb's explosion hits every enemy in the blast. Each decides what the hit does (see IProjectile)
         private static void LinksProjectilesHitEnemies(Room room, ProjectileManager projectiles)
         {
             foreach (IProjectile projectile in projectiles.ActiveProjectiles)
@@ -59,9 +76,9 @@ namespace Collisions
 
                 foreach (IDamageable enemy in HurtableEnemiesTouching(projectile.Collider, room))
                 {
-                    enemy.TakeDamage(projectile.Damage);
+                    projectile.HitEnemy(enemy);
 
-                    if (!projectile.HitsEveryEnemyInRange)
+                    if (!projectile.IsBlast)
                     {
                         projectile.Hit();
                         break;
@@ -70,12 +87,18 @@ namespace Collisions
             }
         }
 
-        // Touching an enemy hurts Link (his health state ignores it while he is flashing from a hit)
+        // Touching an enemy hurts Link (his health state ignores it while he is flashing from a hit), except a
+        // Wallmaster, which catches him instead
         private static void EnemiesHurtLink(IPlayer link, Room room)
         {
             foreach (IEnemy enemy in room.Enemies)
             {
-                if (enemy.Collider != null && link.Collider.Intersects(enemy.Collider))
+                if (enemy.Collider == null || !link.Collider.Intersects(enemy.Collider))
+                    continue;
+
+                if (enemy is ILinkGrabber grabber)
+                    grabber.Grab(link);
+                else
                     link.TakeDamage();
             }
         }
@@ -91,6 +114,16 @@ namespace Collisions
                     link.TakeDamage();
                     projectile.Hit();
                 }
+            }
+        }
+
+        // Link's own bomb hurts him too if he is caught in the blast, so he has to get clear of it
+        private static void BlastsHurtLink(IPlayer link, ProjectileManager projectiles)
+        {
+            foreach (IProjectile projectile in projectiles.ActiveProjectiles)
+            {
+                if (projectile.IsBlast && projectile.Collider != null && link.Collider.Intersects(projectile.Collider))
+                    link.TakeDamage();
             }
         }
 
@@ -138,7 +171,36 @@ namespace Collisions
                 }
             }
 
+            LinkPushesBlocks(link, room, obstacles, pushedBack);
             LinkSidestepsCorners(link, obstacles, pushedBack);
+        }
+
+        // Link walking straight into a pushable block pushes it; once he has pushed long enough it slides a tile,
+        // as long as that tile is clear floor
+        private static void LinkPushesBlocks(IPlayer link, Room room, List<Rectangle> obstacles, Vector2 pushedBack)
+        {
+            if (pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
+                return;
+
+            Direction pushing = (-pushedBack).ToDirection();
+            Rectangle reach = link.Collider.GetCollider();
+            reach.Offset(pushing.ToVector().ToPoint());
+
+            foreach (IBlock block in room.Blocks)
+            {
+                if (block is not IPushableBlock pushable || !reach.Intersects(pushable.Collider.GetCollider())
+                    || !pushable.PushedBy(pushing))
+                    continue;
+
+                Rectangle itself = pushable.Collider.GetCollider();
+                Rectangle destination = pushable.Destination(pushing);
+                bool clear = RoomLayout.FloorBounds.Contains(destination)
+                    && !obstacles.Exists(obstacle => obstacle != itself && obstacle.Intersects(destination))
+                    && !room.Enemies.Any(enemy => enemy.Collider != null && enemy.Collider.GetCollider().Intersects(destination));
+
+                if (clear)
+                    pushable.Slide(pushing);
+            }
         }
 
         // Link walking into the corner of a wall or block, with most of him past it already, steps sideways round

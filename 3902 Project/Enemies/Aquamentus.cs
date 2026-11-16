@@ -17,6 +17,9 @@ namespace Enemies
         private const float PaceDistance = 48f; // how far it walks either side of where it started
         private const float FireballSpeed = 150f; // pixels per second
 
+        // Six sword hits (three arrows, two bombs), as in the NES
+        private const int AquamentusHealth = 6;
+
         // It roars as Link comes in, and again every few seconds while it is alive
         private const float RoarInterval = 3f; // seconds
 
@@ -39,7 +42,7 @@ namespace Enemies
         private readonly ProjectileManager projectiles;
         private float paceDirection = -1f;
         private IEnemyState state;
-        private readonly EnemyHealth health = new(EnemyHealth.DefaultHealth, Sound.BossHit);
+        private readonly EnemyHealth health = new(AquamentusHealth, Sound.BossHit);
         private float roarTimer = RoarInterval;
 
         public Vector2 Position { get; private set; }
@@ -76,10 +79,14 @@ namespace Enemies
             state = newState;
         }
 
-        public void TakeDamage(int damage)
+        // Too big to be knocked back
+        public void TakeDamage(int damage, Vector2 hitFrom)
         {
             health.TakeDamage(damage);
         }
+
+        // The boomerang just bounces off it
+        public void Stun() { }
 
         public void Update(GameTime gameTime)
         {

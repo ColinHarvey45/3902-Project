@@ -14,6 +14,15 @@ namespace Player
             _ => new Vector2(1, 0)
         };
 
+        // The direction a vector mostly points in
+        public static Direction ToDirection(this Vector2 vector)
+        {
+            if (System.Math.Abs(vector.X) >= System.Math.Abs(vector.Y))
+                return vector.X < 0 ? Direction.Left : Direction.Right;
+
+            return vector.Y < 0 ? Direction.Up : Direction.Down;
+        }
+
         // The way back, e.g. the wall Link comes in by after leaving the last room through the one facing it
         public static Direction Opposite(this Direction direction) => direction switch
         {
