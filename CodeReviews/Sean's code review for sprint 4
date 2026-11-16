@@ -1,0 +1,76 @@
+READABILITY REVIEW
+ 
+Author of code review: Sean Kong
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: UI/Hud.cs
+Author of file reviewed: Frank An
+Time taken to complete review: 10 minutes
+ 
+COMMENTS - WHAT IS READABLE:
+- The class is well commented. Almost every constant and non-obvious step has a short
+  comment saying why, not just what: the frame is as wide as a room, the hearts fill the
+  bottom row first, the sword is 7 pixels wide in an 8 pixel slot so it is shifted half a
+  pixel. A new reader can follow the layout without opening the sprite sheet.
+- Names are descriptive and consistent: LevelLabelAt, RupeeCounterAt, HeartsAt,
+  DrawCount, DrawNumber, DrawHearts, DrawMap. The Draw method reads like a table of
+  contents for the HUD (frame, blank the stand-ins, label, counters, items, hearts, map).
+- Layout values are named constants (HeartsPerRow, MaxCountShown, GlyphSize, MapRoomWidth)
+  instead of bare numbers, and positions are grouped under one "Where things go on the
+  frame" comment.
+- Each helper is short (under 15 lines) and does one thing. Screen() and Fill() hide the
+  scale and origin math so the draw methods only deal in sheet pixels.
+- The two Draw overloads are explained (top of the screen vs. anywhere, for the pause
+  screen), so it is clear why both exist.
+ 
+COMMENTS - WHAT IS NOT READABLE:
+- In DrawMap, the local variable "Point origin" has the same name as the private field
+  "origin" (the top-left corner of the HUD on screen). Inside that block "origin" means a
+  map cell's position in sheet pixels, but everywhere else it means the HUD's position on
+  screen. A reader has to notice the shadowing to avoid misreading it, and Fill() on the
+  next line silently uses the field, not the local. A different name such as roomAt would
+  fix it.
+- The "origin" field is assigned inside Draw and then read by Screen() and Fill(), so a
+  reader has to know that those helpers only work after Draw has set it. Nothing in the
+  names or comments says so.
+
+
+CODE QUALITY REVIEW
+ 
+Author of code review: Sean Kong
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: UI/Hud.cs
+Author of file reviewed: Frank An
+ 
+COMMENTS ON CODE QUALITY:
+- Strengths: the class has one job (draw the HUD for a given player and room manager) and
+  it does not change game state. It depends on the IPlayer interface and RoomManager
+  rather than the concrete Link, the layout is data driven (named positions, scale
+  applied in one place), and the counters, hearts and map are clamped (MaxCountShown,
+  MaxHearts) so the drawing cannot overflow the frame.
+- Hidden mutable state in Draw: Draw(spriteBatch, at) writes the "origin" field and the
+  helper methods (Screen, Fill) read it. Because of this, the helpers are only correct if
+  they are called during a Draw, and the class is not safe to draw twice at different
+  positions at the same time (for example, if the pause screen and the gameplay view ever
+  draw it in the same frame). Passing the origin as a parameter, or using a small struct
+  that holds the origin and scale, would remove the hidden dependency.
+- Sprite creation is split between field initializers and the constructor (digits and
+  bItems are filled in the constructor, the others at the field). Putting them all in one
+  place would make it easier to see what the object owns.
+
+ 
+HYPOTHETICAL CHANGE:
+Suppose a future sprint adds half hearts (damage of half a heart) and a second row of
+status, such as a compass or the dungeon map item that only shows the map once Link has
+picked it up.
+- Half hearts: DrawHearts picks between only two sprites (full and empty) by comparing
+  the heart's index with Health, and Health is an int counted in whole hearts. Adding half
+  hearts means changing Link's health units (for example to half-heart points), adding a
+  half-heart sprite to HudSpriteFactory, and changing the index math in DrawHearts. The
+  change would be local to DrawHearts plus the factory, which is a good sign, but it also
+  touches Link and everything that calls LoseHealth.
+- Map visibility: DrawMap currently draws every room that has a MapPosition and does not
+  know which rooms Link has visited or whether he owns the map item. Hud would need to ask
+  the player or room manager for that, which means changing IPlayer or RoomManager, then
+  every class that implements them, not only Hud.
