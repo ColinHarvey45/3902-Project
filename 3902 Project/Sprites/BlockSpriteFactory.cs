@@ -70,11 +70,11 @@ namespace Sprites
         public ISprite CreateRoomWallsSprite() => Still(RoomWallsFrame);
         public ISprite CreateRoomFloorSprite() => Still(RoomFloorFrame);
 
-        public ISprite CreateWallSprite(Direction side) => Door(WallFrame, side);
-        public ISprite CreateOpenDoorSprite(Direction side) => Door(OpenDoorFrame, side);
-        public ISprite CreateKeyholeLockedDoorSprite(Direction side) => Door(KeyholeLockedDoorFrame, side);
-        public ISprite CreateDiamondLockedDoorSprite(Direction side) => Door(DiamondLockedDoorFrame, side);
-        public ISprite CreateBombedWallOpeningSprite(Direction side) => Door(BombedWallOpeningFrame, side);
+        public ISprite CreateWallSprite(Direction side) => Still(DoorFrame(WallFrame, side));
+        public DoorSprites CreateOpenDoorSprites(Direction side) => Door(OpenDoorFrame, side);
+        public DoorSprites CreateKeyholeLockedDoorSprites(Direction side) => Door(KeyholeLockedDoorFrame, side);
+        public DoorSprites CreateDiamondLockedDoorSprites(Direction side) => Door(DiamondLockedDoorFrame, side);
+        public DoorSprites CreateBombedWallOpeningSprites(Direction side) => Door(BombedWallOpeningFrame, side);
 
         public ISprite CreateFireSprite()
         {
@@ -86,8 +86,14 @@ namespace Sprites
             return new Sprite(dungeonTexture, new SpriteFrame(frame));
         }
 
+        private DoorSprites Door(Rectangle topWallFrame, Direction side)
+        {
+            Rectangle whole = DoorFrame(topWallFrame, side);
+            return new DoorSprites(Still(whole), new Sprite(dungeonTexture, ArchFrame(whole, side)));
+        }
+
         // Each door piece is drawn differently depending on which wall it sits in
-        private Sprite Door(Rectangle topWallFrame, Direction side)
+        private static Rectangle DoorFrame(Rectangle topWallFrame, Direction side)
         {
             int row = side switch
             {
@@ -100,7 +106,25 @@ namespace Sprites
             Rectangle frame = topWallFrame;
             frame.Y += row * DoorRowSpacing;
 
-            return Still(frame);
+            return frame;
+        }
+
+        // The half of a door piece on the outside of the room's wall, shifted so it lands on that half of the
+        // whole piece when both are drawn at the same place
+        private static SpriteFrame ArchFrame(Rectangle whole, Direction side)
+        {
+            int halfWidth = whole.Width / 2;
+            int halfHeight = whole.Height / 2;
+
+            return side switch
+            {
+                Direction.Up => new SpriteFrame(new Rectangle(whole.X, whole.Y, whole.Width, halfHeight)),
+                Direction.Down => new SpriteFrame(new Rectangle(whole.X, whole.Y + halfHeight, whole.Width, halfHeight),
+                    Offset: new Vector2(0, halfHeight)),
+                Direction.Left => new SpriteFrame(new Rectangle(whole.X, whole.Y, halfWidth, whole.Height)),
+                _ => new SpriteFrame(new Rectangle(whole.X + halfWidth, whole.Y, halfWidth, whole.Height),
+                    Offset: new Vector2(halfWidth, 0))
+            };
         }
     }
 }

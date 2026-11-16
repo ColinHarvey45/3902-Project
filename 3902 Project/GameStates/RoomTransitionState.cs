@@ -60,18 +60,23 @@ namespace GameStates
             game.Play();
         }
 
-        // The old room moves off the screen the opposite way to Link, and the new one follows it on
+        // The old room moves off the screen the opposite way to Link, and the new one follows it on. Link passes
+        // under the arches of both rooms' doorways, which meet where the rooms do
         public void Draw(SpriteBatch spriteBatch)
         {
             Vector2 scrolled = nextRoomOffset * Progress;
+            Vector2 fromOffset = -scrolled;
+            Vector2 toOffset = nextRoomOffset - scrolled;
 
             // Moved, clipped drawing needs batches of its own, so the batch the states draw into is ended first
             // and begun again after
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = RoomLayout.Bounds;
-            DrawClipped(spriteBatch, -scrolled, from.Draw);
-            DrawClipped(spriteBatch, nextRoomOffset - scrolled, to.Draw);
+            DrawClipped(spriteBatch, fromOffset, from.Draw);
+            DrawClipped(spriteBatch, toOffset, to.Draw);
             DrawClipped(spriteBatch, Vector2.Zero, game.Link.Draw);
+            DrawClipped(spriteBatch, fromOffset, from.DrawArches);
+            DrawClipped(spriteBatch, toOffset, to.DrawArches);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             game.Hud.Draw(spriteBatch);

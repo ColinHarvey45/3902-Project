@@ -1,6 +1,5 @@
 using Interfaces;
 using Player;
-using Rooms;
 using Sprites;
 
 namespace Environment
@@ -8,8 +7,7 @@ namespace Environment
     // The shutter door, which sits in the gap in one of the room's walls (side). No key opens it: it stays shut
     // until the room opens it, and then looks like an open door and Link can walk through
     internal sealed class DiamondLockedDoor(Direction side)
-        : Block(RoomLayout.DoorPosition(side), BlockSpriteFactory.Instance.CreateDiamondLockedDoorSprite(side), RoomLayout.DoorSize),
-        IShutterDoor
+        : Door(side, BlockSpriteFactory.Instance.CreateDiamondLockedDoorSprites(side)), IShutterDoor
     {
         public bool IsOpen { get; private set; }
 
@@ -21,7 +19,7 @@ namespace Environment
                 return;
 
             IsOpen = true;
-            Sprite = BlockSpriteFactory.Instance.CreateOpenDoorSprite(side);
+            ChangeLook(BlockSpriteFactory.Instance.CreateOpenDoorSprites(Side));
         }
     }
 }

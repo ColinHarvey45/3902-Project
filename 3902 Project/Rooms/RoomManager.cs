@@ -104,12 +104,14 @@ namespace Rooms
             TakeWarp();
         }
 
-        // Back to front: the room, then Link, then anything flying over them
+        // Back to front: the room, then Link, then anything flying over them, then the doorways' arches, which
+        // Link and his weapons go under
         public void Draw(SpriteBatch spriteBatch)
         {
             CurrentRoom.Draw(spriteBatch);
             link.Draw(spriteBatch);
             projectiles.Draw(spriteBatch);
+            CurrentRoom.DrawArches(spriteBatch);
         }
 
         // Nothing fired in the old room follows Link into the new one

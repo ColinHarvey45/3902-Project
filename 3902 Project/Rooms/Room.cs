@@ -175,5 +175,15 @@ namespace Rooms
             foreach (IEnemy enemy in enemies)
                 enemy.Draw(spriteBatch);
         }
+
+        // The arches over the doorways, drawn after Link and his weapons so they go under them (see IDoor)
+        public void DrawArches(SpriteBatch spriteBatch)
+        {
+            foreach (IBlock door in doors.Values)
+            {
+                if (door is IDoor withArch)
+                    withArch.DrawArch(spriteBatch);
+            }
+        }
     }
 }
