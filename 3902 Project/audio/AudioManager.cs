@@ -12,8 +12,8 @@ namespace Audio
         private const string MusicFile = "BackgroundMusic";
         private const string SoundFolder = "Sounds/";
 
-        // A little quieter than the sound effects, so they can be heard over it
-        private const float MusicVolume = 0.7f;
+        // Well under the sound effects, so they stand out over it (the music file is much louder than they are)
+        private const float MusicVolume = 0.3f;
 
         // The file in Content/Sounds for each sound effect
         private static readonly Dictionary<Sound, string> SoundFiles = new()

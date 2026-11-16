@@ -1,3 +1,7 @@
 The LOZ_*.wav sound effects are lossless recordings from the NES version of The Legend of Zelda.
 Supplied by HelpTheWretched, www.ZeldaSounds.com: LOZ_Complete_201609.zip from
 https://noproblo.dayjo.org/zeldasounds/loz/
+
+For this game every file was levelled to the same loudness (-14 dB on average while sounding, the
+repeating low-health beep -20 dB, peaks no higher than -1 dB) and saved as 16-bit, so that the sound
+effects can be heard clearly over the music.
