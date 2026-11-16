@@ -1,3 +1,4 @@
+using Audio;
 using Commands;
 using Input;
 using Interfaces;
@@ -30,6 +31,8 @@ namespace GameStates
         public void Enter()
         {
             keyboard.IgnoreHeldInput();
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.Play(Sound.LinkDie);
         }
 
         public void Update(GameTime gameTime)

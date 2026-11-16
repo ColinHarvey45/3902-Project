@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Audio;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -144,14 +145,21 @@ namespace Rooms
                 OpenShutters();
         }
 
-        // Shutter doors open once every enemy in the room is gone
+        // Shutter doors open once every enemy in the room is gone, with the door sound
         private void OpenShutters()
         {
+            bool opened = false;
             foreach (IBlock door in doors.Values)
             {
-                if (door is IShutterDoor shutter)
+                if (door is IShutterDoor { IsOpen: false } shutter)
+                {
                     shutter.Open();
+                    opened = true;
+                }
             }
+
+            if (opened)
+                AudioManager.Instance.Play(Sound.DoorUnlock);
         }
 
         // Back to front: walls and floor, blocks and doors, items, NPCs, then enemies

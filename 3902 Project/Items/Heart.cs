@@ -1,3 +1,4 @@
+using Audio;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Sprites;
@@ -8,6 +9,8 @@ namespace Items
         : Item(position, ItemSpriteFactory.Instance.CreateHeartSprite())
     {
         private const int HeartsRestored = 1;
+
+        public override Sound PickUpSound => Sound.GetHeart;
 
         public override void OnPickedUp(IPlayer player)
         {

@@ -1,3 +1,4 @@
+using Audio;
 using Interfaces;
 using Microsoft.Xna.Framework;
 
@@ -14,6 +15,7 @@ namespace Player.States
         public void TakeDamage()
         {
             link.LoseHealth(HitDamage);
+            AudioManager.Instance.Play(Sound.LinkHurt);
             link.HealthState = new LinkDamagedState(link);
             link.KnockBack();
         }

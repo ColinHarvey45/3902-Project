@@ -1,3 +1,4 @@
+using Audio;
 using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,9 @@ namespace Enemies
         private const float PaceSpeed = 0.5f; // pixels per frame
         private const float PaceDistance = 48f; // how far it walks either side of where it started
         private const float FireballSpeed = 150f; // pixels per second
+
+        // It roars as Link comes in, and again every few seconds while it is alive
+        private const float RoarInterval = 3f; // seconds
 
         // Where the fireballs come out, relative to its top-left corner (it faces left)
         private static readonly Vector2 MouthOffset = new(0, 32);
@@ -35,7 +39,8 @@ namespace Enemies
         private readonly ProjectileManager projectiles;
         private float paceDirection = -1f;
         private IEnemyState state;
-        private readonly EnemyHealth health = new();
+        private readonly EnemyHealth health = new(EnemyHealth.DefaultHealth, Sound.BossHit);
+        private float roarTimer = RoarInterval;
 
         public Vector2 Position { get; private set; }
         public ISprite Sprite { get; set; }
@@ -53,6 +58,17 @@ namespace Enemies
             this.Collider = new BoxCollider(
                 new Rectangle((int)startPosition.X, (int)startPosition.Y, ColliderWidth, ColliderHeight),
                 ColliderOffset);
+        }
+
+        // Only called while Link is in its room, since only that room is updated
+        private void Roar(GameTime gameTime)
+        {
+            roarTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (roarTimer < RoarInterval)
+                return;
+
+            roarTimer = 0f;
+            AudioManager.Instance.Play(Sound.BossScream);
         }
 
         public void ChangeState(IEnemyState newState)
@@ -73,6 +89,7 @@ namespace Enemies
             health.Update(gameTime);
             state.Update(gameTime);
             UpdateCollider();
+            Roar(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)

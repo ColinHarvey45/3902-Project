@@ -1,3 +1,4 @@
+using Audio;
 using Commands;
 using Input;
 using Interfaces;
@@ -25,6 +26,9 @@ namespace GameStates
         public void Enter()
         {
             keyboard.IgnoreHeldInput();
+
+            // The triforce's fanfare plays as it is picked up, with nothing over it
+            AudioManager.Instance.StopMusic();
         }
 
         public void Update(GameTime gameTime)

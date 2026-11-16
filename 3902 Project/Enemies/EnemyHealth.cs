@@ -1,3 +1,4 @@
+using Audio;
 using Microsoft.Xna.Framework;
 
 namespace Enemies
@@ -30,9 +31,13 @@ namespace Enemies
         // What to tint the sprite this frame
         public Color Tint => IsInvincible ? FlashColors[flashIndex] : Color.White;
 
-        public EnemyHealth(int health = DefaultHealth)
+        // The sound a hit makes when it doesn't kill: the boss has its own
+        private readonly Sound hurtSound;
+
+        public EnemyHealth(int health = DefaultHealth, Sound hurtSound = Sound.EnemyHit)
         {
             HitPoints = health;
+            this.hurtSound = hurtSound;
         }
 
         // Ignored while already hurt (it flashes and can't be hit again for a moment) or dead
@@ -44,7 +49,12 @@ namespace Enemies
             HitPoints -= damage;
 
             if (IsDead)
+            {
+                AudioManager.Instance.Play(Sound.EnemyDie);
                 return;
+            }
+
+            AudioManager.Instance.Play(hurtSound);
 
             IsInvincible = true;
             ResetFlash();

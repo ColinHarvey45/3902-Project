@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Audio;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +21,9 @@ namespace GameStates
 
         // The room Link starts in; the test room and the rest are a click away (see PlayingState)
         private const string StartRoom = "Room01_Entrance";
+
+        // The NES beeps a warning once Link is down to this many hearts
+        private const int LowHealthHearts = 1;
 
         // One CSV file per room, copied next to the game when it is built; see Rooms/RoomLoader.cs
         private static readonly string RoomFolder = Path.Combine(AppContext.BaseDirectory, "Levels", "Dungeon1");
@@ -50,6 +54,9 @@ namespace GameStates
             itemSelection = new ItemSelectionState(this, new PauseScreen(Link, Rooms, Hud));
 
             ChangeTo(playing);
+
+            // From the beginning after the game over or win screen stopped it; carries on if it is still playing
+            AudioManager.Instance.PlayMusic();
         }
 
         public void Play() => ChangeTo(playing);
@@ -65,6 +72,10 @@ namespace GameStates
         public void Update(GameTime gameTime)
         {
             Current.Update(gameTime);
+
+            // As in the NES, a warning beep while Link is down to his last heart, but not on the other screens
+            bool lowOnHearts = Link.Health is > 0 and <= LowHealthHearts;
+            AudioManager.Instance.SetLowHealthAlarm(lowOnHearts && (Current == playing || Current is RoomTransitionState));
         }
 
         public void Draw(SpriteBatch spriteBatch)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Audio;
 using Collisions;
 using CSE_3902_Project;
 using Interfaces;
@@ -142,6 +143,7 @@ namespace Rooms
 
             EnterRoom(FindRoom(warp.Destination));
             link.PlaceAt(warp.Arrival);
+            AudioManager.Instance.Play(Sound.Stairs);
         }
 
         private Room FindRoom(string name)

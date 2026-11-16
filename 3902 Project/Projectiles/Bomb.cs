@@ -1,3 +1,4 @@
+using Audio;
 using Colliders;
 using Interfaces;
 using Microsoft.Xna.Framework;
@@ -55,6 +56,7 @@ namespace Projectiles
             isExploding = true;
             Collider = new BoxCollider(new Rectangle(0, 0, BlastSize, BlastSize), BlastOffset);
             Collider.Update(position);
+            AudioManager.Instance.Play(Sound.BombBlow);
         }
 
         public void Hit() { }

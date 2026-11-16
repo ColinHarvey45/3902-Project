@@ -59,8 +59,6 @@ namespace CSE_3902_Project
             states = new GameStateMachine(GraphicsDevice.Viewport.Bounds);
             states.Reset();
             globalKeys = CreateGlobalKeys();
-
-            AudioManager.Instance.PlayMusic();
         }
 
         private KeyboardController CreateGlobalKeys()

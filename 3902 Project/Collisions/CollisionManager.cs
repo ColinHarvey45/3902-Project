@@ -1,3 +1,4 @@
+using Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,7 +115,10 @@ namespace Collisions
             {
                 if (block is ILockedDoor { IsLocked: true } door && link.Collider.Intersects(door.Collider)
                     && link.Inventory.TryUseKey())
+                {
                     door.Unlock();
+                    AudioManager.Instance.Play(Sound.DoorUnlock);
+                }
             }
         }
 
@@ -216,6 +220,7 @@ namespace Collisions
                 if (link.Collider.Intersects(item.Collider))
                 {
                     item.OnPickedUp(link);
+                    AudioManager.Instance.Play(item.PickUpSound);
                     room.RemoveItem(item);
                 }
             }

@@ -1,3 +1,4 @@
+using Audio;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -155,6 +156,7 @@ namespace Player
             {
                 case SecondaryItem.Arrow:
                     projectiles.Add(new Arrow(Center, Facing));
+                    AudioManager.Instance.Play(Sound.ArrowBoomerang);
                     break;
 
                 case SecondaryItem.Boomerang:
@@ -165,6 +167,7 @@ namespace Player
                     ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateLinkBoomerangSprite();
                     boomerang = new Boomerang(boomerangSprite, Center, Facing.ToVector(), this, ProjectileOwner.Link);
                     projectiles.Add(boomerang);
+                    AudioManager.Instance.Play(Sound.ArrowBoomerang);
                     break;
 
                 case SecondaryItem.Bomb:
@@ -172,6 +175,7 @@ namespace Player
                     if (!Inventory.TryUseBomb()) return;
 
                     projectiles.Add(new Bomb(Position + Facing.ToVector() * TileSize + BombTileOffset));
+                    AudioManager.Instance.Play(Sound.BombDrop);
                     break;
             }
         }

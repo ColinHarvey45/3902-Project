@@ -1,3 +1,4 @@
+using Audio;
 using Colliders;
 using Interfaces;
 using Microsoft.Xna.Framework;
@@ -31,6 +32,8 @@ namespace Player.States
             Point swordOffset = (link.Facing.ToVector() * SwordReach).ToPoint();
             SwordCollider = new BoxCollider(new Rectangle(0, 0, SwordHitboxSize, SwordHitboxSize), swordOffset);
             SwordCollider.Update(link.Position);
+
+            AudioManager.Instance.Play(Sound.SwordSlash);
         }
 
         public void Move(Direction direction) { }

@@ -1,3 +1,4 @@
+using Audio;
 using Colliders;
 using Interfaces;
 using Microsoft.Xna.Framework;
@@ -21,6 +22,9 @@ namespace Items
 
         // Most items do nothing for Link yet; the ones that do override this
         public virtual void OnPickedUp(IPlayer player) { }
+
+        // The NES's item sound, unless the item has its own
+        public virtual Sound PickUpSound => Sound.GetItem;
 
         public virtual void Update(GameTime gameTime)
         {
