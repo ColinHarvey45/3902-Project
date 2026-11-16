@@ -1,0 +1,65 @@
+﻿READABILITY REVIEW
+
+
+Author of code review: Colin Harvey
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+Files reviewed: RoomManager.cs, ILinkGrabber.cs, Wallmaster.cs, CombatCollisions.cs
+Author of file reviewed: Frank An
+Time taken to complete review: 30 minutes
+
+
+COMMENTS - WHAT IS READABLE:
+
+
+ILinkGrabber.cs:
+* Clear and descriptive interface, property, and method names (ILinkGrabber, IsHoldingLink, HasCarriedLinkOff, Grab, and Release).
+* Concise XML-style summary comments clearly explain the lifecycle of grabbing, holding, and releasing Link.
+
+
+Wallmaster.cs:
+* Clean expression-bodied properties (IsHoldingLink and HasCarriedLinkOff) that reuse states cleanly.
+* Well-named constants (WallmasterHealth, CarryTime, CarrySpeed) with comments that make the behavior easy to understand and tune.
+* Clear helper methods like TowardsNearestWall().
+
+
+CombatCollisions.cs:
+* Great use of pattern matching (enemy is ILinkGrabber { IsHoldingLink: true } and enemy is not ILinkGrabber grabber). This keeps collision resolution flat, readable, and easy to follow.
+* Updated comments accurately explain the rule that only one Wallmaster can hold Link at a time.
+
+
+RoomManager.cs:
+* Extracting the grabber cleanup loop into a dedicated private helper method (LeaveCurrentRoom()) prevents code duplication across NextRoom(), PreviousRoom(), and EnterRoom() while making the intent obvious.
+
+
+COMMENTS - WHAT IS NOT READABLE:
+
+
+Wallmaster.cs:
+* In TowardsNearestWall(), multiple variable declarations on single lines (int left = ..., right = ...;) and nested System.Math.Min calls make the distance comparison slightly dense to read at a glance.
+
+
+
+
+
+
+CODE QUALITY REVIEW
+
+
+Author of code review: Colin Harvey
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+Files reviewed: RoomManager.cs, ILinkGrabber.cs, Wallmaster.cs, CombatCollisions.cs
+Author of file reviewed: Frank An
+
+
+COMMENTS ON CODE QUALITY:
+
+
+* Code has high cohesion and low coupling through separating the grabbing behavior into the ILinkGrabber interface is great design. CombatCollisions and RoomManager interact strictly with the ILinkGrabber abstraction rather than coupling directly to the concrete Wallmaster class.
+* Updating RoomManager to call LeaveCurrentRoom() during room transitions (NextRoom, PreviousRoom, EnterRoom) and simplifying ReturnLinkIfCarriedOff() properly resolves state cleanup. Because EnterRoom(entrance) now calls LeaveCurrentRoom(), any grabber carrying Link is guaranteed to call Release(), preventing stale grab states if the player returns to that room later.
+* In Wallmaster.UpdateBehavior(), the Wallmaster directly forces Link's position via heldLink.PlaceAt(Position) while Link's own link.Update(gameTime) continues running in RoomManager.Update(). If Link can still accept movement inputs, swing his sword, or use items while grabbed, player inputs will fight against the Wallmaster dragging him. Additionally, RoomManager.ReturnLinkIfCarriedOff() hardcodes Direction.Down in link.PlaceAt(RoomLayout.EntryPosition(Direction.Down)) rather than referencing a configurable entrance spawn point.
+
+
+HYPOTHETICAL CHANGE:
+Add a grabbed or stunned state to IPlayer (e.g., link.SetGrabbed(bool) or a dedicated player state) so that when Wallmaster.Grab(link) is called, Link's normal movement and weapon inputs are disabled until Release() is invoked. Additionally, replace the hardcoded Direction.Down entry position in RoomManager.ReturnLinkIfCarriedOff() with a stored dungeon entrance spawn point so custom starting rooms with different entry orientations work seamlessly.
