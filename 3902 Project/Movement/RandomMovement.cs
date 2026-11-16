@@ -43,6 +43,12 @@ namespace Movement
             TurnRandomly();
         }
 
+        // Whether the object can be at position (its top-left corner) and still be inside its bounds
+        public bool Allows(Vector2 position)
+        {
+            return area.Contains(position);
+        }
+
         public void TurnRandomly()
         {
             Direction = directions[RandomGenerator.Next(directions.Length)];

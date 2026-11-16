@@ -114,10 +114,20 @@ namespace Enemies
 
             if (knockbackLeft > 0)
             {
+                // It stops at the edge of the floor, as at a wall, so it is never knocked out into a doorway
                 float step = Math.Min(KnockbackSpeed, knockbackLeft);
-                Position += knockbackDirection * step;
-                knockbackLeft -= step;
-                UpdateCollider();
+                Vector2 next = Position + knockbackDirection * step;
+                if (Movement.Allows(next))
+                {
+                    knockbackLeft -= step;
+                    Position = next;
+                    UpdateCollider();
+                }
+                else
+                {
+                    knockbackLeft = 0;
+                }
+
                 return;
             }
 

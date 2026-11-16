@@ -54,8 +54,11 @@ namespace Enemies.Wanderers
                 return;
             }
 
+            // It drags him as far as the edge of the floor, and no further (not out into a doorway)
             carryTimeLeft -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Position += carryDirection * CarrySpeed;
+            Vector2 next = Position + carryDirection * CarrySpeed;
+            if (Movement.Allows(next))
+                Position = next;
             UpdateCollider();
             Sprite.Update(gameTime);
             heldLink.PlaceAt(Position);
