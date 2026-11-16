@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Interfaces;
@@ -13,6 +14,10 @@ namespace Collisions
     // There is one method below for each kind of collision
     internal static class CollisionManager
     {
+        // Link steps round a corner if stepping aside half a tile or less gets him past it, as fast as he walks
+        private const int SidestepLimit = RoomLayout.TileSize / 2;
+        private const int SidestepSpeed = 3;
+
         public static void HandleCollisions(IPlayer link, Room room, ProjectileManager projectiles)
         {
             SwordHitsEnemies(link, room);
@@ -116,14 +121,73 @@ namespace Collisions
         // Link can't walk into a wall, a solid block (closed doors included) or an NPC: he is pushed straight back out
         private static void WallsBlocksAndNpcsStopLink(IPlayer link, Room room)
         {
-            IEnumerable<Rectangle> npcs = room.Npcs.Select(npc => npc.Collider.GetCollider());
+            List<Rectangle> obstacles = [.. Obstacles(room), .. room.Npcs.Select(npc => npc.Collider.GetCollider())];
+            Vector2 pushedBack = Vector2.Zero;
 
-            foreach (Rectangle obstacle in Obstacles(room).Concat(npcs))
+            foreach (Rectangle obstacle in obstacles)
             {
                 Vector2 push = PushOut(link.Collider.GetCollider(), obstacle);
                 if (push != Vector2.Zero)
+                {
                     link.Push(push);
+                    pushedBack += push;
+                }
             }
+
+            LinkSidestepsCorners(link, obstacles, pushedBack);
+        }
+
+        // Link walking into the corner of a wall or block, with most of him past it already, steps sideways round
+        // it instead of stopping dead, as in the NES, where he lines up with the gaps between blocks as he turns.
+        // pushedBack is how far he was just pushed back out of things, which is the opposite way to where he was going
+        private static void LinkSidestepsCorners(IPlayer link, List<Rectangle> obstacles, Vector2 pushedBack)
+        {
+            // Only when he was stopped going straight along one axis
+            if (pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
+                return;
+
+            Point forward = new(-Math.Sign(pushedBack.X), -Math.Sign(pushedBack.Y));
+            Point sideways = new(Math.Abs(forward.Y), Math.Abs(forward.X));
+            Rectangle box = link.Collider.GetCollider();
+
+            int towards = SidestepToGetPast(box, forward, sideways, obstacles) ?? int.MaxValue;
+            int away = SidestepToGetPast(box, forward, new Point(-sideways.X, -sideways.Y), obstacles) ?? int.MaxValue;
+
+            // Whichever way is shorter. If neither works, or both are as far, he is square on to it and stays stopped
+            if (towards == away)
+                return;
+
+            int direction = towards < away ? 1 : -1;
+            int distance = Math.Min(towards, away);
+            link.Push(sideways.ToVector2() * direction * Math.Min(SidestepSpeed, distance));
+        }
+
+        // How far box would have to step sideways (along side) before it could move forward without touching
+        // anything, or null if that is further than SidestepLimit or something is in the way of the sidestep
+        private static int? SidestepToGetPast(Rectangle box, Point forward, Point side, List<Rectangle> obstacles)
+        {
+            int distance = 0;
+            while (distance <= SidestepLimit)
+            {
+                Rectangle moved = box;
+                moved.Offset(forward.X + side.X * distance, forward.Y + side.Y * distance);
+
+                int blocking = obstacles.FindIndex(obstacle => obstacle.Intersects(moved));
+                if (blocking < 0)
+                {
+                    Rectangle sidestep = Rectangle.Union(box, new Rectangle(box.X + side.X * distance, box.Y + side.Y * distance, box.Width, box.Height));
+                    return obstacles.Exists(obstacle => obstacle.Intersects(sidestep)) ? null : distance;
+                }
+
+                // Far enough along to clear the side of whatever was in the way
+                Rectangle obstacle = obstacles[blocking];
+                distance += side.X > 0 ? obstacle.Right - moved.Left
+                    : side.X < 0 ? moved.Right - obstacle.Left
+                    : side.Y > 0 ? obstacle.Bottom - moved.Top
+                    : moved.Bottom - obstacle.Top;
+            }
+
+            return null;
         }
 
         // Enemies can't walk into walls or solid blocks either; each one decides what to do instead
