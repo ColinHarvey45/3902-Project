@@ -11,6 +11,10 @@ using Microsoft.Xna.Framework;
 using Npcs;
 using Player;
 using Projectiles;
+using Enemies.Wanderers;
+using Enemies.Hoppers;
+using Enemies.Bosses;
+using Enemies.Traps;
 
 namespace Rooms
 {

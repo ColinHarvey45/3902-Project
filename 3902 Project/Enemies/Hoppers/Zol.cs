@@ -4,8 +4,9 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Rooms;
 using Sprites;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Hoppers
 {
     // Like a Gel but bigger and slower: creeps about a tile at a time with longer pauses.
     // A blow that doesn't kill it outright (the sword's) splits it into two Gels, as in the NES

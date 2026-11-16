@@ -2,12 +2,13 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Rooms;
 using Sprites;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Wanderers
 {
     // A hand that wanders the room. Touching Link doesn't hurt him: it catches him and drags him off towards the
     // nearest wall, and he is taken back to the entrance of the dungeon, as in the NES (see RoomManager)
-    internal sealed class Wallmaster : Enemy, ILinkGrabber
+    internal sealed class Wallmaster : WanderingEnemy, ILinkGrabber
     {
         // Three sword hits, as in the NES
         private const int WallmasterHealth = 3;

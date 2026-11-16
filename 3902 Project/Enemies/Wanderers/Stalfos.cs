@@ -1,9 +1,10 @@
 using Microsoft.Xna.Framework;
 using Sprites;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Wanderers
 {
-    internal sealed class Stalfos : Enemy
+    internal sealed class Stalfos : WanderingEnemy
     {
         // Two sword hits, as in the NES
         private const int StalfosHealth = 2;

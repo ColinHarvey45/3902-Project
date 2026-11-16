@@ -1,6 +1,7 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Sprites;
+using Enemies.Bosses;
 
 namespace Enemies.States
 {

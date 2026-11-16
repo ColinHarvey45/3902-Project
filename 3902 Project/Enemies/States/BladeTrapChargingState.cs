@@ -1,5 +1,6 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
+using Enemies.Traps;
 
 namespace Enemies.States
 {

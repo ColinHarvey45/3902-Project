@@ -2,12 +2,13 @@ using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Movement;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Hoppers
 {
     // Enemies like Gel and Zol that move in quick hops with short rests in between,
     // instead of walking steadily. Whether it is hopping or resting is decided by its state
-    internal abstract class HoppingEnemy : Enemy
+    internal abstract class HoppingEnemy : WanderingEnemy
     {
         private IEnemyState state;
 

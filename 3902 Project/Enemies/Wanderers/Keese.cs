@@ -3,12 +3,13 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Movement;
 using Sprites;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Wanderers
 {
     // Takes off, flutters around in all eight directions while speeding up and slowing
     // down, then lands for a moment. Whether it is flying or resting is decided by its state
-    internal sealed class Keese : Enemy
+    internal sealed class Keese : WanderingEnemy
     {
         // Keese change direction much more often than walking enemies
         private const float TurnTime = 0.4f;

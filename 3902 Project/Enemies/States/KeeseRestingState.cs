@@ -1,5 +1,6 @@
 using Interfaces;
 using Microsoft.Xna.Framework;
+using Enemies.Wanderers;
 
 namespace Enemies.States
 {

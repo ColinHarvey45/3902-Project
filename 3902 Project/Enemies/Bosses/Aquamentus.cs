@@ -6,8 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Projectiles;
 using System;
 using Colliders;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Bosses
 {
     // The dungeon 1 boss: paces back and forth, and every so often opens its mouth to breathe
     // a spread of three fireballs. Its state decides whether its mouth is open

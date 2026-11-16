@@ -11,7 +11,7 @@ namespace Enemies
 {
     // Shared behaviour for enemies that wander: walk in a straight line, pick a new random
     // direction every couple of seconds, and turn around instead of leaving the room's floor
-    internal abstract class Enemy : IDamageable
+    internal abstract class WanderingEnemy : IDamageable
     {
         protected const float DefaultDirectionChangeTime = 2f; // seconds
 
@@ -45,17 +45,17 @@ namespace Enemies
         public bool IsInvincible => Health.IsInvincible;
         public bool IsDead => Health.IsDead;
 
-        protected Enemy(Vector2 startPosition)
+        protected WanderingEnemy(Vector2 startPosition)
             : this(startPosition, RandomMovement.FourDirections, DefaultDirectionChangeTime)
         {
         }
 
-        protected Enemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime)
+        protected WanderingEnemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime)
             : this(startPosition, directions, directionChangeTime, DefaultColliderSize, DefaultColliderSize, DefaultColliderOffset)
         {
         }
 
-        protected Enemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime,
+        protected WanderingEnemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime,
             int colliderWidth, int colliderHeight, Point colliderOffset = default)
         {
             Position = startPosition;

@@ -1,7 +1,8 @@
 using Microsoft.Xna.Framework;
 using Sprites;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Hoppers
 {
     // Darts about a tile at a time with short pauses in between
     internal sealed class Gel : HoppingEnemy

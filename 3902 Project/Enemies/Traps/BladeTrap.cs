@@ -6,8 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Rooms;
 using Sprites;
 using Colliders;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Traps
 {
     // Sits still until Link lines up with it across or down the room, then shoots out at him and slowly slides
     // back to where it started, as in the NES. What it is doing right now is decided by its state (waiting,

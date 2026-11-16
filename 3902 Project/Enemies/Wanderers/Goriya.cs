@@ -1,15 +1,15 @@
-using Enemies.States;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Projectiles;
 using Rooms;
 using Sprites;
 using CSE_3902_Project;
+using Enemies;
 
-namespace Enemies
+namespace Enemies.Wanderers
 {
-    // Wanders like other enemies, but sometimes stops to throw a boomerang and waits for it to come back
-    internal sealed class Goriya : Enemy, IBoomerangThrower
+    // Wanders like other enemies, but sometimes stops to throw a boomerang, and stands still until it comes back
+    internal sealed class Goriya : WanderingEnemy, IBoomerangThrower
     {
         private const int ThrowChancePercent = 40; // chance of throwing each time it turns
         private const float BoomerangSpawnDistance = 24f;
@@ -18,7 +18,6 @@ namespace Enemies
         private const int GoriyaHealth = 3;
 
         private readonly ProjectileManager projectiles;
-        private IEnemyState state;
         private Boomerang boomerang;
 
         // Its boomerang goes into projectiles, along with everything else flying around the room
@@ -28,7 +27,6 @@ namespace Enemies
             this.projectiles = projectiles;
             Health = new EnemyHealth(GoriyaHealth);
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
-            state = new GoriyaWalkingState(this);
         }
 
         // The middle of Goriya, who is one tile big; its boomerang is thrown from just in front of here
@@ -37,21 +35,13 @@ namespace Enemies
         // True until its boomerang is caught (or cleared away when Link leaves the room)
         public bool IsBoomerangOut => projectiles.Contains(boomerang);
 
-        public void ChangeState(IEnemyState newState)
-        {
-            state = newState;
-        }
-
+        // Stands still while its boomerang is out, and walks about the rest of the time
         protected override void UpdateBehavior(GameTime gameTime)
         {
-            state.Update(gameTime);
-            UpdateCollider();
-        }
+            if (!IsBoomerangOut)
+                Wander(gameTime);
 
-        // Called by the walking state
-        public void Walk(GameTime gameTime)
-        {
-            Wander(gameTime);
+            UpdateCollider();
         }
 
         protected override void OnDirectionChanged()
@@ -69,7 +59,6 @@ namespace Enemies
 
             boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this, ProjectileOwner.Enemy);
             projectiles.Add(boomerang);
-            ChangeState(new GoriyaThrowingState(this));
         }
     }
 }
