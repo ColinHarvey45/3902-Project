@@ -28,7 +28,8 @@ namespace Enemies.Wanderers
             Sprite = EnemySpriteFactory.Instance.CreateWallmasterSprite();
         }
 
-        public bool HasCarriedLinkOff => heldLink != null && carryTimeLeft <= 0;
+        public bool IsHoldingLink => heldLink != null;
+        public bool HasCarriedLinkOff => IsHoldingLink && carryTimeLeft <= 0;
 
         public void Grab(IPlayer link)
         {

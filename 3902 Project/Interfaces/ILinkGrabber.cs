@@ -5,7 +5,8 @@ namespace Interfaces
     internal interface ILinkGrabber : IEnemy
     {
 
-        // True once it has carried Link off, and he should be taken back to the entrance
+        // True while it has hold of Link, and once it has carried him off and he should be taken back to the entrance
+        public bool IsHoldingLink { get; }
         public bool HasCarriedLinkOff { get; }
 
         // Touched Link: catches him, unless it is already carrying him

@@ -66,12 +66,14 @@ namespace Rooms
         // The mouse and the O and P keys go through every room in file order, test room included
         public void NextRoom()
         {
+            LeaveCurrentRoom();
             rooms.Next();
             OnRoomChanged();
         }
 
         public void PreviousRoom()
         {
+            LeaveCurrentRoom();
             rooms.Previous();
             OnRoomChanged();
         }
@@ -88,8 +90,19 @@ namespace Rooms
         // Makes room the one Link is in, once he has got there through a doorway or down the stairs
         public void EnterRoom(Room room)
         {
+            LeaveCurrentRoom();
             rooms.MoveTo(room);
             OnRoomChanged();
+        }
+
+        // Whatever had hold of Link in the room he is leaving lets go, so it can't carry him off when he comes back
+        private void LeaveCurrentRoom()
+        {
+            foreach (IEnemy enemy in CurrentRoom.Enemies)
+            {
+                if (enemy is ILinkGrabber grabber)
+                    grabber.Release();
+            }
         }
 
         // Everything moves first, then whatever ended up touching is sorted out
@@ -121,10 +134,9 @@ namespace Rooms
         // A Wallmaster that has carried Link off takes him back to the entrance of the dungeon, as in the NES
         private void ReturnLinkIfCarriedOff()
         {
-            if (CurrentRoom.Enemies.FirstOrDefault(enemy => enemy is ILinkGrabber { HasCarriedLinkOff: true }) is not ILinkGrabber grabber)
+            if (!CurrentRoom.Enemies.Any(enemy => enemy is ILinkGrabber { HasCarriedLinkOff: true }))
                 return;
 
-            grabber.Release();
             EnterRoom(entrance);
             link.PlaceAt(RoomLayout.EntryPosition(Direction.Down));
         }

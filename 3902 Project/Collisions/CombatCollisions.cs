@@ -49,18 +49,23 @@ namespace Collisions
         }
 
         // Touching an enemy hurts Link (his health state ignores it while he is flashing from a hit), except a
-        // Wallmaster, which catches him instead
+        // Wallmaster, which catches him instead; only one can have hold of him at a time
         public static void EnemiesHurtLink(IPlayer link, Room room)
         {
+            bool held = room.Enemies.Any(enemy => enemy is ILinkGrabber { IsHoldingLink: true });
+
             foreach (IEnemy enemy in room.Enemies)
             {
                 if (enemy.Collider == null || !link.Collider.Intersects(enemy.Collider))
                     continue;
 
-                if (enemy is ILinkGrabber grabber)
-                    grabber.Grab(link);
-                else
+                if (enemy is not ILinkGrabber grabber)
                     link.TakeDamage();
+                else if (!held)
+                {
+                    grabber.Grab(link);
+                    held = true;
+                }
             }
         }
 
