@@ -1,321 +1,35 @@
-using Audio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Interfaces;
-using Microsoft.Xna.Framework;
-using Player;
 using Projectiles;
 using Rooms;
-using CSE_3902_Project;
 
 namespace Collisions
 {
     // Finds everything that is touching in the room Link is in, once a frame after everything has moved,
     // and tells the objects involved. Each object decides how it reacts: e.g. Link's health state decides
     // whether a hit hurts him, and each enemy decides what to do when it walks into a wall.
-    // There is one method below for each kind of collision
+    // The collisions themselves are grouped by what they are about, one method for each kind: fighting
+    // (CombatCollisions), moving about (MovementCollisions), and picking things up and unlocking doors
+    // (PickupCollisions). This runs them in the order that matters
     internal static class CollisionManager
     {
-        // Link steps round a corner if stepping aside half a tile or less gets him past it, as fast as he walks
-        private const int SidestepLimit = RoomLayout.TileSize / 2;
-        private const int SidestepSpeed = (int)GameSettings.LinkWalkSpeed;
-
         public static void HandleCollisions(IPlayer link, Room room, ProjectileManager projectiles)
         {
-            LinksWeaponsHitEnemies(room, projectiles);
-            LinksWeaponsProvokeGuards(room, projectiles);
+            CombatCollisions.LinksWeaponsHitEnemies(room, projectiles);
+            CombatCollisions.LinksWeaponsProvokeGuards(room, projectiles);
 
             // Anything killed this frame is gone before it can touch Link
             room.RemoveDeadEnemies();
 
-            EnemiesHurtLink(link, room);
-            EnemyProjectilesHitLink(link, projectiles);
-            BlastsHurtLink(link, projectiles);
-            ProjectilesHitWallsAndBlocks(room, projectiles);
+            CombatCollisions.EnemiesHurtLink(link, room);
+            CombatCollisions.EnemyProjectilesHitLink(link, projectiles);
+            CombatCollisions.BlastsHurtLink(link, projectiles);
+            MovementCollisions.ProjectilesHitWallsAndBlocks(room, projectiles);
 
             // A door Link unlocks this frame no longer stops him
-            LinkUnlocksDoors(link, room);
-            WallsBlocksAndNpcsStopLink(link, room);
-            WallsAndBlocksStopEnemies(room);
-            LinkPicksUpItems(link, room);
-        }
-
-        // Attacking the Old Man (with any weapon) sets off the fires beside him, as in the NES
-        private static void LinksWeaponsProvokeGuards(Room room, ProjectileManager projectiles)
-        {
-            bool attacked = projectiles.ActiveProjectiles.Any(weapon => weapon.Owner == ProjectileOwner.Link
-                && !weapon.IsFinished && weapon.Collider != null && room.Npcs.Any(npc => weapon.Collider.Intersects(npc.Collider)));
-            if (!attacked)
-                return;
-
-            foreach (IBlock block in room.Blocks)
-            {
-                if (block is INpcGuard guard)
-                    guard.Provoke();
-            }
-        }
-
-        // Link's weapons: an arrow or boomerang hits the first enemy it touches and is used up (or turns back); the
-        // sword and a bomb's explosion hit every enemy they touch. Each decides what its hit does (see IProjectile)
-        private static void LinksWeaponsHitEnemies(Room room, ProjectileManager projectiles)
-        {
-            foreach (IProjectile projectile in projectiles.ActiveProjectiles)
-            {
-                if (projectile.Owner != ProjectileOwner.Link || projectile.IsFinished || projectile.Collider == null)
-                    continue;
-
-                foreach (IDamageable enemy in HurtableEnemiesTouching(projectile.Collider, room))
-                {
-                    projectile.HitEnemy(enemy);
-
-                    if (!projectile.IsBlast)
-                    {
-                        projectile.Hit();
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Touching an enemy hurts Link (his health state ignores it while he is flashing from a hit), except a
-        // Wallmaster, which catches him instead
-        private static void EnemiesHurtLink(IPlayer link, Room room)
-        {
-            foreach (IEnemy enemy in room.Enemies)
-            {
-                if (enemy.Collider == null || !link.Collider.Intersects(enemy.Collider))
-                    continue;
-
-                if (enemy is ILinkGrabber grabber)
-                    grabber.Grab(link);
-                else
-                    link.TakeDamage();
-            }
-        }
-
-        // An enemy's fireball or boomerang hurts Link, and is used up (or turns back)
-        private static void EnemyProjectilesHitLink(IPlayer link, ProjectileManager projectiles)
-        {
-            foreach (IProjectile projectile in projectiles.ActiveProjectiles)
-            {
-                if (projectile.Owner == ProjectileOwner.Enemy && !projectile.IsFinished && projectile.Collider != null
-                    && link.Collider.Intersects(projectile.Collider))
-                {
-                    link.TakeDamage();
-                    projectile.Hit();
-                }
-            }
-        }
-
-        // Link's own bomb hurts him too if he is caught in the blast, so he has to get clear of it
-        private static void BlastsHurtLink(IPlayer link, ProjectileManager projectiles)
-        {
-            foreach (IProjectile projectile in projectiles.ActiveProjectiles)
-            {
-                if (projectile.IsBlast && projectile.Collider != null && link.Collider.Intersects(projectile.Collider))
-                    link.TakeDamage();
-            }
-        }
-
-        // Arrows and fireballs end at walls and solid blocks, and boomerangs turn back
-        private static void ProjectilesHitWallsAndBlocks(Room room, ProjectileManager projectiles)
-        {
-            foreach (IProjectile projectile in projectiles.ActiveProjectiles)
-            {
-                if (projectile.IsFinished || projectile.Collider == null)
-                    continue;
-
-                Rectangle box = projectile.Collider.GetCollider();
-                if (Obstacles(room).Any(obstacle => obstacle.Intersects(box)))
-                    projectile.Hit();
-            }
-        }
-
-        // Walking into a locked door with a key opens it and uses the key up; without one it is just a closed door
-        private static void LinkUnlocksDoors(IPlayer link, Room room)
-        {
-            foreach (IBlock block in room.Blocks)
-            {
-                if (block is ILockedDoor { IsLocked: true } door && link.Collider.Intersects(door.Collider)
-                    && link.Inventory.TryUseKey())
-                {
-                    door.Unlock();
-                    AudioManager.Instance.Play(Sound.DoorUnlock);
-                }
-            }
-        }
-
-        // Link can't walk into a wall, a solid block (closed doors included) or an NPC: he is pushed straight back out
-        private static void WallsBlocksAndNpcsStopLink(IPlayer link, Room room)
-        {
-            List<Rectangle> obstacles = [.. Obstacles(room), .. room.Npcs.Select(npc => npc.Collider.GetCollider())];
-            Vector2 pushedBack = Vector2.Zero;
-
-            foreach (Rectangle obstacle in obstacles)
-            {
-                Vector2 push = PushOut(link.Collider.GetCollider(), obstacle);
-                if (push != Vector2.Zero)
-                {
-                    link.Push(push);
-                    pushedBack += push;
-                }
-            }
-
-            LinkPushesBlocks(link, room, obstacles, pushedBack);
-            LinkSidestepsCorners(link, obstacles, pushedBack);
-        }
-
-        // Link walking straight into a pushable block pushes it; once he has pushed long enough it slides a tile,
-        // as long as that tile is clear floor
-        private static void LinkPushesBlocks(IPlayer link, Room room, List<Rectangle> obstacles, Vector2 pushedBack)
-        {
-            if (pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
-                return;
-
-            Direction pushing = (-pushedBack).ToDirection();
-            Rectangle reach = link.Collider.GetCollider();
-            reach.Offset(pushing.ToVector().ToPoint());
-
-            foreach (IBlock block in room.Blocks)
-            {
-                if (block is not IPushableBlock pushable || !reach.Intersects(pushable.Collider.GetCollider())
-                    || !pushable.PushedBy(pushing))
-                    continue;
-
-                Rectangle itself = pushable.Collider.GetCollider();
-                Rectangle destination = pushable.Destination(pushing);
-                bool clear = RoomLayout.FloorBounds.Contains(destination)
-                    && !obstacles.Exists(obstacle => obstacle != itself && obstacle.Intersects(destination))
-                    && !room.Enemies.Any(enemy => enemy.Collider != null && enemy.Collider.GetCollider().Intersects(destination));
-
-                if (clear)
-                    pushable.Slide(pushing);
-            }
-        }
-
-        // Link walking into the corner of a wall or block, with most of him past it already, steps sideways round
-        // it instead of stopping dead, as in the NES, where he lines up with the gaps between blocks as he turns.
-        // pushedBack is how far he was just pushed back out of things, which is the opposite way to where he was going
-        private static void LinkSidestepsCorners(IPlayer link, List<Rectangle> obstacles, Vector2 pushedBack)
-        {
-            // Only when he was stopped going straight along one axis
-            if (pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
-                return;
-
-            Point forward = new(-Math.Sign(pushedBack.X), -Math.Sign(pushedBack.Y));
-            Point sideways = new(Math.Abs(forward.Y), Math.Abs(forward.X));
-            Rectangle box = link.Collider.GetCollider();
-
-            int towards = SidestepToGetPast(box, forward, sideways, obstacles) ?? int.MaxValue;
-            int away = SidestepToGetPast(box, forward, new Point(-sideways.X, -sideways.Y), obstacles) ?? int.MaxValue;
-
-            // Whichever way is shorter. If neither works, or both are as far, he is square on to it and stays stopped
-            if (towards == away)
-                return;
-
-            int direction = towards < away ? 1 : -1;
-            int distance = Math.Min(towards, away);
-            link.Push(sideways.ToVector2() * direction * Math.Min(SidestepSpeed, distance));
-        }
-
-        // How far box would have to step sideways (along side) before it could move forward without touching
-        // anything, or null if that is further than SidestepLimit or something is in the way of the sidestep
-        private static int? SidestepToGetPast(Rectangle box, Point forward, Point side, List<Rectangle> obstacles)
-        {
-            int distance = 0;
-            while (distance <= SidestepLimit)
-            {
-                Rectangle moved = box;
-                moved.Offset(forward.X + side.X * distance, forward.Y + side.Y * distance);
-
-                int blocking = obstacles.FindIndex(obstacle => obstacle.Intersects(moved));
-                if (blocking < 0)
-                {
-                    Rectangle sidestep = Rectangle.Union(box, new Rectangle(box.X + side.X * distance, box.Y + side.Y * distance, box.Width, box.Height));
-                    return obstacles.Exists(obstacle => obstacle.Intersects(sidestep)) ? null : distance;
-                }
-
-                // Far enough along to clear the side of whatever was in the way
-                Rectangle obstacle = obstacles[blocking];
-                distance += side.X > 0 ? obstacle.Right - moved.Left
-                    : side.X < 0 ? moved.Right - obstacle.Left
-                    : side.Y > 0 ? obstacle.Bottom - moved.Top
-                    : moved.Bottom - obstacle.Top;
-            }
-
-            return null;
-        }
-
-        // Enemies can't walk into walls or solid blocks either; each one decides what to do instead
-        private static void WallsAndBlocksStopEnemies(Room room)
-        {
-            foreach (IEnemy enemy in room.Enemies)
-            {
-                if (enemy.Collider == null)
-                    continue;
-
-                foreach (Rectangle obstacle in Obstacles(room))
-                {
-                    Vector2 push = PushOut(enemy.Collider.GetCollider(), obstacle);
-                    if (push != Vector2.Zero)
-                        enemy.OnBlocked(push);
-                }
-            }
-        }
-
-        // Link picks up any item he touches: it does what it does for him, and disappears from the room
-        private static void LinkPicksUpItems(IPlayer link, Room room)
-        {
-            for (int i = room.Items.Count - 1; i >= 0; i--)
-            {
-                IItem item = room.Items[i];
-                if (link.Collider.Intersects(item.Collider))
-                {
-                    item.OnPickedUp(link);
-                    AudioManager.Instance.Play(item.PickUpSound);
-                    room.RemoveItem(item);
-                }
-            }
-        }
-
-        // Enemies that can be hurt right now (not dead, and not still flashing from a hit) and are touching hitbox.
-        // Blade Traps can't be hurt at all
-        private static IEnumerable<IDamageable> HurtableEnemiesTouching(ICollider hitbox, Room room)
-        {
-            foreach (IEnemy enemy in room.Enemies)
-            {
-                if (enemy is IDamageable damageable && !damageable.IsDead && !damageable.IsInvincible
-                    && enemy.Collider != null && hitbox.Intersects(enemy.Collider))
-                    yield return damageable;
-            }
-        }
-
-        // The room's walls (and the strips just outside it), and every solid block, closed doors included
-        private static IEnumerable<Rectangle> Obstacles(Room room)
-        {
-            foreach (Rectangle wall in room.Walls)
-                yield return wall;
-
-            foreach (IBlock block in room.Blocks)
-            {
-                if (block.IsSolid)
-                    yield return block.Collider.GetCollider();
-            }
-        }
-
-        // How far to move a box so it no longer overlaps an obstacle: straight out across whichever side
-        // overlaps the least, as in Caden's original block collision. Zero if they don't overlap
-        private static Vector2 PushOut(Rectangle box, Rectangle obstacle)
-        {
-            Rectangle overlap = Rectangle.Intersect(box, obstacle);
-            if (overlap.IsEmpty)
-                return Vector2.Zero;
-
-            if (overlap.Width < overlap.Height)
-                return new Vector2(box.Center.X < obstacle.Center.X ? -overlap.Width : overlap.Width, 0);
-
-            return new Vector2(0, box.Center.Y < obstacle.Center.Y ? -overlap.Height : overlap.Height);
+            PickupCollisions.LinkUnlocksDoors(link, room);
+            MovementCollisions.WallsBlocksAndNpcsStopLink(link, room);
+            MovementCollisions.WallsAndBlocksStopEnemies(room);
+            PickupCollisions.LinkPicksUpItems(link, room);
         }
     }
 }
