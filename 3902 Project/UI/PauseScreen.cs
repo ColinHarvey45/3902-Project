@@ -71,9 +71,9 @@ namespace UI
         private readonly ISprite cursorBottomLeft = HudSpriteFactory.Instance.CreateCursorCornerSprite(top: false, left: true);
         private readonly ISprite cursorBottomRight = HudSpriteFactory.Instance.CreateCursorCornerSprite(top: false, left: false);
 
-        // How each room looks on the map depends on which of its walls have a doorway, which never changes,
-        // so each room's tile is made once, the first time it is drawn
-        private readonly Dictionary<Room, ISprite> roomTiles = [];
+        // How a room looks on the map depends on which of its walls have a doorway (up, down, left, right). That can
+        // change, when a cracked wall is blown open, so tiles are kept by doorways rather than by room, each made once
+        private readonly Dictionary<(bool Up, bool Down, bool Left, bool Right), ISprite> roomTiles = [];
 
         // Which of the choices is highlighted
         private int selected;
@@ -168,12 +168,12 @@ namespace UI
 
         private ISprite TileFor(Room room)
         {
-            if (!roomTiles.TryGetValue(room, out ISprite tile))
+            (bool Up, bool Down, bool Left, bool Right) doorways = (room.HasDoorway(Direction.Up), room.HasDoorway(Direction.Down),
+                room.HasDoorway(Direction.Left), room.HasDoorway(Direction.Right));
+            if (!roomTiles.TryGetValue(doorways, out ISprite tile))
             {
-                tile = HudSpriteFactory.Instance.CreateDungeonRoomSprite(
-                    room.HasDoorway(Direction.Up), room.HasDoorway(Direction.Down),
-                    room.HasDoorway(Direction.Left), room.HasDoorway(Direction.Right));
-                roomTiles[room] = tile;
+                tile = HudSpriteFactory.Instance.CreateDungeonRoomSprite(doorways.Up, doorways.Down, doorways.Left, doorways.Right);
+                roomTiles[doorways] = tile;
             }
 
             return tile;
