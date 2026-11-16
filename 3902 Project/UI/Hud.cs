@@ -6,6 +6,7 @@ using Rooms;
 using Sprites;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace UI
 {
@@ -126,7 +127,7 @@ namespace UI
 
         private void DrawNumber(SpriteBatch spriteBatch, Point at, int number)
         {
-            string text = number.ToString();
+            string text = number.ToString(CultureInfo.InvariantCulture);
             for (int i = 0; i < text.Length; i++)
                 digits[text[i] - '0'].Draw(spriteBatch, Screen(new Point(at.X + i * GlyphSize, at.Y)));
         }
