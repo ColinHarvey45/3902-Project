@@ -18,7 +18,7 @@ namespace Enemies.Wanderers
         private const int GoriyaHealth = 3;
 
         private readonly ProjectileManager projectiles;
-        private Boomerang boomerang;
+        private IProjectile boomerang;
 
         // Its boomerang goes into projectiles, along with everything else flying around the room
         public Goriya(Vector2 startPosition, ProjectileManager projectiles)
@@ -55,9 +55,7 @@ namespace Enemies.Wanderers
         private void ThrowBoomerang()
         {
             Vector2 spawnPosition = Center + CurrentDirection * BoomerangSpawnDistance;
-            ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateGoriyaBoomerangSprite();
-
-            boomerang = new Boomerang(boomerangSprite, spawnPosition, CurrentDirection, this, ProjectileOwner.Enemy);
+            boomerang = ProjectileFactory.CreateGoriyaBoomerang(spawnPosition, CurrentDirection, this);
             projectiles.Add(boomerang);
         }
     }

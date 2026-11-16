@@ -56,7 +56,7 @@ namespace Environment
                 return;
 
             Vector2 direction = Vector2.Normalize(towardsLink);
-            projectiles.Add(new Fireball(middle + direction * LaunchDistance - HalfFireball, direction * FireballSpeed));
+            projectiles.Add(ProjectileFactory.CreateFireball(middle + direction * LaunchDistance - HalfFireball, direction * FireballSpeed));
         }
     }
 }

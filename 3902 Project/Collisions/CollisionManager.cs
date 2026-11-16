@@ -23,9 +23,8 @@ namespace Collisions
 
         public static void HandleCollisions(IPlayer link, Room room, ProjectileManager projectiles)
         {
-            SwordHitsEnemies(link, room);
-            SwordProvokesGuards(link, room);
-            LinksProjectilesHitEnemies(room, projectiles);
+            LinksWeaponsHitEnemies(room, projectiles);
+            LinksWeaponsProvokeGuards(room, projectiles);
 
             // Anything killed this frame is gone before it can touch Link
             room.RemoveDeadEnemies();
@@ -42,21 +41,12 @@ namespace Collisions
             LinkPicksUpItems(link, room);
         }
 
-        // Link's sword hurts every enemy it touches, knocking it back away from him
-        private static void SwordHitsEnemies(IPlayer link, Room room)
+        // Attacking the Old Man (with any weapon) sets off the fires beside him, as in the NES
+        private static void LinksWeaponsProvokeGuards(Room room, ProjectileManager projectiles)
         {
-            if (link.SwordCollider is not ICollider sword)
-                return;
-
-            Vector2 linkMiddle = link.Collider.GetCollider().Center.ToVector2();
-            foreach (IDamageable enemy in HurtableEnemiesTouching(sword, room))
-                enemy.TakeDamage(link.SwordDamage, linkMiddle);
-        }
-
-        // Attacking the Old Man with the sword sets off the fires beside him, as in the NES
-        private static void SwordProvokesGuards(IPlayer link, Room room)
-        {
-            if (link.SwordCollider is not ICollider sword || !room.Npcs.Any(npc => sword.Intersects(npc.Collider)))
+            bool attacked = projectiles.ActiveProjectiles.Any(weapon => weapon.Owner == ProjectileOwner.Link
+                && !weapon.IsFinished && weapon.Collider != null && room.Npcs.Any(npc => weapon.Collider.Intersects(npc.Collider)));
+            if (!attacked)
                 return;
 
             foreach (IBlock block in room.Blocks)
@@ -66,9 +56,9 @@ namespace Collisions
             }
         }
 
-        // An arrow or boomerang hits the first enemy it touches and is used up (or turns back);
-        // a bomb's explosion hits every enemy in the blast. Each decides what the hit does (see IProjectile)
-        private static void LinksProjectilesHitEnemies(Room room, ProjectileManager projectiles)
+        // Link's weapons: an arrow or boomerang hits the first enemy it touches and is used up (or turns back); the
+        // sword and a bomb's explosion hit every enemy they touch. Each decides what its hit does (see IProjectile)
+        private static void LinksWeaponsHitEnemies(Room room, ProjectileManager projectiles)
         {
             foreach (IProjectile projectile in projectiles.ActiveProjectiles)
             {

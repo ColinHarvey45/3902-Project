@@ -126,7 +126,7 @@ namespace Enemies.Bosses
             Vector2 mouth = Position + MouthOffset;
 
             foreach (Vector2 direction in FireballDirections)
-                projectiles.Add(new Fireball(mouth, direction * FireballSpeed));
+                projectiles.Add(ProjectileFactory.CreateFireball(mouth, direction * FireballSpeed));
         }
 
         public void UpdateCollider()

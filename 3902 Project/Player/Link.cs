@@ -24,7 +24,9 @@ namespace Player
 
         private readonly ProjectileManager projectiles;
         private Direction? requestedDirection;
-        private Boomerang boomerang;
+
+        // His boomerang, while it is out; he can't throw another until it is back
+        private IProjectile boomerang;
 
         public Vector2 Position { get; private set; }
 
@@ -44,12 +46,6 @@ namespace Player
 
         // He starts with bombs in his B slot
         public SecondaryItem EquippedItem { get; set; } = SecondaryItem.Bomb;
-
-        // How much health his sword takes off an enemy it hits
-        public int SwordDamage { get; } = 1;
-
-        // His sword's collider while he is swinging it, or null when he isn't
-        public ICollider SwordCollider => (State as LinkAttackingState)?.SwordCollider;
 
         private const int ColliderWidth = (int)(12 * Sprite.Scale);
         private const int ColliderHeight = (int)(12 * Sprite.Scale);
@@ -150,13 +146,19 @@ namespace Player
             Position += Facing.ToVector() * MoveSpeed;
         }
 
+        // Called by the attacking state: the swing lasts duration seconds
+        public void SwingSword(float duration)
+        {
+            projectiles.Add(ProjectileFactory.CreateSwordSwing(Position, Center, Facing, duration));
+        }
+
         // Called by the states that let Link use an item right now
         public void SpawnProjectile(SecondaryItem item)
         {
             switch (item)
             {
                 case SecondaryItem.Arrow:
-                    projectiles.Add(new Arrow(Center, Facing));
+                    projectiles.Add(ProjectileFactory.CreateArrow(Center, Facing));
                     AudioManager.Instance.Play(Sound.ArrowBoomerang);
                     break;
 
@@ -165,8 +167,7 @@ namespace Player
                     // (or cleared away when he leaves the room)
                     if (projectiles.Contains(boomerang)) return;
 
-                    ISprite boomerangSprite = ProjectileSpriteFactory.Instance.CreateLinkBoomerangSprite();
-                    boomerang = new Boomerang(boomerangSprite, Center, Facing.ToVector(), this, ProjectileOwner.Link);
+                    boomerang = ProjectileFactory.CreateLinkBoomerang(Center, Facing, this);
                     projectiles.Add(boomerang);
                     AudioManager.Instance.Play(Sound.ArrowBoomerang);
                     break;
@@ -175,7 +176,7 @@ namespace Player
                     // Placed on the tile in front of Link; each one uses up a bomb, and with none left nothing is placed
                     if (!Inventory.TryUseBomb()) return;
 
-                    projectiles.Add(new Bomb(Position + Facing.ToVector() * TileSize + BombTileOffset));
+                    projectiles.Add(ProjectileFactory.CreateBomb(Position + Facing.ToVector() * TileSize + BombTileOffset));
                     AudioManager.Instance.Play(Sound.BombDrop);
                     break;
             }

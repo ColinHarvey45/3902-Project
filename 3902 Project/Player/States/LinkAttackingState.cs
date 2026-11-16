@@ -1,5 +1,4 @@
 using Audio;
-using Colliders;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,32 +6,22 @@ using Sprites;
 
 namespace Player.States
 {
-    // Link stands still and ignores input until his sword swing finishes
+    // Link stands still and ignores input until his sword swing finishes. The swing itself is one of his
+    // projectiles, which hits whatever is in front of him for as long as the swing lasts (see SwordSwing)
     internal sealed class LinkAttackingState : ILinkState
     {
         private const float AttackDuration = 0.2f; // seconds
 
-        // The sword's hitbox is 12 x 12 sheet pixels, one tile (16 sheet pixels) in front of Link
-        private const float SwordReach = 16 * Sprite.Scale;
-        private const int SwordHitboxSize = (int)(12 * Sprite.Scale);
-
         private readonly Link link;
         private readonly ISprite sprite;
         private float timer;
-
-        // The sword's collider for this swing; RoomManager checks it against the enemies in the room
-        public ICollider SwordCollider { get; }
 
         public LinkAttackingState(Link link)
         {
             this.link = link;
             sprite = LinkSpriteFactory.Instance.CreateSwordSprite(link.Facing);
 
-            // Sized to the sword and offset from Link's position to the tile he is facing
-            Point swordOffset = (link.Facing.ToVector() * SwordReach).ToPoint();
-            SwordCollider = new BoxCollider(new Rectangle(0, 0, SwordHitboxSize, SwordHitboxSize), swordOffset);
-            SwordCollider.Update(link.Position);
-
+            link.SwingSword(AttackDuration);
             AudioManager.Instance.Play(Sound.SwordSlash);
         }
 

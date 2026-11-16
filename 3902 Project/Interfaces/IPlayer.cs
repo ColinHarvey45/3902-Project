@@ -31,10 +31,6 @@ namespace Interfaces
 
         public ICollider Collider { get; }
 
-        // His sword's hitbox while he is swinging it, or null when he isn't, and how much it hurts an enemy
-        public ICollider SwordCollider { get; }
-        public int SwordDamage { get; }
-
         // Moves him straight away, e.g. back out of a wall he walked into
         public void Push(Vector2 offset);
 
