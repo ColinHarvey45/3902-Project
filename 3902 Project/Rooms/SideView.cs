@@ -17,8 +17,20 @@ namespace Rooms
                 return;
 
             float climbed = link.Position.Y - before.Y;
-            if (climbed != 0)
+            if (climbed < 0)
+            {
+                // Off the top of a ladder: back down just far enough to stand on top of it (or all the way, if
+                // he wasn't on one)
+                for (int step = 0; step < -climbed && !OnLadder(link, room); step++)
+                    link.Push(new Vector2(0, 1));
+
+                if (OnLadder(link, room))
+                    return;
+            }
+            else if (climbed > 0)
+            {
                 link.Push(new Vector2(0, -climbed));
+            }
 
             // He falls until he lands on something, so he never sinks into the bricks
             Rectangle box = link.Collider.GetCollider();

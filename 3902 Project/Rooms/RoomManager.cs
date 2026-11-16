@@ -29,6 +29,9 @@ namespace Rooms
         // Where Link starts, and where a Wallmaster takes him back to
         private readonly Room entrance;
 
+        // The stairs (or ladder top) Link is standing on, if any
+        private Warp warpLinkIsOn;
+
         public Room CurrentRoom => rooms.Current;
 
         // Every room in the dungeon, which the HUD draws on its map
@@ -154,17 +157,27 @@ namespace Rooms
             }
         }
 
-        // Stepping onto the stairs (Link's middle on them, not just his edge) takes him straight to the room they lead to
+        // Stepping onto the stairs (Link's middle on them, not just his edge) takes him straight to the room they lead to.
+        // Only stepping onto them does: Link who has just come up a ladder onto the stairs, as in the NES, has to walk
+        // off them and back on to go down again
         private void TakeWarp()
         {
-            Point middle = link.Collider.GetCollider().Center;
-            Warp warp = CurrentRoom.Warps.FirstOrDefault(each => each.Area.Contains(middle));
-            if (warp == null)
+            Warp warp = WarpUnderLink();
+            bool steppedOn = warp != null && warp != warpLinkIsOn;
+            warpLinkIsOn = warp;
+            if (!steppedOn)
                 return;
 
             EnterRoom(FindRoom(warp.Destination));
             link.PlaceAt(warp.Arrival);
+            warpLinkIsOn = WarpUnderLink();
             AudioManager.Instance.Play(Sound.Stairs);
+        }
+
+        private Warp WarpUnderLink()
+        {
+            Point middle = link.Collider.GetCollider().Center;
+            return CurrentRoom.Warps.FirstOrDefault(each => each.Area.Contains(middle));
         }
 
         private Room FindRoom(string name)

@@ -23,5 +23,6 @@ Enemy,Keese,8.5,3
 Enemy,Keese,10,4
 Enemy,Keese,5.5,5.5
 
-# Climbing off the top of the ladder goes back up the stairs, to just below them
-Warp,1,-2,Room15_BladeTraps,6,4
+# Climbing off the top of the ladder goes back up the stairs, onto them, as in the NES; Link walks off them
+# (stepping back on takes him down again)
+Warp,1,-2,Room15_BladeTraps,6,3
