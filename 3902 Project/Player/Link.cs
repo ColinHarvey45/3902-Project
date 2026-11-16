@@ -7,6 +7,7 @@ using Projectiles;
 using Sprites;
 using Colliders;
 using System;
+using CSE_3902_Project;
 
 namespace Player
 {
@@ -14,7 +15,7 @@ namespace Player
     // input is decided by his current State, and whether he is hurt by his HealthState
     internal sealed class Link : IPlayer, IBoomerangThrower
     {
-        private const float MoveSpeed = 3f; // pixels per frame
+        private const float MoveSpeed = GameSettings.LinkWalkSpeed;
         private const float KnockbackDistance = 4f; // pixels he is pushed back when hurt
         private const float TileSize = 16 * Sprite.Scale;
         private const int StartingHealth = 3;

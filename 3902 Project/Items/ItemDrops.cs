@@ -2,13 +2,14 @@ using System;
 using Interfaces;
 using Microsoft.Xna.Framework;
 using Sprites;
+using CSE_3902_Project;
 
 namespace Items
 {
     // What a dead enemy leaves behind, as in the NES: often nothing, otherwise a rupee, a heart or some bombs
     internal static class ItemDrops
     {
-        // Out of every 100 enemies killed, roughly how many leave each; the rest leave nothing
+        // The percentage of enemies that leave each; the rest leave nothing
         private const int RupeeChance = 25;
         private const int HeartChance = 15;
         private const int BombChance = 10;
@@ -22,7 +23,7 @@ namespace Items
         public static IItem Roll(Vector2 middle)
         {
             Vector2 position = middle - HalfItem;
-            int roll = RandomGenerator.Next(100);
+            int roll = RandomGenerator.Next(GameSettings.Percent);
 
             if (roll < RupeeChance)
                 return new Rupee(position);

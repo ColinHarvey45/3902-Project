@@ -59,10 +59,13 @@ namespace UI
         private readonly RoomManager rooms;
         private readonly int level;
 
+        // 0 to 9
+        private const int DigitCount = 10;
+
         private readonly ISprite frame = HudSpriteFactory.Instance.CreateFrameSprite();
         private readonly ISprite levelLabel = HudSpriteFactory.Instance.CreateLevelLabelSprite();
         private readonly ISprite multiplySign = HudSpriteFactory.Instance.CreateMultiplySignSprite();
-        private readonly ISprite[] digits = new ISprite[10];
+        private readonly ISprite[] digits = new ISprite[DigitCount];
         private readonly ISprite fullHeart = HudSpriteFactory.Instance.CreateFullHeartSprite();
         private readonly ISprite emptyHeart = HudSpriteFactory.Instance.CreateEmptyHeartSprite();
         private readonly ISprite mapRoom = HudSpriteFactory.Instance.CreateMapRoomSprite();

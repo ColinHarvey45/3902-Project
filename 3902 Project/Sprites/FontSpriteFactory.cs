@@ -3,6 +3,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -30,7 +31,7 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            texture = Whitened(content.Load<Texture2D>("TLOZFont-transparent"));
+            texture = Whitened(content.Load<Texture2D>(ContentNames.FontSheet));
         }
 
         // character is one of Characters

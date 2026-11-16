@@ -30,12 +30,13 @@ namespace Enemies
         private const int ColliderHeight = (int)(32 * Sprites.Sprite.Scale);
         private static readonly Point ColliderOffset = Point.Zero;
 
-        // In the real game the middle fireball aims at Link; until Sprint 3 they fly left in a fan
+        // They fly left in a fan: the outer two go this far up or down for every pixel left
+        private const float FireballSpread = 0.4f;
         private static readonly Vector2[] FireballDirections =
         [
-            Vector2.Normalize(new Vector2(-1, -0.4f)),
+            Vector2.Normalize(new Vector2(-1, -FireballSpread)),
             new Vector2(-1, 0),
-            Vector2.Normalize(new Vector2(-1, 0.4f))
+            Vector2.Normalize(new Vector2(-1, FireballSpread))
         ];
 
         private readonly float homeX;

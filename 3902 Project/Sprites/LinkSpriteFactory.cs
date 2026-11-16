@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Player;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -34,7 +35,7 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            texture = content.Load<Texture2D>("TLOZLink-transparent2");
+            texture = content.Load<Texture2D>(ContentNames.LinkSheet);
         }
 
         public ISprite CreateStandingSprite(Direction facing)

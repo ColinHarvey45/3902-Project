@@ -13,7 +13,11 @@ namespace Enemies
     // direction every couple of seconds, and turn around instead of leaving the room's floor
     internal abstract class Enemy : IDamageable
     {
-        private const float DefaultDirectionChangeTime = 2f;
+        protected const float DefaultDirectionChangeTime = 2f; // seconds
+
+        // Most enemies are a tile big, with a hitbox 12 x 12 sheet pixels, 2 in from the sprite's edges
+        protected const int DefaultColliderSize = (int)(12 * Sprites.Sprite.Scale);
+        private static readonly Point DefaultColliderOffset = new((int)(2 * Sprites.Sprite.Scale), (int)(2 * Sprites.Sprite.Scale));
         private const float WalkSpeed = 1f; // pixels per frame
 
         // How long the boomerang stops an enemy for
@@ -47,9 +51,7 @@ namespace Enemies
         }
 
         protected Enemy(Vector2 startPosition, Vector2[] directions, float directionChangeTime)
-            : this(startPosition, directions, directionChangeTime,
-                (int)(12 * Sprites.Sprite.Scale), (int)(12 * Sprites.Sprite.Scale),
-                new Point((int)(2 * Sprites.Sprite.Scale), (int)(2 * Sprites.Sprite.Scale)))
+            : this(startPosition, directions, directionChangeTime, DefaultColliderSize, DefaultColliderSize, DefaultColliderOffset)
         {
         }
 

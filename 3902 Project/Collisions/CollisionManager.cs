@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Player;
 using Projectiles;
 using Rooms;
+using CSE_3902_Project;
 
 namespace Collisions
 {
@@ -18,7 +19,7 @@ namespace Collisions
     {
         // Link steps round a corner if stepping aside half a tile or less gets him past it, as fast as he walks
         private const int SidestepLimit = RoomLayout.TileSize / 2;
-        private const int SidestepSpeed = 3;
+        private const int SidestepSpeed = (int)GameSettings.LinkWalkSpeed;
 
         public static void HandleCollisions(IPlayer link, Room room, ProjectileManager projectiles)
         {

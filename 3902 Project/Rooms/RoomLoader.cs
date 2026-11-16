@@ -265,22 +265,24 @@ namespace Rooms
         // A Block, Enemy, Npc or Item line: its kind, then the column and row of its top-left corner
         private static T CreateOnTile<T>(Dictionary<string, Func<Vector2, T>> kinds, string[] fields, string description)
         {
-            ExpectValues(fields, 3);
-            Func<Vector2, T> create = Find(kinds, fields[1], description);
+            const int Kind = 1, Column = 2, Row = 3;
+            ExpectValues(fields, Row);
+            Func<Vector2, T> create = Find(kinds, fields[Kind], description);
 
-            return create(RoomLayout.TilePosition(ParseNumber(fields[2]), ParseNumber(fields[3])));
+            return create(RoomLayout.TilePosition(ParseNumber(fields[Column]), ParseNumber(fields[Row])));
         }
 
         // A Warp line: the tile Link steps onto, the room it takes him to, and the tile he arrives on there.
         // Whether that room exists is checked once every room has been loaded
         private static Warp ParseWarp(string[] fields)
         {
-            ExpectValues(fields, 5);
-            Vector2 tile = RoomLayout.TilePosition(ParseNumber(fields[1]), ParseNumber(fields[2]));
+            const int Column = 1, Row = 2, Destination = 3, ArrivalColumn = 4, ArrivalRow = 5;
+            ExpectValues(fields, ArrivalRow);
+            Vector2 tile = RoomLayout.TilePosition(ParseNumber(fields[Column]), ParseNumber(fields[Row]));
             Rectangle area = new((int)tile.X, (int)tile.Y, RoomLayout.TileSize, RoomLayout.TileSize);
-            Vector2 arrival = RoomLayout.TilePosition(ParseNumber(fields[4]), ParseNumber(fields[5]));
+            Vector2 arrival = RoomLayout.TilePosition(ParseNumber(fields[ArrivalColumn]), ParseNumber(fields[ArrivalRow]));
 
-            return new Warp(area, fields[3], arrival);
+            return new Warp(area, fields[Destination], arrival);
         }
 
         private static T Find<T>(Dictionary<string, T> kinds, string name, string description)

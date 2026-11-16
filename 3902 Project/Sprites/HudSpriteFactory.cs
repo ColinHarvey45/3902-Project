@@ -2,6 +2,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -60,7 +61,7 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            texture = content.Load<Texture2D>("TLOZHUDandPause-transparent");
+            texture = content.Load<Texture2D>(ContentNames.HudAndPauseSheet);
         }
 
         public ISprite CreateFrameSprite() => Still(FrameSource);
@@ -85,9 +86,15 @@ namespace Sprites
         }
 
         // A room on the pause screen's map, with a gap in its rim for each side that has a doorway
+        // The sheet has one tile for each set of gaps, in order of up + down + left + right counted as a binary number
+        private const int UpGap = 8;
+        private const int DownGap = 4;
+        private const int LeftGap = 2;
+        private const int RightGap = 1;
+
         public ISprite CreateDungeonRoomSprite(bool up, bool down, bool left, bool right)
         {
-            int tile = (up ? 8 : 0) + (down ? 4 : 0) + (left ? 2 : 0) + (right ? 1 : 0);
+            int tile = (up ? UpGap : 0) + (down ? DownGap : 0) + (left ? LeftGap : 0) + (right ? RightGap : 0);
 
             return Still(new Rectangle(RoomTilesLeft + tile * RoomTileSpacing, RoomTilesTop, RoomTileSize, RoomTileSize));
         }

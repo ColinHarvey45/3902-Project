@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using CSE_3902_Project;
 
 namespace Audio
 {
@@ -9,35 +10,8 @@ namespace Audio
     // turns only the music off; sound effects always play. Anything can ask for a sound effect by name (Sound)
     internal sealed class AudioManager : IDisposable
     {
-        private const string MusicFile = "BackgroundMusic";
-        private const string SoundFolder = "Sounds/";
-
         // Well under the sound effects, so they stand out over it (the music file is much louder than they are)
         private const float MusicVolume = 0.3f;
-
-        // The file in Content/Sounds for each sound effect
-        private static readonly Dictionary<Sound, string> SoundFiles = new()
-        {
-            [Sound.SwordSlash] = "LOZ_Sword_Slash",
-            [Sound.ArrowBoomerang] = "LOZ_Arrow_Boomerang",
-            [Sound.BombDrop] = "LOZ_Bomb_Drop",
-            [Sound.BombBlow] = "LOZ_Bomb_Blow",
-            [Sound.LinkHurt] = "LOZ_Link_Hurt",
-            [Sound.LinkDie] = "LOZ_Link_Die",
-            [Sound.LowHealth] = "LOZ_LowHealth",
-            [Sound.EnemyHit] = "LOZ_Enemy_Hit",
-            [Sound.EnemyDie] = "LOZ_Enemy_Die",
-            [Sound.BossHit] = "LOZ_Boss_Hit",
-            [Sound.BossScream] = "LOZ_Boss_Scream1",
-            [Sound.GetItem] = "LOZ_Get_Item",
-            [Sound.GetHeart] = "LOZ_Get_Heart",
-            [Sound.GetRupee] = "LOZ_Get_Rupee",
-            [Sound.Fanfare] = "LOZ_Fanfare",
-            [Sound.DoorUnlock] = "LOZ_Door_Unlock",
-            [Sound.Stairs] = "LOZ_Stairs",
-            [Sound.Secret] = "LOZ_Secret",
-            [Sound.Text] = "LOZ_Text"
-        };
 
         private readonly Dictionary<Sound, SoundEffect> soundEffects = [];
         private SoundEffectInstance music;
@@ -55,12 +29,12 @@ namespace Audio
 
         public void LoadAllSounds(ContentManager content)
         {
-            music = content.Load<SoundEffect>(MusicFile).CreateInstance();
+            music = content.Load<SoundEffect>(ContentNames.Music).CreateInstance();
             music.IsLooped = true;
             music.Volume = MusicVolume;
 
-            foreach (KeyValuePair<Sound, string> sound in SoundFiles)
-                soundEffects[sound.Key] = content.Load<SoundEffect>(SoundFolder + sound.Value);
+            foreach (KeyValuePair<Sound, string> sound in ContentNames.SoundEffects)
+                soundEffects[sound.Key] = content.Load<SoundEffect>(sound.Value);
 
             lowHealthBeep = soundEffects[Sound.LowHealth].CreateInstance();
             lowHealthBeep.IsLooped = true;

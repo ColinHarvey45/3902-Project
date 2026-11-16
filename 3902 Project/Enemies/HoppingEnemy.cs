@@ -18,10 +18,10 @@ namespace Enemies
         public float MaxRestTime { get; }
 
         protected HoppingEnemy(Vector2 startPosition, float hopSpeed, float hopTime, float maxRestTime,
-            int colliderWidth = 12 * (int)Sprites.Sprite.Scale,
-            int colliderHeight = 12 * (int)Sprites.Sprite.Scale,
+            int colliderWidth = DefaultColliderSize,
+            int colliderHeight = DefaultColliderSize,
             Point colliderOffset = default)
-            : base(startPosition, RandomMovement.FourDirections, 2f,
+            : base(startPosition, RandomMovement.FourDirections, DefaultDirectionChangeTime,
                 colliderWidth, colliderHeight, colliderOffset)
         {
             Movement.Speed = hopSpeed;

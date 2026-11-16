@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Player;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -41,9 +42,9 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            linkTexture = content.Load<Texture2D>("TLOZLink-transparent2");
-            enemyTexture = content.Load<Texture2D>("TLOZDungeonEnemies-transparent");
-            bossTexture = content.Load<Texture2D>("TLOZBosses-transparent");
+            linkTexture = content.Load<Texture2D>(ContentNames.LinkSheet);
+            enemyTexture = content.Load<Texture2D>(ContentNames.DungeonEnemiesSheet);
+            bossTexture = content.Load<Texture2D>(ContentNames.BossesSheet);
         }
 
         // Arrows and boomerangs are drawn centred on their position, so they can be fired from

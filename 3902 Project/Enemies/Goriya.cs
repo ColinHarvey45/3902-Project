@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Projectiles;
 using Rooms;
 using Sprites;
+using CSE_3902_Project;
 
 namespace Enemies
 {
@@ -57,7 +58,7 @@ namespace Enemies
         {
             Sprite = EnemySpriteFactory.Instance.CreateGoriyaSprite(CurrentDirection);
 
-            if (RandomGenerator.Next(100) < ThrowChancePercent)
+            if (RandomGenerator.Next(GameSettings.Percent) < ThrowChancePercent)
                 ThrowBoomerang();
         }
 

@@ -2,6 +2,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -45,9 +46,9 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            texture = content.Load<Texture2D>("TLOZDungeonEnemies-transparent");
-            bossTexture = content.Load<Texture2D>("TLOZBosses-transparent");
-            deathTexture = content.Load<Texture2D>("TLOZEnemyDeath");
+            texture = content.Load<Texture2D>(ContentNames.DungeonEnemiesSheet);
+            bossTexture = content.Load<Texture2D>(ContentNames.BossesSheet);
+            deathTexture = content.Load<Texture2D>(ContentNames.EnemyDeathSheet);
         }
 
         // Plays once, then IsFinished

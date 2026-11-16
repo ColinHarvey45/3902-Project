@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Player;
+using CSE_3902_Project;
+using System.Collections.Generic;
 
 namespace Sprites
 {
@@ -52,8 +54,8 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            dungeonTexture = content.Load<Texture2D>("TLOZDungeon-transparent");
-            npcTexture = content.Load<Texture2D>("TLOZNPCs-transparent");
+            dungeonTexture = content.Load<Texture2D>(ContentNames.DungeonSheet);
+            npcTexture = content.Load<Texture2D>(ContentNames.NpcsSheet);
         }
 
         public ISprite CreateSquareBlockSprite() => Still(SquareBlockFrame);
@@ -92,19 +94,20 @@ namespace Sprites
             return new DoorSprites(Still(whole), new Sprite(dungeonTexture, ArchFrame(whole, side)));
         }
 
-        // Each door piece is drawn differently depending on which wall it sits in
+        // Each door piece is drawn differently depending on which wall it sits in; the sheet has a row of them
+        // for each wall, in this order from the top
+        private static readonly Dictionary<Direction, int> DoorSheetRows = new()
+        {
+            [Direction.Up] = 0,
+            [Direction.Left] = 1,
+            [Direction.Right] = 2,
+            [Direction.Down] = 3
+        };
+
         private static Rectangle DoorFrame(Rectangle topWallFrame, Direction side)
         {
-            int row = side switch
-            {
-                Direction.Up => 0,
-                Direction.Left => 1,
-                Direction.Right => 2,
-                _ => 3
-            };
-
             Rectangle frame = topWallFrame;
-            frame.Y += row * DoorRowSpacing;
+            frame.Y += DoorSheetRows[side] * DoorRowSpacing;
 
             return frame;
         }

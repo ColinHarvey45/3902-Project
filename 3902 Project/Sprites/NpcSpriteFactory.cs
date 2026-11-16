@@ -2,6 +2,7 @@ using Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using CSE_3902_Project;
 
 namespace Sprites
 {
@@ -20,7 +21,7 @@ namespace Sprites
 
         public void LoadAllTextures(ContentManager content)
         {
-            texture = content.Load<Texture2D>("TLOZNPCs-transparent");
+            texture = content.Load<Texture2D>(ContentNames.NpcsSheet);
         }
 
         public ISprite CreateOldManSprite()
