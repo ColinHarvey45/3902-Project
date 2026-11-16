@@ -24,6 +24,7 @@ namespace Audio
         GetHeart,
         GetRupee,
         Fanfare,
+        KeyAppear,
 
         // The dungeon
         DoorUnlock,

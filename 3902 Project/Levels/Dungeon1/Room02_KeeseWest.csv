@@ -1,4 +1,4 @@
-# Level 1: west of the entrance: 3 Keese and a key.
+# Level 1: west of the entrance: 3 Keese, and a key that appears once they are dead, as in the NES.
 # From the NESMaps Level 1 (Quest 1) map, room 2 across and 6 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
@@ -19,4 +19,4 @@ Floor,............
 Enemy,Keese,1,1
 Enemy,Keese,3,2
 Enemy,Keese,1,5
-Item,Key,8.25,6
+Reward,Key,8.25,6

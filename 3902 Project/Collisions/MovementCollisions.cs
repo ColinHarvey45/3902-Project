@@ -39,10 +39,10 @@ namespace Collisions
         }
 
         // Link walking straight into a pushable block pushes it; once he has pushed long enough it slides a tile,
-        // as long as that tile is clear floor
+        // as long as that tile is clear floor. As in the NES, blocks won't move until the room is cleared
         private static void LinkPushesBlocks(IPlayer link, Room room, List<Rectangle> obstacles, Vector2 pushedBack)
         {
-            if (pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
+            if (!room.IsCleared || pushedBack == Vector2.Zero || (pushedBack.X != 0 && pushedBack.Y != 0))
                 return;
 
             Direction pushing = (-pushedBack).ToDirection();

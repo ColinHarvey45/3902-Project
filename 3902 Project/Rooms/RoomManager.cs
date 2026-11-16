@@ -126,7 +126,7 @@ namespace Rooms
             CollisionManager.HandleCollisions(link, CurrentRoom, projectiles);
             projectiles.RemoveFinished();
 
-            UnlockDoorsOnTheOtherSide();
+            OpenDoorsOnTheOtherSide();
             TakeWarp();
             ReturnLinkIfCarriedOff();
         }
@@ -158,14 +158,19 @@ namespace Rooms
             CurrentRoom.MarkVisited();
         }
 
-        // A door unlocked from one side is unlocked from the other too: the room next door has the same door
-        private void UnlockDoorsOnTheOtherSide()
+        // A door unlocked (or a wall blown open) from one side is open from the other too: the room next door has
+        // the same door
+        private void OpenDoorsOnTheOtherSide()
         {
             foreach (Direction side in Enum.GetValues<Direction>())
             {
-                if (CurrentRoom.DoorOn(side) is ILockedDoor { IsLocked: false }
-                    && NeighbourOf(CurrentRoom, side)?.DoorOn(side.Opposite()) is ILockedDoor { IsLocked: true } otherSide)
-                    otherSide.Unlock();
+                IBlock otherSide = NeighbourOf(CurrentRoom, side)?.DoorOn(side.Opposite());
+
+                if (CurrentRoom.DoorOn(side) is ILockedDoor { IsLocked: false } && otherSide is ILockedDoor { IsLocked: true } lockedDoor)
+                    lockedDoor.Unlock();
+
+                if (CurrentRoom.DoorOn(side) is IBombableWall { IsOpen: true } && otherSide is IBombableWall { IsOpen: false } crackedWall)
+                    crackedWall.BlowOpen();
             }
         }
 

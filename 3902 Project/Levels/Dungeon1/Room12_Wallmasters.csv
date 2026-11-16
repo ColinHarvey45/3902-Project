@@ -1,4 +1,5 @@
-# Level 1: 8 Wallmasters and a key.
+# Level 1: 8 Wallmasters and a key. The room looks empty: the Wallmasters wait in the walls and come out one at
+# a time as Link walks along them, as in the NES, so where they are listed doesn't matter.
 # From the NESMaps Level 1 (Quest 1) map, room 5 across and 3 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 

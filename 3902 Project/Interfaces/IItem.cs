@@ -10,6 +10,9 @@ namespace Interfaces
 
         public ICollider Collider { get; }
 
+        // Moves it so its middle is at middle, e.g. onto the enemy carrying it (see Room)
+        public void CenterOn(Vector2 middle);
+
         // What it does for Link when he picks it up (the room then takes it away)
         public void OnPickedUp(IPlayer player);
 

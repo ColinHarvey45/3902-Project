@@ -12,7 +12,7 @@ namespace Interfaces
         // Touched Link: catches him, unless it is already carrying him
         public void Grab(IPlayer link);
 
-        // Lets go of him once he has been taken away
+        // Lets go of him, once he has been taken away or has left the room
         public void Release();
 
     }

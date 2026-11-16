@@ -10,8 +10,10 @@ using Sprites;
 namespace Environment
 {
     // Looks like any other square block, but slides one tile when Link pushes against it for half a second, once
-    // only, as in the NES; the secret sound plays when it stops. In room 15 it opens the way to the stairs, and in
-    // room 8 it opens the shutter door (see Room)
+    // only, as in the NES; the secret sound plays when it stops. onlyWay, if given, is the one way it can be
+    // pushed, like the block in room 15, which only goes up. In room 15 it opens the way to the stairs, and in
+    // room 8 it opens the shutter door (see Room). As in the NES, it can't be pushed until the room's enemies
+    // are dead (see MovementCollisions)
     internal sealed class PushableBlock : IPushableBlock
     {
         private const int FramesToPush = 30; // half a second
@@ -28,9 +30,12 @@ namespace Environment
         private bool hasStartedSliding;
         private Vector2 slideLeft;
 
-        public PushableBlock(Vector2 position)
+        private readonly Direction? onlyWay;
+
+        public PushableBlock(Vector2 position, Direction? onlyWay = null)
         {
             this.position = position;
+            this.onlyWay = onlyWay;
             Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, RoomLayout.TileSize, RoomLayout.TileSize));
         }
 
@@ -41,7 +46,7 @@ namespace Environment
 
         public bool PushedBy(Direction direction)
         {
-            if (hasStartedSliding)
+            if (hasStartedSliding || (onlyWay != null && direction != onlyWay))
                 return false;
 
             if (framesPushed == 0 || direction != pushDirection)

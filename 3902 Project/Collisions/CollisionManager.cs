@@ -8,7 +8,7 @@ namespace Collisions
     // and tells the objects involved. Each object decides how it reacts: e.g. Link's health state decides
     // whether a hit hurts him, and each enemy decides what to do when it walks into a wall.
     // The collisions themselves are grouped by what they are about, one method for each kind: fighting
-    // (CombatCollisions), moving about (MovementCollisions), and picking things up and unlocking doors
+    // (CombatCollisions), moving about (MovementCollisions), and picking things up and opening doors
     // (PickupCollisions). This runs them in the order that matters
     internal static class CollisionManager
     {
@@ -25,8 +25,9 @@ namespace Collisions
             CombatCollisions.BlastsHurtLink(link, projectiles);
             MovementCollisions.ProjectilesHitWallsAndBlocks(room, projectiles);
 
-            // A door Link unlocks this frame no longer stops him
+            // A door Link unlocks (or blows open) this frame no longer stops him
             PickupCollisions.LinkUnlocksDoors(link, room);
+            PickupCollisions.BlastsOpenWalls(room, projectiles);
             MovementCollisions.WallsBlocksAndNpcsStopLink(link, room);
             MovementCollisions.WallsAndBlocksStopEnemies(room);
             PickupCollisions.LinkPicksUpItems(link, room);

@@ -77,6 +77,7 @@ namespace Sprites
         public DoorSprites CreateKeyholeLockedDoorSprites(Direction side) => Door(KeyholeLockedDoorFrame, side);
         public DoorSprites CreateDiamondLockedDoorSprites(Direction side) => Door(DiamondLockedDoorFrame, side);
         public DoorSprites CreateBombedWallOpeningSprites(Direction side) => Door(BombedWallOpeningFrame, side);
+        public DoorSprites CreateBombableWallSprites(Direction side) => Door(WallFrame, side);
 
         public ISprite CreateFireSprite()
         {

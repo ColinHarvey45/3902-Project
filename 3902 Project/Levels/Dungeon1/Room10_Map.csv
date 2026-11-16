@@ -1,4 +1,4 @@
-# Level 1: 5 Gels and the dungeon map.
+# Level 1: 5 Gels and the dungeon map. The bottom wall is cracked: a bomb blows a hole through to room 5.
 # From the NESMaps Level 1 (Quest 1) map, room 3 across and 3 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
@@ -6,7 +6,7 @@ Map,3,3
 Door,Up,OpenDoor
 Door,Left,OpenDoor
 Door,Right,KeyholeLockedDoor
-Door,Down,BombedWallOpening
+Door,Down,BombableWall
 
 Floor,............
 Floor,.QQ......QQ.

@@ -27,8 +27,11 @@ namespace Rooms
     //                                 usual walls (the underground passage); same symbols, and '.' is empty black
     //   Block,<kind>,<column>,<row>   e.g. Block,FireBlock,9,0
     //   Enemy,<kind>,<column>,<row>   e.g. Enemy,Stalfos,6,4
+    //   Enemy,<kind>,<column>,<row>,<item kind>
+    //                                 an enemy carrying an item, which it drops when it dies, e.g. Enemy,Stalfos,6,1,Key
     //   Npc,<kind>,<column>,<row>     e.g. Npc,OldMan,5.5,2
     //   Item,<kind>,<column>,<row>    e.g. Item,Key,5,3
+    //   Reward,<kind>,<column>,<row>  an item that appears there once every enemy in the room is dead, e.g. Reward,Key,8.25,6
     //   Warp,<column>,<row>,<room>,<column>,<row>
     //                                 stepping onto that tile takes Link to the room with that file name, where he
     //                                 is put on the second tile, e.g. the stairs: Warp,6,3,Room16_BowPassage,1,-1
@@ -47,6 +50,10 @@ namespace Rooms
         {
             ['Q'] = position => new SquareBlock(position),
             ['P'] = position => new PushableBlock(position),
+            ['^'] = position => new PushableBlock(position, Direction.Up),
+            ['v'] = position => new PushableBlock(position, Direction.Down),
+            ['<'] = position => new PushableBlock(position, Direction.Left),
+            ['>'] = position => new PushableBlock(position, Direction.Right),
             ['F'] = position => new FishStatue(position),
             ['D'] = position => new DragonStatue(position),
             ['G'] = position => new BlueGap(position),
@@ -63,6 +70,7 @@ namespace Rooms
             [nameof(KeyholeLockedDoor)] = side => new KeyholeLockedDoor(side),
             [nameof(DiamondLockedDoor)] = side => new DiamondLockedDoor(side),
             [nameof(BombedWallOpening)] = side => new BombedWallOpening(side),
+            [nameof(BombableWall)] = side => new BombableWall(side),
             [nameof(Wall)] = side => new Wall(side)
         };
 
@@ -180,8 +188,10 @@ namespace Rooms
                     ExpectValues(fields, 2);
                     Direction side = ParseWall(fields[1]);
 
-                    // Anything but a plain wall is a doorway, which the pause screen's map shows
-                    room.AddDoor(side, Find(DoorKinds, fields[2], "door")(side), isDoorway: fields[2] != nameof(Wall));
+                    // Anything but a wall is a doorway, which the pause screen's map shows (a cracked wall once it is
+                    // blown open)
+                    room.AddDoor(side, Find(DoorKinds, fields[2], "door")(side),
+                        isDoorway: fields[2] is not (nameof(Wall) or nameof(BombableWall)));
                     break;
                 }
 
@@ -201,7 +211,7 @@ namespace Rooms
                     break;
 
                 case "Enemy":
-                    room.AddEnemy(CreateOnTile(enemyKinds, fields, "enemy"));
+                    AddEnemy(room, fields);
                     break;
 
                 case "Npc":
@@ -210,6 +220,10 @@ namespace Rooms
 
                 case "Item":
                     room.AddItem(CreateOnTile(ItemKinds, fields, "item"));
+                    break;
+
+                case "Reward":
+                    room.AddReward(CreateOnTile(ItemKinds, fields, "item"));
                     break;
 
                 case "Warp":
@@ -223,7 +237,7 @@ namespace Rooms
 
                 default:
                     throw new InvalidDataException(
-                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc, Item, Warp or SideView)");
+                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc, Item, Reward, Warp or SideView)");
             }
         }
 
@@ -266,7 +280,19 @@ namespace Rooms
 
         }
 
-        // A Block, Enemy, Npc or Item line: its kind, then the column and row of its top-left corner
+        // An Enemy line, which may end with the kind of item the enemy carries
+        private void AddEnemy(Room room, string[] fields)
+        {
+            const int CarriedItem = 4;
+            bool carries = fields.Length == CarriedItem + 1;
+            IEnemy enemy = CreateOnTile(enemyKinds, carries ? fields[..CarriedItem] : fields, "enemy");
+            room.AddEnemy(enemy);
+
+            if (carries)
+                room.GiveItemTo(enemy, Find(ItemKinds, fields[CarriedItem], "item")(Vector2.Zero));
+        }
+
+        // A Block, Enemy, Npc, Item or Reward line: its kind, then the column and row of its top-left corner
         private static T CreateOnTile<T>(Dictionary<string, Func<Vector2, T>> kinds, string[] fields, string description)
         {
             const int Kind = 1, Column = 2, Row = 3;

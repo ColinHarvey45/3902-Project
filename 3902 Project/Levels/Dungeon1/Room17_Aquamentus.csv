@@ -1,4 +1,4 @@
-# Level 1: Aquamentus, the boss, and a heart container.
+# Level 1: Aquamentus, the boss, and a heart container, which appears once he is dead, as in the NES.
 # From the NESMaps Level 1 (Quest 1) map, room 5 across and 2 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
@@ -17,4 +17,4 @@ Floor,.........QQQ
 Floor,.......QQQQQ
 
 Enemy,Aquamentus,7.5,2
-Item,HeartContainer,10,3.25
+Reward,HeartContainer,10,3.25

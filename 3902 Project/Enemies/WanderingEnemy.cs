@@ -166,9 +166,10 @@ namespace Enemies
             Sprite.Update(gameTime);
         }
 
+        // An enemy out of sight (a Wallmaster in the wall) has no hitbox to move
         public void UpdateCollider()
         {
-            Collider.Update(Position);
+            Collider?.Update(Position);
         }
 
         // Walked into a wall or a solid block: step back out, and head off a new way. Knocked back into one,

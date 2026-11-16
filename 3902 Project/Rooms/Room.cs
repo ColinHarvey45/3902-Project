@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Audio;
 using Enemies;
 using Interfaces;
@@ -31,6 +32,16 @@ namespace Rooms
 
         // The bursts left where enemies have just died
         private readonly List<DeathPuff> deathPuffs = [];
+
+        // Items that appear once the room is cleared, like most of the keys in the NES (see IsCleared)
+        private readonly List<IItem> rewards = [];
+
+        // Items enemies are carrying, like the Stalfos with a key in the NES: drawn on the enemy, and dropped where
+        // it dies
+        private readonly Dictionary<IEnemy, IItem> carriedItems = [];
+
+        // As in the NES, only one enemy hiding in the walls (a Wallmaster) is out at a time
+        private const int HidingEnemiesOutAtOnce = 1;
 
         // Where the room is on the dungeon map in the HUD (column and row, counted from 0), or null for
         // a room that isn't on it, like the test room and the underground passage
@@ -92,9 +103,10 @@ namespace Rooms
             return doors.GetValueOrDefault(side);
         }
 
+        // A cracked wall becomes a doorway once it has been blown open
         public bool HasDoorway(Direction side)
         {
-            return doorways.Contains(side);
+            return doorways.Contains(side) || doors.GetValueOrDefault(side) is IBombableWall { IsOpen: true };
         }
 
         public void AddBlock(IBlock block)
@@ -117,6 +129,20 @@ namespace Rooms
             enemies.Add(enemy);
         }
 
+        public void AddReward(IItem item)
+        {
+            rewards.Add(item);
+        }
+
+        // enemy carries item until it dies
+        public void GiveItemTo(IEnemy enemy, IItem item)
+        {
+            carriedItems[enemy] = item;
+        }
+
+        // True once every enemy that can be killed is dead (Blade Traps can't be, so they don't count)
+        public bool IsCleared => !enemies.Any(enemy => enemy is IDamageable);
+
         public void AddWarp(Warp warp)
         {
             warps.Add(warp);
@@ -135,7 +161,7 @@ namespace Rooms
         }
 
         // Enemies that have died disappear from the room for good, leaving a burst of light where they were, and
-        // sometimes an item (see ItemDrops); a Zol that split leaves its two Gels instead
+        // whatever they were carrying, or sometimes an item (see ItemDrops); a Zol that split leaves its two Gels instead
         public void RemoveDeadEnemies()
         {
             List<IEnemy> dead = enemies.FindAll(enemy => enemy is IDamageable { IsDead: true });
@@ -151,7 +177,9 @@ namespace Rooms
                 }
 
                 Vector2 middle = enemy.Collider.GetCollider().Center.ToVector2();
-                deathPuffs.Add(new DeathPuff(middle, ItemDrops.Roll(middle)));
+                IItem drop = carriedItems.Remove(enemy, out IItem carried) ? carried : ItemDrops.Roll(middle);
+                drop?.CenterOn(middle);
+                deathPuffs.Add(new DeathPuff(middle, drop));
             }
         }
 
@@ -187,6 +215,8 @@ namespace Rooms
 
         public void Update(GameTime gameTime)
         {
+            LetHidingEnemiesOut();
+
             foreach (IBlock block in blocks)
                 block.Update(gameTime);
 
@@ -199,16 +229,71 @@ namespace Rooms
             foreach (IEnemy enemy in enemies)
                 enemy.Update(gameTime);
 
+            foreach ((IEnemy enemy, IItem item) in carriedItems)
+            {
+                if (enemy.Collider != null)
+                    item.CenterOn(enemy.Collider.GetCollider().Center.ToVector2());
+            }
+
             UpdateDeathPuffs(gameTime);
+
+            if (rewards.Count > 0 && IsCleared && deathPuffs.Count == 0)
+                GiveRewards();
 
             if (ShuttersShouldOpen)
                 OpenShutters();
         }
 
+        // Once the last enemy's burst has gone, the room's rewards appear, with the NES's chime
+        private void GiveRewards()
+        {
+            items.AddRange(rewards);
+            rewards.Clear();
+            AudioManager.Instance.Play(Sound.KeyAppear);
+        }
+
+        // Lets enemies hiding in the walls come out when they are ready, as long as not too many are out already
+        private void LetHidingEnemiesOut()
+        {
+            int outNow = enemies.Count(enemy => enemy is IHidingEnemy { IsHidden: false });
+
+            foreach (IEnemy enemy in enemies)
+            {
+                if (outNow >= HidingEnemiesOutAtOnce)
+                    return;
+
+                if (enemy is IHidingEnemy { IsReadyToComeOut: true } hiding)
+                {
+                    hiding.ComeOut();
+                    outNow++;
+                }
+            }
+        }
+
         // As in the NES, a room with a block to push opens its shutters once the block has been pushed; any other
-        // room opens them once every enemy in it is gone
+        // room opens them once it is cleared
         private bool ShuttersShouldOpen =>
-            blocks.Find(block => block is IPushableBlock) is IPushableBlock pushable ? pushable.HasMoved : enemies.Count == 0;
+            blocks.Find(block => block is IPushableBlock) is IPushableBlock pushable ? pushable.HasMoved : IsCleared;
+
+        // As in the NES, a shutter Link comes in by opens to let him through, and shuts behind him once he is in
+        // (see RoomTransitionState), unless the room is ready to open it anyway. True if the shutter on side opened
+        public bool OpenShutterFor(Direction side)
+        {
+            if (DoorOn(side) is not IShutterDoor { IsOpen: false } shutter)
+                return false;
+
+            shutter.Open();
+            return true;
+        }
+
+        public void ShutBehindLink(Direction side)
+        {
+            if (ShuttersShouldOpen || DoorOn(side) is not IShutterDoor { IsOpen: true } shutter)
+                return;
+
+            shutter.Close();
+            AudioManager.Instance.Play(Sound.DoorUnlock);
+        }
 
         // Opens the shutter doors, with the door sound
         private void OpenShutters()
@@ -227,7 +312,8 @@ namespace Rooms
                 AudioManager.Instance.Play(Sound.DoorUnlock);
         }
 
-        // Back to front: walls and floor, blocks and doors, items, NPCs, enemies, then the bursts where enemies died
+        // Back to front: walls and floor, blocks and doors, items, NPCs, enemies and what they carry, then the bursts
+        // where enemies died
         public void Draw(SpriteBatch spriteBatch)
         {
             if (hasDungeonWalls)
@@ -247,6 +333,9 @@ namespace Rooms
 
             foreach (IEnemy enemy in enemies)
                 enemy.Draw(spriteBatch);
+
+            foreach (IItem item in carriedItems.Values)
+                item.Draw(spriteBatch);
 
             foreach (DeathPuff deathPuff in deathPuffs)
                 deathPuff.Draw(spriteBatch);

@@ -39,6 +39,7 @@ namespace CSE_3902_Project
             [Sound.GetHeart] = SoundFolder + "LOZ_Get_Heart",
             [Sound.GetRupee] = SoundFolder + "LOZ_Get_Rupee",
             [Sound.Fanfare] = SoundFolder + "LOZ_Fanfare",
+            [Sound.KeyAppear] = SoundFolder + "LOZ_Key_Appear",
             [Sound.DoorUnlock] = SoundFolder + "LOZ_Door_Unlock",
             [Sound.Stairs] = SoundFolder + "LOZ_Stairs",
             [Sound.Secret] = SoundFolder + "LOZ_Secret",

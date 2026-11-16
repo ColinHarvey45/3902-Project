@@ -20,6 +20,12 @@ namespace Items
         public ICollider Collider { get; } =
             new BoxCollider(new Rectangle((int)position.X, (int)position.Y, HitboxWidth, HitboxHeight));
 
+        public void CenterOn(Vector2 middle)
+        {
+            Position = middle - new Vector2(HitboxWidth / 2f, HitboxHeight / 2f);
+            Collider.Update(Position);
+        }
+
         // Most items do nothing for Link yet; the ones that do override this
         public virtual void OnPickedUp(IPlayer player) { }
 

@@ -1,4 +1,4 @@
-# Level 1: east of the entrance: 5 Stalfos.
+# Level 1: east of the entrance: 5 Stalfos, one of them carrying a key, which it drops when it dies, as in the NES.
 # From the NESMaps Level 1 (Quest 1) map, room 4 across and 6 down.
 # Line kinds and symbols are explained at the top of Rooms/RoomLoader.cs
 
@@ -18,6 +18,6 @@ Floor,............
 
 Enemy,Stalfos,9.5,1
 Enemy,Stalfos,6,1
-Enemy,Stalfos,6.5,4
+Enemy,Stalfos,6.5,4,Key
 Enemy,Stalfos,10.5,5
 Enemy,Stalfos,3,5
