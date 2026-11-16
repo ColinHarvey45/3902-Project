@@ -13,17 +13,20 @@ namespace Environment
         // Blocks never move, so the hitbox is set once, covering the block where it is drawn
         public ICollider Collider { get; } = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, size, size));
 
+        // What it looks like; a door that opens changes it
+        protected ISprite Sprite { get; set; } = sprite;
+
         // Blocks are solid unless a kind of block says otherwise
         public virtual bool IsSolid => true;
 
         public void Update(GameTime gameTime)
         {
-            sprite.Update(gameTime);
+            Sprite.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            sprite.Draw(spriteBatch, position);
+            Sprite.Draw(spriteBatch, position);
         }
 
     }

@@ -18,5 +18,15 @@ namespace CSE_3902_Project
             index = (index - 1 + objects.Length) % objects.Length;
         }
 
+        // Makes item the current one; going to the next or previous one then carries on from there
+        public void MoveTo(T item)
+        {
+            int position = System.Array.IndexOf(objects, item);
+            if (position < 0)
+                throw new System.ArgumentException("That isn't in the list", nameof(item));
+
+            index = position;
+        }
+
     }
 }

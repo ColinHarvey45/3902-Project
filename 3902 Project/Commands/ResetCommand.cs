@@ -1,14 +1,15 @@
-using CSE_3902_Project;
+using GameStates;
 using Interfaces;
 
 namespace Commands
 {
-    internal sealed class ResetCommand(Game1 game) : ICommand
+    // Starts the level again from the beginning, with every room as it was and Link at the entrance
+    internal sealed class ResetCommand(GameStateMachine game) : ICommand
     {
 
         public void Execute()
         {
-            game.ResetGame();
+            game.Reset();
         }
 
     }

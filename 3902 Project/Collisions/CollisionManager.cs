@@ -24,6 +24,9 @@ namespace Collisions
             EnemiesHurtLink(link, room);
             EnemyProjectilesHitLink(link, projectiles);
             ProjectilesHitWallsAndBlocks(room, projectiles);
+
+            // A door Link unlocks this frame no longer stops him
+            LinkUnlocksDoors(link, room);
             WallsBlocksAndNpcsStopLink(link, room);
             WallsAndBlocksStopEnemies(room);
             LinkPicksUpItems(link, room);
@@ -96,6 +99,17 @@ namespace Collisions
                 Rectangle box = projectile.Collider.GetCollider();
                 if (Obstacles(room).Any(obstacle => obstacle.Intersects(box)))
                     projectile.Hit();
+            }
+        }
+
+        // Walking into a locked door with a key opens it and uses the key up; without one it is just a closed door
+        private static void LinkUnlocksDoors(IPlayer link, Room room)
+        {
+            foreach (IBlock block in room.Blocks)
+            {
+                if (block is ILockedDoor { IsLocked: true } door && link.Collider.Intersects(door.Collider)
+                    && link.Inventory.TryUseKey())
+                    door.Unlock();
             }
         }
 

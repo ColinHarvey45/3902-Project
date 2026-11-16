@@ -25,8 +25,12 @@ namespace Rooms
     //   Enemy,<kind>,<column>,<row>   e.g. Enemy,Stalfos,6,4
     //   Npc,<kind>,<column>,<row>     e.g. Npc,OldMan,5.5,2
     //   Item,<kind>,<column>,<row>    e.g. Item,Key,5,3
+    //   Warp,<column>,<row>,<room>,<column>,<row>
+    //                                 stepping onto that tile takes Link to the room with that file name, where he
+    //                                 is put on the second tile, e.g. the stairs: Warp,6,3,Room16_BowPassage,1,-1
     // Kinds are class names. Columns run 0-11 and rows 0-6 across the floor, and halves like 5.5 are
-    // allowed. Blank lines, and lines starting with #, are ignored.
+    // allowed (as are tiles past the floor, like -1, in a room without the usual walls).
+    // Blank lines, and lines starting with #, are ignored.
     // projectiles is where Goriya and Aquamentus put what they throw and breathe
     internal sealed class RoomLoader(ProjectileManager projectiles)
     {
@@ -120,7 +124,7 @@ namespace Rooms
         // A mistake in the file stops the game with the file name, the line number and what is wrong
         public Room Load(string path)
         {
-            Room room = new();
+            Room room = new(Path.GetFileNameWithoutExtension(path));
             TileGrid floor = new("Floor", RoomLayout.FloorColumns, RoomLayout.FloorRows, RoomLayout.TilePosition);
             TileGrid wholeRoom = new("Tiles", RoomLayout.RoomColumns, RoomLayout.RoomRows, RoomLayout.RoomTilePosition);
             string[] lines = File.ReadAllLines(path);
@@ -168,12 +172,9 @@ namespace Rooms
                 {
                     ExpectValues(fields, 2);
                     Direction side = ParseWall(fields[1]);
-                    room.AddBlock(Find(DoorKinds, fields[2], "door")(side));
 
                     // Anything but a plain wall is a doorway, which the pause screen's map shows
-                    if (fields[2] != nameof(Wall))
-                        room.AddDoorway(side);
-
+                    room.AddDoor(side, Find(DoorKinds, fields[2], "door")(side), isDoorway: fields[2] != nameof(Wall));
                     break;
                 }
 
@@ -204,9 +205,13 @@ namespace Rooms
                     room.AddItem(CreateOnTile(ItemKinds, fields, "item"));
                     break;
 
+                case "Warp":
+                    room.AddWarp(ParseWarp(fields));
+                    break;
+
                 default:
                     throw new InvalidDataException(
-                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc or Item)");
+                        $"'{fields[0]}' isn't a kind of line (Map, Door, Floor, Tiles, Block, Enemy, Npc, Item or Warp)");
             }
         }
 
@@ -256,6 +261,18 @@ namespace Rooms
             Func<Vector2, T> create = Find(kinds, fields[1], description);
 
             return create(RoomLayout.TilePosition(ParseNumber(fields[2]), ParseNumber(fields[3])));
+        }
+
+        // A Warp line: the tile Link steps onto, the room it takes him to, and the tile he arrives on there.
+        // Whether that room exists is checked once every room has been loaded
+        private static Warp ParseWarp(string[] fields)
+        {
+            ExpectValues(fields, 5);
+            Vector2 tile = RoomLayout.TilePosition(ParseNumber(fields[1]), ParseNumber(fields[2]));
+            Rectangle area = new((int)tile.X, (int)tile.Y, RoomLayout.TileSize, RoomLayout.TileSize);
+            Vector2 arrival = RoomLayout.TilePosition(ParseNumber(fields[4]), ParseNumber(fields[5]));
+
+            return new Warp(area, fields[3], arrival);
         }
 
         private static T Find<T>(Dictionary<string, T> kinds, string name, string description)

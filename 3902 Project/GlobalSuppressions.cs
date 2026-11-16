@@ -9,6 +9,6 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "namespace", Target = "~N:CSE_3902_Project")]
 
 [assembly: SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance",
-    Justification = "Game1 deliberately holds Link as IPlayer so that it, and the commands it creates, only depend on the " +
-                    "player interface. The speed difference of one call per frame is not noticeable in this game.",
-    Scope = "member", Target = "~F:CSE_3902_Project.Game1.link")]
+    Justification = "Game1 deliberately holds its keyboard as IController, so it only depends on the controller interface " +
+                    "(the instructor's Sprint 3 feedback). The speed difference of one call per frame is not noticeable in this game.",
+    Scope = "member", Target = "~F:CSE_3902_Project.Game1.globalKeys")]

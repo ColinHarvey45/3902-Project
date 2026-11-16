@@ -26,6 +26,9 @@ namespace Interfaces
         // The item in his B slot, which is the one he uses with the B key; it is chosen on the pause screen
         public SecondaryItem EquippedItem { get; set; }
 
+        // His top-left corner on screen
+        public Vector2 Position { get; }
+
         public ICollider Collider { get; }
 
         // His sword's hitbox while he is swinging it, or null when he isn't, and how much it hurts an enemy
@@ -34,6 +37,9 @@ namespace Interfaces
 
         // Moves him straight away, e.g. back out of a wall he walked into
         public void Push(Vector2 offset);
+
+        // Puts him somewhere else straight away, e.g. just inside the door of the room he has walked into
+        public void PlaceAt(Vector2 position);
 
         public void Update(GameTime gameTime);
         public void Draw(SpriteBatch spriteBatch);

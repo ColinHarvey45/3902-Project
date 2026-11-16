@@ -14,5 +14,14 @@ namespace Player
             _ => new Vector2(1, 0)
         };
 
+        // The way back, e.g. the wall Link comes in by after leaving the last room through the one facing it
+        public static Direction Opposite(this Direction direction) => direction switch
+        {
+            Direction.Up => Direction.Down,
+            Direction.Down => Direction.Up,
+            Direction.Left => Direction.Right,
+            _ => Direction.Left
+        };
+
     }
 }

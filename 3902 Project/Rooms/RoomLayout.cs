@@ -95,6 +95,45 @@ namespace Rooms
             return Origin + offset;
         }
 
+        // Where Link stands when he comes into a room through the doorway in the given wall: on the floor tile
+        // just inside it, in the middle of that wall. He starts the game just inside the bottom door
+        public static Vector2 EntryPosition(Direction side)
+        {
+            const float MiddleColumn = (FloorColumns - 1) / 2f;
+            const float MiddleRow = (FloorRows - 1) / 2f;
+
+            return side switch
+            {
+                Direction.Up => TilePosition(MiddleColumn, 0),
+                Direction.Down => TilePosition(MiddleColumn, FloorRows - 1),
+                Direction.Left => TilePosition(0, MiddleRow),
+                _ => TilePosition(FloorColumns - 1, MiddleRow)
+            };
+        }
+
+        // The edge of the room that box has gone past, if any. Link can only get there by walking out through a doorway
+        public static Direction? EdgeCrossed(Rectangle box)
+        {
+            Rectangle room = Bounds;
+
+            if (box.Top < room.Top)
+                return Direction.Up;
+            if (box.Bottom > room.Bottom)
+                return Direction.Down;
+            if (box.Left < room.Left)
+                return Direction.Left;
+            if (box.Right > room.Right)
+                return Direction.Right;
+
+            return null;
+        }
+
+        // How far away the next room in the given direction is on screen: one room's width or height
+        public static Vector2 NextRoomOffset(Direction side)
+        {
+            return side.ToVector() * new Vector2(Width, Height);
+        }
+
         // A rectangle given relative to the room's top-left corner
         private static Rectangle At(int x, int y, int width, int height)
         {

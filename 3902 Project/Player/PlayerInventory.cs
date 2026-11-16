@@ -18,6 +18,9 @@ namespace Player
         public bool HasMap { get; private set; }
         public bool HasCompass { get; private set; }
 
+        // Picking up the dungeon's piece of the triforce wins the game
+        public bool HasTriforce { get; private set; }
+
         public void AddRupees(int amount)
         {
             Rupees = Math.Min(MaxCount, Rupees + amount);
@@ -41,6 +44,21 @@ namespace Player
         public void CollectCompass()
         {
             HasCompass = true;
+        }
+
+        public void CollectTriforce()
+        {
+            HasTriforce = true;
+        }
+
+        // Uses up a key if he has one, to open a locked door; false if he has none
+        public bool TryUseKey()
+        {
+            if (Keys == 0)
+                return false;
+
+            Keys--;
+            return true;
         }
 
         // Uses up a bomb if he has one; false if he has none left

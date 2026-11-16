@@ -126,6 +126,11 @@ namespace Player
             Collider.Update(Position);
         }
 
+        public void PlaceAt(Vector2 position)
+        {
+            Push(position - Position);
+        }
+
         // Called by the healthy state when Link is hurt: he is pushed back a little, opposite the way he faces
         public void KnockBack()
         {
