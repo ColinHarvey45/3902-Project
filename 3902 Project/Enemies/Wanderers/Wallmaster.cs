@@ -108,19 +108,26 @@ namespace Enemies.Wanderers
             UpdateCollider();
         }
 
-        // Nothing can reach it in the wall
+        // Nothing can reach it in the wall. Killed while it is dragging Link (by a bomb he dropped, or an arrow
+        // already flying), it lets go of him
         public override void TakeDamage(int damage, Vector2 hitFrom)
         {
-            if (!inWall)
-                base.TakeDamage(damage, hitFrom);
+            if (inWall)
+                return;
+
+            base.TakeDamage(damage, hitFrom);
+            if (IsDead)
+                LetGoOfLink();
         }
 
+        // Link can't do anything while it holds him
         public void Grab(IPlayer player)
         {
             if (heldLink != null)
                 return;
 
             heldLink = player;
+            heldLink.OnGrabbed();
             carryTimeLeft = CarryTime;
             carryDirection = TowardsNearestWall();
         }
@@ -128,8 +135,14 @@ namespace Enemies.Wanderers
         // Lets go of Link, if it has him, and goes back into the wall: he has been taken away, or has left the room
         public void Release()
         {
-            heldLink = null;
+            LetGoOfLink();
             GoBackIntoTheWall();
+        }
+
+        private void LetGoOfLink()
+        {
+            heldLink?.OnReleased();
+            heldLink = null;
         }
 
         // Holding Link, it drags him with it; out of the wall, it creeps along its path; in the wall, it waits

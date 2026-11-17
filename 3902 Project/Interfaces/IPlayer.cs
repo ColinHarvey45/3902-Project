@@ -13,6 +13,10 @@ namespace Interfaces
         public void UseItem(SecondaryItem item);
         public void TakeDamage();
 
+        // While something has hold of him (a Wallmaster), he can't walk, swing his sword or use items
+        public void OnGrabbed();
+        public void OnReleased();
+
         // His hearts: how many he has left, and the most he can have (he starts with 3 of 3).
         // A heart restores one; a heart container adds one more and fills them all
         public int Health { get; }

@@ -87,6 +87,18 @@ namespace Player
             HealthState.TakeDamage();
         }
 
+        // Caught by a Wallmaster, he can do nothing until it lets go of him
+        public void OnGrabbed()
+        {
+            State = new LinkHeldState(this);
+        }
+
+        public void OnReleased()
+        {
+            if (State is LinkHeldState)
+                State = new LinkStandingState(this);
+        }
+
         // Called by the healthy state when Link is hurt; he can't go below no hearts
         public void LoseHealth(int amount)
         {

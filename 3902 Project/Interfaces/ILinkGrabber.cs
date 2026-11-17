@@ -9,7 +9,7 @@ namespace Interfaces
         public bool IsHoldingLink { get; }
         public bool HasCarriedLinkOff { get; }
 
-        // Touched Link: catches him, unless it is already carrying him
+        // Touched Link: catches him, unless it is already carrying him. He can't do anything until it lets go
         public void Grab(IPlayer link);
 
         // Lets go of him, once he has been taken away or has left the room
