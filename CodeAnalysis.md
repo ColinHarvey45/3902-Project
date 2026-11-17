@@ -10,7 +10,7 @@ We use the **.NET code-quality analyzers (Roslyn)** to check our code. This docu
   <AnalysisLevel>latest-recommended</AnalysisLevel>
   ```
 - **How to see the warnings:** do a full rebuild (`dotnet build "3902 Project.slnx" --no-incremental`, or Build → Rebuild Solution in Visual Studio). Warnings appear in the build output, or in the Error List in Visual Studio. A normal build is not enough: see *Lesson learned* under Sprint 3.
-- **Dates run:** 2026-10-06, on the code at the end of Sprint 2; 2026-10-26, on every Sprint 3 commit.
+- **Dates run:** 2026-10-06, on the code at the end of Sprint 2; 2026-10-26, on every Sprint 3 commit; 2026-11-16, on every Sprint 4 commit.
 
 ## Sprint 2
 
@@ -114,6 +114,36 @@ A normal (incremental) build only checks the files it has to recompile, so it ca
 ### Not covered by these rules
 
 Unused `using` lines are not reported by the recommended rules. We removed the ones found in code review (e.g. in `ICollider.cs` and `Boomerang.cs`) by hand.
+
+## Sprint 4
+
+### Summary
+
+Code written in Sprint 4 added **1 warning, CA1305**. We fixed it. Nothing new was suppressed, and one Sprint 2 suppression moved to a different field (see below). **The build has 0 warnings**, checked with a full rebuild of every Sprint 4 commit on 2026-11-16.
+
+| Rule | Where | Added | Fixed |
+|---|---|---|---|
+| CA1305 | `UI/Hud.cs`, in `DrawNumber` | `8ba7336` (Nov 9, the HUD) | `bb48d92` (Nov 15) |
+
+So the build had 0 warnings until Nov 9, 1 from Nov 9, and 0 again from Nov 15.
+
+### Fixed
+
+#### CA1305: a number turned into text without saying which culture to use (1)
+`DrawNumber`, which draws the rupee, key and bomb counts in the HUD, called `int.ToString()`. That uses the computer's region settings, so the analyzer warns that the text could come out differently on a computer set up for another country.
+
+**Fix:** we changed it to `ToString(CultureInfo.InvariantCulture)`, which always gives plain digits, so the HUD draws the counts the same way on every computer. Every class added in Sprint 4 (the game states, `TextRenderer`, `AudioManager`, `ProjectileFactory`, the three collision classes, `PushableBlock`, `BombableWall`, ...) was `sealed` or `static` from the start, so CA1852 didn't come up again.
+
+### Suppressed
+
+Nothing new. Both Sprint 2 suppressions are still needed, but the CA1859 one is now on a different field:
+
+- **CA1707:** the namespace is still `CSE_3902_Project`.
+- **CA1859:** `Game1` no longer holds Link at all: Link and the game's flow moved into `GameStates/GameStateMachine.cs` (`c97e0c6`, Nov 15), as the instructor's Sprint 3 feedback asked. `Game1` now holds its keyboard for the keys that work everywhere (quit, restart, mute) as an `IController`, which the instructor also asked for, and the same rule suggests typing it as `KeyboardController` instead. We kept the interface for the same reason as before, and moved the suppression in `GlobalSuppressions.cs` to that field (`Game1.globalKeys`) in the same commit.
+
+### Lesson learned
+
+The warning came in with the HUD's pull request and stayed in the build for six days, because nobody did a full rebuild when the pull request was merged. A full rebuild should be part of reviewing a pull request, not only of committing.
 
 ## Going forward
 The build should stay at 0 warnings. Check with a full rebuild before committing. When new code adds a warning, fix it, or suppress it in `GlobalSuppressions.cs` with a reason and add it to this document.
