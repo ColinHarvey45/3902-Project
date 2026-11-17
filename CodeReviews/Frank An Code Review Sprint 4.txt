@@ -1,0 +1,41 @@
+READABILITY REVIEW
+
+Author of code review: Frank An
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: PauseScreen.cs
+Author of file reviewed: Colin Harvey
+Time taken to complete review: 15 minutes
+
+COMMENTS - WHAT IS READABLE:
+- The comment at the top explains the whole layout of the class and what it does, which is very helpful for understanding the code.
+- The comment tells how picking an item works
+- Every position and size is a named constant with units, no magic nums
+- Choices in lines 31-36 lists each item with where it sits, you can see the whole menu at a glance
+- Draw() reads like a table of contents
+- Screen(), Scaled() and TileAt() keep the scaling math in one place, and they take panel position as a parameter
+
+COMMENTS - WHAT IS NOT READABLE:
+-Class called PauseScreen, but InventoryScreen is more accurate
+- "far" on line 135 is vague
+- Open() uses Math.Max. The Max() is there in case the equipped item isn't one of the choices, but nothing explains that.
+- The four cursor corner fields in lines 69-72 and the four matching Draw calls are repetitive
+
+CODE QUALITY REVIEW
+
+Author of code review: Frank An
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: PauseScreen.cs
+Author of file reviewed: Colin Harvey
+
+COMMENTS ON CODE QUALITY:
+- Very good cohesion overall
+- Class depends on IPlayer, not the concrete Link, which is good. It also depends on the RoomManager and Room, maybe add
+a small interface for DungeonMap which would lower coupling
+- Choosing an item maybe could be its own class when more items are added
+- Caching the room tiles by which walls have doorways is good optimization
+- All items are always on the menu, which isn't how real game work.
+
+HYPOTHETICAL CHANGE:
+Only show the items that Link has found.
