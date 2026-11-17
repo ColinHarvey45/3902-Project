@@ -13,7 +13,6 @@ IBombableWall, IPushableBlock, ILinkGrabber), so the rooms and collisions did no
 found bugs that testing one feature at a time would have missed, like getting trapped under the stairs after climbing out of the bow passage, and a bombed wall not showing on the map.
 The code reviews also paid off: one pointed out that Link could still swing his sword while a Wallmaster was dragging him, which is now fixed.
 
-Next plan is to Actually start the sprint's work in the first week, since most of this sprint was done in the last two days again, keep a task board and burndown chart again, and send
-every change through a pull request with a full rebuild before merging, so warnings don't sit in the build. For Sprint 5 we want to add a title screen and the overworld, load the game's
+Next plan is to send every change through a pull request with a full rebuild before merging, so warnings don't sit in the build. For Sprint 5 we want to add a title screen and the overworld, load the game's
 settings from a file, fix the differences from the NES that are left (finding the bow and boomerang before using them, the map and compass on the HUD, Aquamentus aiming at Link), and add
 gamepad controls.
