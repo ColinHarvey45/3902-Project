@@ -1,0 +1,33 @@
+READABILITY REVIEW
+
+Author of code review: Caden Casselman
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: ItemDrops.cs
+Author of file reviewed: Frank An
+Time taken to complete review: 20 minutes
+
+COMMENTS - WHAT IS READABLE:
+- The comments are descriptive and tell what the class does and how it functions
+- Variable names are clear and concise, loops are clear and organized
+
+COMMENTS - WHAT IS NOT READABLE:
+-The parameter for where loot is dropped is called middle. This IS explained in the comment above the loop, but something more like enemyCenter may be more clear for reading at a glance.
+
+
+CODE QUALITY REVIEW
+
+Author of code review: Caden Casselman
+Date of code review: 2026-11-16
+Sprint number: Sprint 4
+File reviewed: ItemDrops.cs
+Author of file reviewed: Frank An
+
+COMMENTS ON CODE QUALITY:
+- Very good organization and precision overall
+- High cohesion
+- Same chances for each enemy
+- Hard to test specific drops since the class is static with its own private Random, but with the current chances for drops this isn't an issue.
+
+HYPOTHETICAL CHANGE:
+Drop chances per unique enemy, like the NES version
